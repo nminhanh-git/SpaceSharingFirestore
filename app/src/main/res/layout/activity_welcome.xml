@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context=".WelcomeActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+        <!--ToolBar-->
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/transparent"
+            android:focusable="true"
+            app:elevation="0dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/main_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:minHeight="?attr/actionBarSize"
+                android:orientation="horizontal"
+                android:theme="@style/AppTheme.ActionBar"
+                app:contentInsetStart="0dp">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/logo" />
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
+
+        <ImageView
+            android:id="@+id/image_view_welcome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/welcome_title"
+            android:layout_below="@id/appbar_layout"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/welcome_title"
+            style="@style/TextAppearance.AppCompat.Display1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/welcome_subtitle"
+            android:fontFamily="@font/roboto_black"
+            android:text="Chào mừng bạn\nđến với SHARE!"
+            android:textColor="#404040" />
+
+        <TextView
+            android:id="@+id/welcome_subtitle"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/sign_in_up_layout"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/roboto_reg"
+            android:text="Chia sẻ không gian chưa bao giờ dễ đến thế!" />
+
+        <LinearLayout
+            android:id="@+id/sign_in_up_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/welcome_fb_button"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_welcome_sign_in"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="25dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_sign_in_background"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:fontFamily="@font/roboto_black"
+                android:text="đăng nhập"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btn_welcome_sign_up"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_sign_in_background"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:fontFamily="@font/roboto_black"
+                android:text="đăng ký"
+                android:textColor="#fff" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/welcome_fb_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/welcome_text_view_divider"
+            android:background="@drawable/background_fb_button"
+            android:drawableLeft="@drawable/facebook_logo_drawble_left_btn"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:fontFamily="@font/roboto_black"
+            android:paddingLeft="20dp"
+            android:text="tiếp tục với facebook"
+            android:textColor="#fff" />
+
+        <TextView
+            android:id="@+id/welcome_text_view_divider"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/welcome_text_view_no_sign_in"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/roboto_reg"
+            android:text="Hoặc"
+            android:textColor="@color/dark_gray" />
+
+        <TextView
+            android:id="@+id/welcome_text_view_no_sign_in"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/roboto_reg"
+            android:text="Tiếp tục sử dụng mà không cần đăng nhập"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary" />
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/welcome_loading_layout"
+        layout="@layout/progress_bar_layout" />
+</RelativeLayout>

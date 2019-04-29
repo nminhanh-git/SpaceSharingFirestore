@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ebebeb"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:context=".Fragment.AddSpacePages.AddDescriptionFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/title_size"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:fontFamily="@font/roboto_reg"
+                android:text="Diện tích *"
+                android:textColor="@color/colorPrimary" />
+
+            <RelativeLayout
+                android:id="@+id/layout_size"
+                android:layout_width="150dp"
+                android:layout_height="80dp"
+                android:layout_below="@id/title_size"
+                android:layout_alignParentStart="true"
+                android:background="@drawable/edit_background_inverse"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
+
+                <EditText
+                    android:id="@+id/add_description_edit_text_size"
+                    style="@style/TextAppearance.AppCompat.Display1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignBottom="@id/metric"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginRight="5dp"
+                    android:layout_toStartOf="@id/metric"
+                    android:background="@color/transparent"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:textColor="@color/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/metric"
+                    style="@style/TextAppearance.AppCompat.Display1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/roboto_reg"
+                    android:text="m\u00B2"
+                    android:textColor="@color/colorPrimary" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/title_price"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/layout_price"
+                android:layout_alignParentTop="true"
+                android:fontFamily="@font/roboto_reg"
+                android:text="Giá dự kiến *"
+                android:textColor="@color/colorPrimary" />
+
+            <RelativeLayout
+                android:id="@+id/layout_price"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_below="@id/title_size"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="30dp"
+                android:layout_toEndOf="@id/layout_size"
+                android:background="@drawable/edit_background_inverse"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
+
+                <EditText
+                    android:id="@+id/add_description_price"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/currency"
+                    android:background="@color/transparent"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:padding="5dp"
+                    android:textColor="@color/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/currency"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:fontFamily="@font/roboto_reg"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="8dp"
+                    android:text="đồng/tháng"
+                    android:textColor="@color/colorPrimary" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/title_description"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_price"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/roboto_reg"
+                android:text="Mô tả *"
+                android:textColor="@color/colorPrimary" />
+
+            <EditText
+                android:id="@+id/add_description_des"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title_description"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/edit_background_inverse"
+                android:padding="16dp"
+                android:textColor="@color/colorPrimary" />
+        </RelativeLayout>
+    </ScrollView>
+</FrameLayout>

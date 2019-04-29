@@ -1,0 +1,29 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fontFamily">@font/roboto_reg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+    </style>
+
+    <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="actionMenuTextColor">@color/colorPrimary</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+
+    </style>
+
+    <style name="AppTheme.OtpView" parent="OtpWidget.OtpView">
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="TextViewTitle" parent="Base.TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:fontFamily">@font/roboto_reg</item>
+    </style>
+</resources>

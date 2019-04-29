@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "551480759463",
+    "firebase_url": "https://spacesharing-298d6.firebaseio.com",
+    "project_id": "spacesharing-298d6",
+    "storage_bucket": "spacesharing-298d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551480759463:android:93ebeae16f92566d",
+        "android_client_info": {
+          "package_name": "com.example.nminhanh.spacesharing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "551480759463-eh8lud1t9vldop3r8u0lpbfak6r6e8aj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nminhanh.spacesharing",
+            "certificate_hash": "6a1f181b080c5331ff8aaffee229689d223bc68e"
+          }
+        },
+        {
+          "client_id": "551480759463-ulei83tolkro9it50v71lbaj6jnav5o8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2AqDzsQ6AGwbefqFRdh_Whe_KaQc2s4c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "551480759463-ulei83tolkro9it50v71lbaj6jnav5o8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

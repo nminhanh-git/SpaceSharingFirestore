@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FilterResultActivity">
+
+    <!--ToolBar-->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:focusable="true"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/filter_result_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:minHeight="?attr/actionBarSize"
+            android:orientation="horizontal"
+            android:theme="@style/AppTheme.ActionBar"
+            app:contentInsetEnd="10dp"
+            app:contentInsetStart="10dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/roboto_bold"
+                    android:gravity="center_vertical"
+                    android:text="Kết quả phân loại"
+                    android:textColor="@color/dark_gray" />
+
+
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <ImageButton
+        android:id="@+id/filter_result_btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/appbar_layout"
+        android:layout_alignBottom="@id/appbar_layout"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back" />
+
+    <RelativeLayout
+        android:id="@+id/filter_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filter_result_btn_back">
+
+        <TextView
+            android:id="@+id/filter_list_title"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/roboto_reg"
+            android:text="phân loại theo" />
+
+        <com.adroitandroid.chipcloud.ChipCloud
+            android:id="@+id/filter_result_chipcloud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_list_title"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:deselectedColor="@color/colorPrimary"
+            app:deselectedFontColor="@color/light_gray"
+            app:gravity="left"
+            app:selectMode="none" />
+    </RelativeLayout>
+
+    <!--Recycler View-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/filter_result_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/filter_list_layout"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" />
+
+</RelativeLayout>

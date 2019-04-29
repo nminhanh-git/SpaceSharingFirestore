@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--spinner City-->
+    <RelativeLayout
+        android:id="@+id/dialog_city"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+
+        <TextView
+            android:id="@+id/filter_checkbox_city"
+            style="@style/TextViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Thành phố" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/filter_checkbox_city"
+            android:background="@drawable/background_spinner">
+
+            <Spinner
+                android:id="@+id/filter_dialog_spinner_city"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <!--Spinner district-->
+
+    <RelativeLayout
+        android:id="@+id/dialog_district"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/dialog_city"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:id="@+id/filter_dialog_checkbox_district"
+            style="@style/TextViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Quận/Huyện" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/filter_dialog_checkbox_district"
+            android:background="@drawable/background_spinner">
+
+            <Spinner
+                android:id="@+id/filter_dialog_spinner_district"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!--Spinner ward-->
+
+    <RelativeLayout
+        android:id="@+id/dialog_ward"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/dialog_district"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:id="@+id/filter_dialog_checkbox_ward"
+            style="@style/TextViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Phường/Xã" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/filter_dialog_checkbox_ward"
+            android:background="@drawable/background_spinner">
+
+            <Spinner
+                android:id="@+id/filter_dialog_spinner_ward"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    <!--Other filter options-->
+
+    <CheckBox
+        android:id="@+id/filter_checkbox_size"
+        style="@style/TextViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_ward"
+        android:text="diện tích" />
+
+    <FrameLayout
+        android:id="@+id/size_slider_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filter_checkbox_size"
+        android:layout_marginBottom="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_layout_background"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:id="@+id/size_range_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/size_start"
+                    style="@android:style/TextAppearance.Material.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="0"
+                    android:textColor="#595959" />
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="-"
+                    android:textColor="#595959" />
+
+                <TextView
+                    android:id="@+id/size_end"
+                    style="@android:style/TextAppearance.Material.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="100"
+                    android:textColor="#595959" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/size_unit"
+                style="@android:style/TextAppearance.Material.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/slider_size"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/roboto_reg"
+                android:text="m2"
+
+                android:textColor="@color/colorPrimary" />
+
+            <io.apptik.widget.MultiSlider
+                android:id="@+id/slider_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/size_range_layout"
+                app:scaleMax="100"
+                app:scaleMin="0"
+                app:scaleStep="20"
+                app:thumbColor="#dadada"
+                app:thumbNumber="2" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/filter_size_unselected"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/unselected_radio_option_background"
+            android:clickable="true"
+            android:focusable="true" />
+    </FrameLayout>
+
+    <CheckBox
+        android:id="@+id/filter_checkbox_price"
+        style="@style/TextViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/size_slider_layout"
+        android:text="Sắp xếp theo giá tiền" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/filter_checkbox_price"
+        android:background="@drawable/background_spinner">
+
+        <Spinner
+            android:id="@+id/filter_dialog_spinner_price"
+            style="@style/Widget.AppCompat.DropDownItem.Spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:spinnerMode="dropdown" />
+    </LinearLayout>
+</RelativeLayout>

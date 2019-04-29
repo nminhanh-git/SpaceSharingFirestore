@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:fitsSystemWindows="true"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".UserInfoActivity">
+
+
+    <!--ToolBar-->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:focusable="true"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/user_info_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:minHeight="?attr/actionBarSize"
+            android:orientation="horizontal"
+            android:theme="@style/AppTheme.ActionBar"
+            app:contentInsetStart="0dp">
+
+            <ImageView
+                android:id="@+id/user_info_logo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:paddingBottom="20dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/user_info_title"
+                style="@style/TextAppearance.AppCompat.Display1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="@font/roboto_black"
+                android:text="Thông tin cá nhân"
+                android:textColor="#404040" />
+
+            <TextView
+                android:id="@+id/user_info_subtitle"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_info_title"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/roboto_reg"
+                android:text="@string/user_info_prompt_complete_info_string" />
+
+            <EditText
+                android:id="@+id/user_info_edit_text_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_info_subtitle"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/search_bar_background"
+                android:fontFamily="@font/roboto_reg"
+                android:hint="Họ Tên"
+                android:inputType="textCapWords"
+                android:minHeight="@dimen/search_bar_height"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:textColorHint="#787878" />
+
+            <EditText
+                android:id="@+id/user_info_mail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_info_edit_text_name"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/search_bar_background"
+                android:fontFamily="@font/roboto_reg"
+                android:hint="Địa chỉ Email"
+                android:inputType="textEmailAddress"
+                android:minHeight="@dimen/search_bar_height"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:textColorHint="#787878" />
+
+            <EditText
+                android:id="@+id/user_info_edit_text_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_info_mail"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/search_bar_background"
+                android:fontFamily="@font/roboto_reg"
+                android:hint="Số điện thoại"
+                android:inputType="phone"
+                android:maxLength="10"
+                android:minHeight="@dimen/search_bar_height"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:textColorHint="#787878" />
+
+            <Button
+                android:id="@+id/user_info_btn_phone_verify"
+                style="@style/com_facebook_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/user_info_edit_text_phone"
+                android:layout_alignEnd="@id/user_info_edit_text_phone"
+                android:layout_alignBottom="@id/user_info_edit_text_phone"
+                android:layout_marginEnd="15dp"
+                android:background="?attr/selectableItemBackground"
+                android:maxLength="11"
+                android:text="Xác thực"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/colorPrimary" />
+
+            <ImageView
+                android:id="@+id/user_info_image_view_verified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/user_info_edit_text_phone"
+                android:layout_alignEnd="@id/user_info_edit_text_phone"
+                android:layout_alignBottom="@id/user_info_edit_text_phone"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/ic_check"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/user_info_btn_continue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_sign_in_background"
+        android:fontFamily="@font/roboto_black"
+        android:text="Tiếp tục"
+        android:textColor="#fff"
+        android:textSize="@dimen/search_bar_text_size" />
+</RelativeLayout>

@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">SpaceSharing</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="otp_phone_auth_error_wrong_code_string">The sms verification code used to create the phone auth credential is invalid. Please resend the verification code sms and be sure use the verification code provided by the user.</string>
+    <string name="otp_prompt_enter_code_string">Một mã xác nhận đã được gửi tới số điện thoại của bạn. Vui lòng kiểm tra và nhập mã xác nhận:</string>
+    <string name="user_info_prompt_complete_info_string">Bạn cần hoàn thành việc điền thông tin cá nhân của mình trước khi đăng nhập lần đầu tiên.</string>
+
+    <string-array name="city_array">
+        <item>Hãy chọn thành phố...</item>
+        <item>Hà Nội</item>
+        <item>Đà Nẵng</item>
+        <item>TP. Hồ Chí Minh</item>
+    </string-array>
+    <string-array name="type_array">
+        <item>Nhà ở</item>
+        <item>Cửa hàng kinh doanh</item>
+        <item>Kho thời vụ</item>
+    </string-array>
+    <string-array name="door_direction_array">
+        <item>Đông</item>
+        <item>Tây</item>
+        <item>Nam</item>
+        <item>Bắc</item>
+        <item>Đông Bắc</item>
+        <item>Đông Nam</item>
+        <item>Tây Bắc</item>
+        <item>Tây Nam</item>
+    </string-array>
+    <string-array name="price_order_array">
+        <item>Hãy chọn cách sắp xếp...</item>
+        <item>Tăng dần</item>
+        <item>Giảm dần</item>
+    </string-array>
+
+    <string name="facebook_app_id">629486984183614</string>
+    <string name="fb_login_protocol_scheme">fb629486984183614</string>
+    <string name="otp_phone_auth_error_linked_credential_string">This credential is already associated with a different user account.</string>
+    <string name="fragment_account_facebook_into_string">Kết nối với Facebook để việc chia sẻ thông tin trở nên dễ dàng hơn!</string>
+
+</resources>

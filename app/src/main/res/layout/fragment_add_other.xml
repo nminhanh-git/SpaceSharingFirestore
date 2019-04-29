@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ebebeb"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:context=".Fragment.AddSpacePages.AddOtherFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/other_title_description"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_price"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:fontFamily="@font/roboto_reg"
+                android:text="Thông tin khác"
+                android:textColor="@color/colorPrimary" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/other_title_description"
+                android:background="@drawable/edit_background_inverse"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/other_title_space_type"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layout_price"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:fontFamily="@font/roboto_reg"
+                    android:text="Loại không gian *"
+                    android:textColor="@color/colorPrimary" />
+
+                <LinearLayout
+                    android:id="@+id/layout_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/other_title_space_type"
+                    android:background="@drawable/background_spinner">
+
+                    <Spinner
+                        android:id="@+id/add_other_spinner_type"
+                        style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                        android:layout_width="135dp"
+                        android:layout_height="50dp"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/add_other_layout_custom_option"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layout_type"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/other_title_door"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Hướng cửa chính"
+                        android:textColor="@color/colorPrimary" />
+
+
+                    <LinearLayout
+                        android:id="@+id/layout_door"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/other_title_door"
+                        android:background="@drawable/background_spinner">
+
+                        <Spinner
+                            android:id="@+id/add_other_spinner_door"
+                            style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                            android:layout_width="170dp"
+                            android:layout_height="50dp"
+                            android:spinnerMode="dropdown" />
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/other_title_bedroom"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/layout_door"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Số phòng ngủ"
+                        android:textColor="@color/colorPrimary" />
+
+                    <RelativeLayout
+                        android:id="@+id/layout_bedroom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:layout_below="@id/other_title_bedroom">
+
+                        <EditText
+                            android:id="@+id/add_other_edit_text_bedroom"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="60dp"
+                            android:layout_height="50dp"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/edit_background"
+                            android:fontFamily="@font/roboto_reg"
+                            android:inputType="number"
+                            android:text="0"
+                            android:textAlignment="center" />
+
+                        <ImageButton
+                            android:id="@+id/other_bedroom_button_increase"
+                            android:layout_width="@dimen/square_button_icon_size"
+                            android:layout_height="@dimen/square_button_icon_size"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_toEndOf="@id/add_other_edit_text_bedroom"
+                            android:background="?attr/selectableItemBackground"
+                            android:src="@drawable/ic_increase" />
+
+                        <ImageButton
+                            android:id="@+id/other_bedroom_button_decrease"
+                            android:layout_width="@dimen/square_button_icon_size"
+                            android:layout_height="@dimen/square_button_icon_size"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginLeft="10dp"
+
+                            android:layout_toEndOf="@id/add_other_edit_text_bedroom"
+                            android:background="?attr/selectableItemBackground"
+                            android:src="@drawable/ic_decrease" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/other_title_bathroom"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/layout_bathroom"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@id/layout_door"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Số phòng vệ sinh"
+                        android:textColor="@color/colorPrimary" />
+
+                    <RelativeLayout
+                        android:id="@+id/layout_bathroom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:layout_below="@id/other_title_bedroom"
+                        android:layout_marginLeft="40dp"
+                        android:layout_toEndOf="@id/other_title_bedroom">
+
+                        <EditText
+                            android:id="@+id/add_other_edit_text_bathroom"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="60dp"
+                            android:layout_height="50dp"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/edit_background"
+                            android:fontFamily="@font/roboto_reg"
+                            android:inputType="number"
+                            android:text="0"
+                            android:textAlignment="center" />
+
+                        <ImageButton
+                            android:id="@+id/other_bathroom_button_increase"
+                            android:layout_width="@dimen/square_button_icon_size"
+                            android:layout_height="@dimen/square_button_icon_size"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_toEndOf="@id/add_other_edit_text_bathroom"
+                            android:background="?attr/selectableItemBackground"
+                            android:src="@drawable/ic_increase" />
+
+                        <ImageButton
+                            android:id="@+id/other_bathroom_button_decrease"
+                            android:layout_width="@dimen/square_button_icon_size"
+                            android:layout_height="@dimen/square_button_icon_size"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginLeft="10dp"
+
+                            android:layout_toEndOf="@id/add_other_edit_text_bathroom"
+                            android:background="?attr/selectableItemBackground"
+                            android:src="@drawable/ic_decrease" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/other_note_room"
+                        style="@style/TextAppearance.AppCompat.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/layout_bedroom"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Đặt giá trị là 0 nếu như không gian không phải là nhà ở" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/other_title_detail_space"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/add_other_layout_custom_option"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/roboto_reg"
+                    android:text="Đặc điểm nhà đất"
+                    android:textColor="@color/colorPrimary" />
+
+                <LinearLayout
+                    android:id="@+id/layout_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/other_title_detail_space"
+                    android:background="@drawable/edit_background"
+                    android:padding="10dp">
+
+                    <EditText
+                        android:id="@+id/add_other_edit_text_detail"
+                        style="@style/TextAppearance.AppCompat.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/roboto_reg"
+                        android:hint="Ví dụ: nhà mặt tiền, nhà trong ngõ,..." />
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</FrameLayout>
