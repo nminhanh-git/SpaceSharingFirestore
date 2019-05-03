@@ -107,7 +107,8 @@ public class SearchFragment extends Fragment {
                 String phuong = mAddressUtils.getWardName(model.getQuanId(), model.getPhuongId());
                 holder.mTextViewAddress.setText(model.getDiaChiPho() + ", " + phuong + ", " + quan + ", " + thanhPho);
 
-                holder.mTextViewPrice.setText((int) model.getDienTich() + Html.fromHtml("m<super>2</super>").toString() + " - " + formattedMoney((int) model.getGia()) + " đồng");
+                holder.mTextViewPrice.setText((int) model.getDienTich() + Html.fromHtml("m<super>2</super>").toString()
+                        + " - " + formattedMoney((int) model.getGia()) + " đồng");
                 if (!model.getFirstImagePath().equalsIgnoreCase("không có gì hết á!")) {
                     final String imageURl = IMAGE_STORAGE_BASE_URL + "/"
                             + model.getIdChu() + "/"

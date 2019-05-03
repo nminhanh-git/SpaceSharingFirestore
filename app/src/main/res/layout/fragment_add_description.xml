@@ -69,7 +69,7 @@
                     android:layout_alignParentBottom="true"
 
                     android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/roboto_reg"
+                    android:fontFamily="@font/roboto_bold"
                     android:text="m\u00B2"
                     android:textColor="@color/colorPrimary" />
             </RelativeLayout>
@@ -125,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:fontFamily="@font/roboto_reg"
+                    android:fontFamily="@font/roboto_bold"
                     android:paddingRight="8dp"
                     android:paddingBottom="8dp"
                     android:text="đồng/tháng"
@@ -143,6 +143,16 @@
                 android:layout_marginBottom="5dp"
                 android:fontFamily="@font/roboto_reg"
                 android:text="Mô tả" />
+            <TextView
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/title_description"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/title_description"
+                android:fontFamily="@font/roboto_bold"
+                android:text="*"
+                android:textColor="@color/colorPrimary" />
 
             <EditText
                 android:id="@+id/add_description_des"

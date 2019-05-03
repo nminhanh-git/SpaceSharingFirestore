@@ -53,7 +53,7 @@
                 android:fontFamily="@font/roboto_reg"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:text="Bạn cần phải thêm vào 5 ảnh,hiện bạn đã thêm 0/5 ảnh"
+                android:text="Bạn cần phải thêm vào 5 ảnh, hiện bạn đã thêm 0/5 ảnh"
                 android:textAlignment="center" />
 
 

@@ -71,7 +71,6 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
     double latitude;
     double longitude;
-    boolean canContinue = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +95,7 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
         mBtnContinue = findViewById(R.id.add_btn_continue);
 
         mTextviewNote = findViewById(R.id.add_textview_note);
-        String text = "Những mục có dấu <font color=#FF9800>*</font> là những mục bắt buộc";
+        String text = "Những mục có dấu <font color=#e83841>*</font> là những mục bắt buộc";
         mTextviewNote.setText(Html.fromHtml(text));
 
         mViewPagerAdd = findViewById(R.id.add_viewpager);
@@ -137,9 +136,7 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
                         mBtnContinue.setText("Tiếp tục");
                         listener = (StepContinueListener) getSupportFragmentManager().getFragments().get(0);
                         listener.onContinue();
-                        if (canContinue) {
-                            mViewPagerAdd.setCurrentItem(1);
-                        }
+                        mViewPagerAdd.setCurrentItem(1);
                         break;
                     case 1:
                         mBtnCancel.setText("Trở về");
@@ -225,38 +222,33 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
     @Override
     public void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, String fullAddress, ArrayList<String> imagePath) {
-        if (title.isEmpty() || addressNumber.isEmpty() || cityId.isEmpty() || districtId.isEmpty() || wardId.isEmpty()
-                || fullAddress.isEmpty() || imagePath.isEmpty()) {
-            canContinue = false;
+        mImagePath = new ArrayList<>(imagePath);
+        if (mImagePath != null && mImagePath.size() != 0) {
+            currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
         } else {
-            canContinue = true;
-            mImagePath = new ArrayList<>(imagePath);
-            if (mImagePath != null && mImagePath.size() != 0) {
-                currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
-            } else {
-                currentSpace.setFirstImagePath("không có gì hết á!");
-            }
-            currentSpace.setIdChu(mFirebaseUser.getUid());
-            currentSpace.setTieuDe(title);
-            currentSpace.setDiaChiPho(addressNumber);
-            currentSpace.setThanhPhoId(cityId);
-            currentSpace.setQuanId(districtId);
-            currentSpace.setPhuongId(wardId);
-
-            Geocoder mGeoCoder = new Geocoder(this);
-            List<Address> addressesList;
-            try {
-                addressesList = mGeoCoder.getFromLocationName(fullAddress, 1);
-                if (addressesList.size() > 0) {
-                    Address currentAddress = addressesList.get(0);
-                    latitude = currentAddress.getLatitude();
-                    longitude = currentAddress.getLongitude();
-                }
-            } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
-                e.printStackTrace();
-            }
+            currentSpace.setFirstImagePath("không có gì hết á!");
         }
+        currentSpace.setIdChu(mFirebaseUser.getUid());
+        currentSpace.setTieuDe(title);
+        currentSpace.setDiaChiPho(addressNumber);
+        currentSpace.setThanhPhoId(cityId);
+        currentSpace.setQuanId(districtId);
+        currentSpace.setPhuongId(wardId);
+
+        Geocoder mGeoCoder = new Geocoder(this);
+        List<Address> addressesList;
+        try {
+            addressesList = mGeoCoder.getFromLocationName(fullAddress, 1);
+            if (addressesList.size() > 0) {
+                Address currentAddress = addressesList.get(0);
+                latitude = currentAddress.getLatitude();
+                longitude = currentAddress.getLongitude();
+            }
+        } catch (IOException e) {
+            Log.d(TAG, e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 
     @Override
