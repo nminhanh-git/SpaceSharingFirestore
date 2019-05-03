@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -27,10 +28,6 @@
             android:parentActivityName=".WelcomeActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".AddSpaceActivity" />
-        <activity
-            android:name=".SignUpActivity"
-            android:parentActivityName=".WelcomeActivity"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".OTPActivity"
             android:windowSoftInputMode="adjustResize" />

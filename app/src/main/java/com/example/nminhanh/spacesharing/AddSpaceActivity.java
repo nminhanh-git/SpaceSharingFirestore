@@ -1,5 +1,7 @@
 package com.example.nminhanh.spacesharing;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,12 +33,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.imperiumlabs.geofirestore.GeoFirestore;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import github.chenupt.springindicator.SpringIndicator;
@@ -56,11 +63,15 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
     Space currentSpace;
     ArrayList<String> mImagePath;
     StepContinueListener listener;
-    public static final String SPACE_CHILD = "space";
+    public static final String SPACE_COLLECTION = "space";
 
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mFirebaseUser;
     FirebaseFirestore db;
+
+    double latitude;
+    double longitude;
+    boolean canContinue = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +84,7 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
         if (mFirebaseAuth.getCurrentUser() != null) {
             mFirebaseUser = mFirebaseAuth.getCurrentUser();
         }
+
         initialize();
     }
 
@@ -84,7 +96,7 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
         mBtnContinue = findViewById(R.id.add_btn_continue);
 
         mTextviewNote = findViewById(R.id.add_textview_note);
-        String text = "Những mục có dấu <font color=#e83841>*</font> là những mục bắt buộc";
+        String text = "Những mục có dấu <font color=#FF9800>*</font> là những mục bắt buộc";
         mTextviewNote.setText(Html.fromHtml(text));
 
         mViewPagerAdd = findViewById(R.id.add_viewpager);
@@ -125,7 +137,9 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
                         mBtnContinue.setText("Tiếp tục");
                         listener = (StepContinueListener) getSupportFragmentManager().getFragments().get(0);
                         listener.onContinue();
-                        mViewPagerAdd.setCurrentItem(1);
+                        if (canContinue) {
+                            mViewPagerAdd.setCurrentItem(1);
+                        }
                         break;
                     case 1:
                         mBtnCancel.setText("Trở về");
@@ -146,30 +160,25 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
     }
 
     private void saveNewSpaceObject(final Space currentSpace) {
-//        final DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
-//        final String[] key = new String[1];
-//        dbReference.child(SPACE_CHILD).push().setValue(currentSpace, new DatabaseReference.CompletionListener() {
-//            @Override
-//            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-//                if (databaseError == null) {
-//                    key[0] = databaseReference.getKey();
-//                    currentSpace.setId(key[0]);
-//                    dbReference.child(SPACE_CHILD).child(key[0]).setValue(currentSpace);
-//                    if (mImagePath != null && mImagePath.size() != 0) {
-//                        putImageToStorage(key);
-//                    }
-//                    Toast.makeText(AddSpaceActivity.this, key[0], Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(AddSpaceActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-        final CollectionReference mSpacesCollRef = db.collection("space");
+        final CollectionReference mSpacesCollRef = db.collection(SPACE_COLLECTION);
         mSpacesCollRef.add(currentSpace).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 currentSpace.setId(documentReference.getId());
                 mSpacesCollRef.document(currentSpace.getId()).set(currentSpace);
+
+                GeoFirestore mGeoFirestore = new GeoFirestore(mSpacesCollRef);
+                mGeoFirestore.setLocation(currentSpace.getId(), new GeoPoint(latitude, longitude)
+                        , new GeoFirestore.CompletionListener() {
+                            @Override
+                            public void onComplete(Exception e) {
+                                if (e == null) {
+                                    Log.d(TAG, "add location for this document to cloud firestore successfully!");
+                                } else {
+                                    Log.d(TAG, e.getMessage());
+                                }
+                            }
+                        });
 
                 DocumentReference currentSpaceRef = mSpacesCollRef.document(currentSpace.getId());
                 Map<String, Object> updates = new HashMap<>();
@@ -215,19 +224,39 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
 
     @Override
-    public void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, ArrayList<String> imagePath) {
-        mImagePath = new ArrayList<>(imagePath);
-        if (mImagePath != null && mImagePath.size() != 0) {
-            currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
+    public void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, String fullAddress, ArrayList<String> imagePath) {
+        if (title.isEmpty() || addressNumber.isEmpty() || cityId.isEmpty() || districtId.isEmpty() || wardId.isEmpty()
+                || fullAddress.isEmpty() || imagePath.isEmpty()) {
+            canContinue = false;
         } else {
-            currentSpace.setFirstImagePath("không có gì hết á!");
+            canContinue = true;
+            mImagePath = new ArrayList<>(imagePath);
+            if (mImagePath != null && mImagePath.size() != 0) {
+                currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
+            } else {
+                currentSpace.setFirstImagePath("không có gì hết á!");
+            }
+            currentSpace.setIdChu(mFirebaseUser.getUid());
+            currentSpace.setTieuDe(title);
+            currentSpace.setDiaChiPho(addressNumber);
+            currentSpace.setThanhPhoId(cityId);
+            currentSpace.setQuanId(districtId);
+            currentSpace.setPhuongId(wardId);
+
+            Geocoder mGeoCoder = new Geocoder(this);
+            List<Address> addressesList;
+            try {
+                addressesList = mGeoCoder.getFromLocationName(fullAddress, 1);
+                if (addressesList.size() > 0) {
+                    Address currentAddress = addressesList.get(0);
+                    latitude = currentAddress.getLatitude();
+                    longitude = currentAddress.getLongitude();
+                }
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+                e.printStackTrace();
+            }
         }
-        currentSpace.setIdChu(mFirebaseUser.getUid());
-        currentSpace.setTieuDe(title);
-        currentSpace.setDiaChiPho(addressNumber);
-        currentSpace.setThanhPhoId(cityId);
-        currentSpace.setQuanId(districtId);
-        currentSpace.setPhuongId(wardId);
     }
 
     @Override

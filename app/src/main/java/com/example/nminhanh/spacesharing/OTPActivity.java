@@ -1,9 +1,12 @@
 package com.example.nminhanh.spacesharing;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class OTPActivity extends AppCompatActivity {
 
     private static final String TAG = "MinhAnhOTPActivity";
+    private static final int REQUEST_NEW_USER_INFO = 1;
     Toolbar mToolbar;
     ImageView mImageViewToolbar;
     ImageButton mButtonBack;
@@ -54,7 +58,6 @@ public class OTPActivity extends AppCompatActivity {
     long seconds = 0;
 
     FirebaseAuth mFirebaseAuth;
-    FirebaseUser mCurrentUser;
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBack;
     PhoneAuthCredential mPhoneAuthCredential;
@@ -69,7 +72,6 @@ public class OTPActivity extends AppCompatActivity {
         setContentView(R.layout.activity_otp);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
 
         initializeView();
         // init count down timer
@@ -155,6 +157,12 @@ public class OTPActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 Log.d("MaVerification", e.getMessage());
+                if (e.getMessage().equalsIgnoreCase(getString(R.string.op_network_error_string))) {
+                    mBtnVerify.setVisibility(View.GONE);
+                    showNetworkErrorDialog();
+
+
+                }
             }
 
             @Override
@@ -173,14 +181,11 @@ public class OTPActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mLayoutLoading.setVisibility(View.VISIBLE);
                 mTextViewLoading.setText("Đang xác nhận...");
-
-
                 mPhoneAuthCredential = PhoneAuthProvider.getCredential(VerificationId, verificationCode);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         switch (command.toLowerCase()) {
-                            case "sign up":
                             case "sign in":
                                 signInWithPhoneAuthCredential(mPhoneAuthCredential);
                                 break;
@@ -189,6 +194,7 @@ public class OTPActivity extends AppCompatActivity {
                                 break;
                             case "edit":
                                 updateWithPhoneAuthCredential(mPhoneAuthCredential);
+                                break;
                         }
                     }
                 }, 1200);
@@ -204,6 +210,19 @@ public class OTPActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void showNetworkErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Đã có lỗi xảy ra")
+                .setMessage("Xác thực thất bại do thiết bị chưa kết nối mạng, vui lòng thử lại.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
     }
 
     private void initializeView() {
@@ -242,29 +261,22 @@ public class OTPActivity extends AppCompatActivity {
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential) {
-        switch (command) {
-            case "sign up":
-                mTextViewLoading.setText("Đang đăng ký...");
-                break;
-            case "sign in":
-                mTextViewLoading.setText("Đang đăng nhập, đợi xíu nha...");
-                break;
-        }
-
+        mTextViewLoading.setText("Đang đăng nhập, đợi xíu nha...");
         mFirebaseAuth.signInWithCredential(phoneAuthCredential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             mLayoutLoading.setVisibility(View.GONE);
-                            if (command.equalsIgnoreCase("sign up")) {
-                                Toast.makeText(OTPActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(OTPActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OTPActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                            if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                                FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                setUpInfoForNewUser(mCurrentUser);
                             }
                             setResult(RESULT_OK);
                             finish();
                         } else if (task.getException().getMessage().equalsIgnoreCase(getString(R.string.otp_phone_auth_error_wrong_code_string))) {
+                            mOtpView.setText("");
                             Toast.makeText(OTPActivity.this, "Mã xác nhận không đúng. Vui lòng nhập lại", Toast.LENGTH_SHORT).show();
                         } else if (task.getException().getMessage().equalsIgnoreCase(getString(R.string.otp_phone_auth_error_linked_credential_string))) {
                             Log.d(TAG, task.getException().getMessage());
@@ -278,7 +290,7 @@ public class OTPActivity extends AppCompatActivity {
     }
 
     private void linkWithPhoneAuthCredential(PhoneAuthCredential mPhoneAuthCredential) {
-        mCurrentUser.linkWithCredential(mPhoneAuthCredential)
+        mFirebaseAuth.getCurrentUser().linkWithCredential(mPhoneAuthCredential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -301,7 +313,7 @@ public class OTPActivity extends AppCompatActivity {
     }
 
     private void updateWithPhoneAuthCredential(PhoneAuthCredential mPhoneAuthCredential) {
-        mCurrentUser.updatePhoneNumber(mPhoneAuthCredential)
+        mFirebaseAuth.getCurrentUser().updatePhoneNumber(mPhoneAuthCredential)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -321,5 +333,26 @@ public class OTPActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void setUpInfoForNewUser(FirebaseUser mCurrentUser) {
+        Intent infoIntent = new Intent(OTPActivity.this, UserInfoActivity.class);
+        String name = "";
+        String phoneNumber = "";
+        String mail = "";
+        if (mCurrentUser.getDisplayName() != null) {
+            name = mCurrentUser.getDisplayName();
+        }
+        if (mCurrentUser.getEmail() != null) {
+            mail = mCurrentUser.getEmail();
+        }
+        if (mCurrentUser.getPhoneNumber() != null) {
+            phoneNumber = mCurrentUser.getPhoneNumber();
+        }
+        infoIntent.putExtra("user name", name);
+        infoIntent.putExtra("user mail", mail);
+        infoIntent.putExtra("user phone", phoneNumber);
+        infoIntent.putExtra("provider", "sign in");
+        startActivity(infoIntent);
     }
 }

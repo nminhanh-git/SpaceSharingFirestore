@@ -73,28 +73,24 @@
             android:fontFamily="@font/roboto_reg"
             android:text="phân loại theo" />
 
-        <com.adroitandroid.chipcloud.ChipCloud
-            android:id="@+id/filter_result_chipcloud"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/filter_tag_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_below="@id/filter_list_title"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            app:deselectedColor="@color/colorPrimary"
-            app:deselectedFontColor="@color/light_gray"
-            app:gravity="left"
-            app:selectMode="none" />
+            android:orientation="horizontal" />
     </RelativeLayout>
 
     <!--Recycler View-->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/filter_result_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_below="@id/filter_list_layout"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:paddingTop="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp" />
 

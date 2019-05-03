@@ -18,13 +18,14 @@
         android:paddingRight="16dp"
         android:paddingBottom="8dp"
         android:text="Phân loại theo"
-        android:textColor="@color/dark_gray" />
+        android:textColor="#595959" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/filter_btn_layout"
         android:layout_below="@id/dialog_title"
+        android:fadeScrollbars="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="10dp">
@@ -51,32 +52,35 @@
                     android:layout_height="80dp"
                     android:src="@drawable/ic_location" />
 
-                <TextView
-                    android:id="@+id/location_title"
-                    style="@style/TextAppearance.AppCompat.Medium"
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_above="@id/location_subtitle"
                     android:layout_alignTop="@id/location_image"
-                    android:layout_marginTop="10dp"
                     android:layout_toEndOf="@id/location_image"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="địa điểm gần nhất"
-                    android:textAllCaps="true"
-                    android:textColor="#595959" />
-
-                <TextView
-                    android:id="@+id/location_subtitle"
-                    style="@style/TextAppearance.AppCompat.Body2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_alignBottom="@id/location_image"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="7dp"
-                    android:layout_toEndOf="@id/location_image"
-                    android:fontFamily="@font/roboto_reg"
-                    android:text="Tìm kiếm các địa điểm gần nhất so với vị trí của bạn."
-                    android:textColor="#595959" />
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/location_title"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_bold"
+                        android:text="Địa điểm gần nhất"
+                        android:textAllCaps="false"
+                        android:textColor="#595959" />
+
+                    <TextView
+                        android:id="@+id/location_subtitle"
+                        style="@style/TextAppearance.AppCompat.Body2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/location_title"
+                        android:layout_marginRight="20dp"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Tìm kiếm các địa điểm gần nhất so với vị trí của bạn."
+                        android:textColor="#595959" />
+                </RelativeLayout>
             </RelativeLayout>
             <!--Divider line-->
             <LinearLayout

@@ -33,7 +33,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private static final String TAG = "MinhAnh.welcomeActiviy";
     Button mBtnSignIn;
-    Button mBtnSignUp;
     Button mBtnFacebook;
     TextView mTextViewNoSignIn;
     ImageView mImageViewWelcome;
@@ -47,11 +46,12 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-
+        // initial step for everything
         initialize();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFacebookUtils = new FacebookConnectUtils();
 
+        // Add onClick listener for BUTTONS
         mBtnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,13 +60,6 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
-        mBtnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(WelcomeActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
         mTextViewNoSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,7 +70,7 @@ public class WelcomeActivity extends AppCompatActivity {
         mBtnFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFacebookUtils.loginWithReadPermission(WelcomeActivity.this, Arrays.asList("email", "public_profile"));
+                mFacebookUtils.loginWithReadPermission(WelcomeActivity.this, Arrays.asList("public_profile"));
             }
         });
     }
@@ -125,7 +118,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void initialize() {
         mBtnSignIn = findViewById(R.id.btn_welcome_sign_in);
-        mBtnSignUp = findViewById(R.id.btn_welcome_sign_up);
         mBtnFacebook = findViewById(R.id.welcome_fb_button);
         mImageViewWelcome = findViewById(R.id.image_view_welcome);
         mTextViewNoSignIn = findViewById(R.id.welcome_text_view_no_sign_in);

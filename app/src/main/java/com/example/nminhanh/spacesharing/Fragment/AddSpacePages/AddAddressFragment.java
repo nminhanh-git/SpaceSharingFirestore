@@ -15,6 +15,7 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
@@ -49,9 +52,13 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
     Spinner mSpinnerCity;
     Spinner mSpinnerDistrict;
     Spinner mSpinnerWard;
+    TextView mTextViewImageNote;
+    ImageView mImageCityError;
+    ImageView mImageDistrictError;
+    ImageView mImageWardError;
 
-    String currentTitle;
-    String currentAddressNumber;
+    String currentTitle = "";
+    String currentAddressNumber = "";
     City currentCity;
     District currentDist;
     Ward currentWard;
@@ -79,21 +86,51 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
     }
 
     public interface AddressReceiver {
-        void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, ArrayList<String> imagePath);
+        void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, String fullAddress, ArrayList<String> imagePath);
     }
 
     AddressReceiver receiver;
 
     @Override
     public void onContinue() {
-        Bundle b = new Bundle();
-        b.putString("title", currentTitle);
-        b.putString("address", currentAddressNumber);
-        b.putSerializable("city", currentCity);
-        b.putSerializable("district", currentDist);
-        b.putSerializable("ward", currentWard);
-        b.putStringArrayList("image path", mImagePathList);
-        setArguments(b);
+        if (!currentTitle.isEmpty() && !currentAddressNumber.isEmpty()
+                && mImagePathList.size() >= 5
+                && mEditTextTitle.getError() != null && mEditTextAddress.getError() != null
+                && !currentCity.getId().equals("-1")
+                && !currentDist.getId().equals("-1")
+                && !currentWard.getId().equals("-1")) {
+            Bundle b = new Bundle();
+            b.putString("title", currentTitle);
+            b.putString("address", currentAddressNumber);
+            b.putSerializable("city", currentCity);
+            b.putSerializable("district", currentDist);
+            b.putSerializable("ward", currentWard);
+            b.putStringArrayList("image path", mImagePathList);
+            setArguments(b);
+
+        } else {
+            if (mEditTextTitle.getText().toString().isEmpty()) {
+                mEditTextTitle.setError("Bạn chưa nhập tiêu đề");
+            }
+            if (mEditTextAddress.getText().toString().isEmpty()) {
+                mEditTextAddress.setError("Bạn chưa nhập địa chỉ");
+            }
+            if (mImagePathList.size() < 5) {
+                Toast.makeText(getContext(), "Bạn chưa thêm đủ ảnh", Toast.LENGTH_SHORT).show();
+            }
+            if (currentCity.getId().equals("-1")) {
+                Toast.makeText(getContext(), "Bạn chưa chọn thành phố", Toast.LENGTH_SHORT).show();
+                mImageCityError.setVisibility(View.VISIBLE);
+            }
+            if (currentDist.getId().equals("-1")) {
+                Toast.makeText(getContext(), "Bạn chưa chọn quận/huyện", Toast.LENGTH_SHORT).show();
+                mImageDistrictError.setVisibility(View.VISIBLE);
+            }
+            if (currentWard.getId().equals("-1")) {
+                Toast.makeText(getContext(), "Bạn chưa chọn phường/xã", Toast.LENGTH_SHORT).show();
+                mImageWardError.setVisibility(View.VISIBLE);
+            }
+        }
 
         receiver.onAddressReceived(
                 currentTitle,
@@ -101,6 +138,7 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
                 currentCity.getId(),
                 currentDist.getId(),
                 currentWard.getId(),
+                currentAddressNumber + ", " + currentWard.getName() + ", " + currentDist.getName() + ", " + currentCity.getName(),
                 mImagePathList);
     }
 
@@ -131,18 +169,18 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
             currentCity = (City) b.getSerializable("city");
             switch (currentCity.getId().trim()) {
                 case "01":
-                    mSpinnerCity.setSelection(0);
-                    break;
-                case "48":
                     mSpinnerCity.setSelection(1);
                     break;
-                case "79":
+                case "48":
                     mSpinnerCity.setSelection(2);
+                    break;
+                case "79":
+                    mSpinnerCity.setSelection(3);
                     break;
             }
 
             currentDist = (District) b.getSerializable("district");
-            int indexDist = 0;
+            int indexDist = 1;
             for (String s : districtNameList) {
                 if (s.trim().equalsIgnoreCase(currentDist.getName().trim())) {
                     indexDist = districtNameList.indexOf(s);
@@ -163,7 +201,7 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
             Toast.makeText(getContext(), mSpinnerDistrict.getAdapter().getItem(indexDist) + "", Toast.LENGTH_SHORT).show();
             refreshWardList();
             currentWard = (Ward) b.getSerializable("ward");
-            int indexWard = 0;
+            int indexWard = 1;
             for (String s : wardNameList) {
                 if (s.trim().equalsIgnoreCase(currentWard.getName().trim())) {
                     indexWard = wardNameList.indexOf(s);
@@ -195,6 +233,13 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         mSpinnerCity = view.findViewById(R.id.add_address_spinner_city);
         mSpinnerDistrict = view.findViewById(R.id.add_address_spinner_district);
         mSpinnerWard = view.findViewById(R.id.add_address_spinner_ward);
+        mTextViewImageNote = view.findViewById(R.id.add_address_image_note);
+        mImageCityError = view.findViewById(R.id.add_address_spinner_city_image_error);
+        mImageCityError.setVisibility(View.GONE);
+        mImageDistrictError = view.findViewById(R.id.add_address_spinner_district_image_error);
+        mImageDistrictError.setVisibility(View.GONE);
+        mImageWardError = view.findViewById(R.id.add_address_spinner_ward_image_error);
+        mImageWardError.setVisibility(View.GONE);
 
         mEditTextAddress.addTextChangedListener(new TextWatcher() {
             @Override
@@ -204,8 +249,9 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentAddressNumber = s.toString();
                 if (!s.equals("")) {
-                    currentAddressNumber = s.toString();
+                    mEditTextAddress.setError(null);
                 }
             }
 
@@ -222,8 +268,9 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentTitle = s.toString();
                 if (!s.equals("")) {
-                    currentTitle = s.toString();
+                    mEditTextTitle.setError(null);
                 }
             }
 
@@ -241,22 +288,27 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         wardNameList = new ArrayList<>();
         currentWard = new Ward();
 
-        currentCity = new City("01", "Hà Nội");
+        currentCity = new City("-1", "Hãy chọn thành phố...");
         ArrayAdapter<CharSequence> cityAdapter = ArrayAdapter.createFromResource(getContext(), R.array.city_array, android.R.layout.simple_spinner_dropdown_item);
         mSpinnerCity.setAdapter(cityAdapter);
         mSpinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    case 0:
-                        currentCity = new City("01", "Hà Nội");
-                        break;
                     case 1:
-                        currentCity = new City("48", "Đà Nẵng");
+                        currentCity = new City("01", "Hà Nội");
+                        mImageCityError.setVisibility(View.GONE);
                         break;
                     case 2:
-                        currentCity = new City("79", "TP.Hồ Chí Minh");
+                        currentCity = new City("48", "Đà Nẵng");
+                        mImageCityError.setVisibility(View.GONE);
                         break;
+                    case 3:
+                        currentCity = new City("79", "TP.Hồ Chí Minh");
+                        mImageCityError.setVisibility(View.GONE);
+                        break;
+                    default:
+                        currentCity = new City("-1", "Hãy chọn thành phố...");
                 }
                 refreshDistrictList();
                 currentDist = districtList.get(0);
@@ -268,7 +320,7 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                currentCity = new City("01", "Hà Nội");
+                currentCity = new City("-1", "Hãy chọn thành phố...");
                 refreshDistrictList();
                 currentDist = districtList.get(0);
                 refreshWardList();
@@ -286,6 +338,7 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentDist = districtList.get(position);
+                mImageDistrictError.setVisibility(View.GONE);
                 refreshWardList();
             }
 
@@ -304,6 +357,7 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentWard = wardList.get(position);
+                mImageWardError.setVisibility(View.GONE);
             }
 
             @Override
@@ -313,6 +367,11 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         });
 
         mImagePathList = new ArrayList<>();
+        String textImageNote = "Bạn cần phải thêm vào <font color=#FF9800>5 ảnh</font>, hiện bạn đã thêm <font color=#FF9800>"
+                + mImagePathList.size() +
+                "/5</font> ảnh.<br>Ảnh đầu tiên sẽ được chọn làm ảnh đại diện cho tin đăng.";
+        mTextViewImageNote.setText(Html.fromHtml(textImageNote));
+
         tempImagePathList = new ArrayList<>();
         mImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,9 +385,46 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         mImageRecycleView.setAdapter(adapter);
         SnapHelper mSnapHelper = new PagerSnapHelper();
         mSnapHelper.attachToRecyclerView(mImageRecycleView);
-        //TODO: tìm hiểu về SnapHelper
-        //TODO: viết comment vào trong code để dễ hiểu hơn
 
+        // Add textWatcher to editTexts
+        mEditTextAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0) {
+                    currentAddressNumber = s.toString();
+                    mEditTextAddress.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        mEditTextTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0) {
+                    currentTitle = s.toString();
+                    mEditTextTitle.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -359,9 +455,14 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         if (requestCode == GET_IMAGE_REQUEST_CODE) {
             if (resultCode == getActivity().RESULT_OK) {
                 String imagePath = data.getData().toString();
+
                 tempImagePathList.add(imagePath);
                 mImagePathList.clear();
                 mImagePathList.addAll(tempImagePathList);
+                String textImageNote = "Bạn cần phải thêm vào 5 ảnh, hiện bạn đã thêm <font color=#FF9800>"
+                        + mImagePathList.size() +
+                        "/5</font> ảnh.Ảnh đầu tiên sẽ được chọn làm ảnh đại diện cho tin đăng.";
+                mTextViewImageNote.setText(Html.fromHtml(textImageNote));
                 adapter.notifyDataSetChanged();
                 mImageRecycleView.scrollToPosition(mImagePathList.size() - 1);
             }

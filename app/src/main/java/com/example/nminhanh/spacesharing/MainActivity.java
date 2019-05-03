@@ -1,11 +1,18 @@
 package com.example.nminhanh.spacesharing;
 
+import android.Manifest;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +28,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -35,17 +41,26 @@ import com.example.nminhanh.spacesharing.Model.City;
 import com.example.nminhanh.spacesharing.Model.District;
 import com.example.nminhanh.spacesharing.Model.Ward;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import io.apptik.widget.MultiSlider;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, SignOutListener, ShowFacebookLoadingListener {
+public class MainActivity extends AppCompatActivity
+        implements ViewPager.OnPageChangeListener,
+        SignOutListener,
+        ShowFacebookLoadingListener,
+        FetchAddressTask.onGetAddressCompletedListener {
 
     static final int REQUEST_ADD = 1;
+    private static final int REQUEST_LOCATION_PERMISSION_CODE = 1;
 
     Toolbar mToolbar;
     ImageView mImageToolbarLogo;
@@ -55,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     RelativeLayout mLayoutFacebookLoading;
     ImageView mImageFacebookLoading;
     FirebaseAuth mFirebaseAuth;
+
+    HashMap<String, String> filters;
 
     RelativeLayout mLayoutNearby;
 
@@ -72,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     Ward currentWard;
     AddressUtils mAddressUtils;
 
+    Spinner mFilterSpinnerType;
+    String type;
+
     CheckBox mCheckBoxSize;
     TextView mTextViewSizeStart;
     TextView mTextViewSizeEnd;
@@ -82,9 +102,21 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     CheckBox mCheckBoxPrice;
     Spinner mSpinnerPrice;
-    HashMap<String, String> filters;
     String priceSortDirection;
 
+    FusedLocationProviderClient mFusedLocationProviderClient;
+    LocationCallback mLocationCallback;
+    String mLatestAddress;
+    boolean isTrackingLocation = false;
+
+    ImageView mImageLocation;
+    TextView mTextViewLocationAddress;
+    TextView mTextViewLocationLoading;
+    Button mBtnLocationStartLocate;
+    Button mBtnLocationCancel;
+    Button mBtnLocationFilter;
+    AnimatorSet mAnimLocationImage;
+    Location mLatestTranslatedLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +126,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mAddressUtils = new AddressUtils(this);
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (isTrackingLocation) {
+                    new FetchAddressTask(MainActivity.this)
+                            .execute(locationResult.getLastLocation());
+                }
+            }
+        };
     }
 
     void initialize() {
@@ -120,14 +163,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 switch (menuItem.getItemId()) {
                     case R.id.action_search:
                         id = 0;
-
                         break;
                     case R.id.action_space:
                         id = 1;
                         break;
                     case R.id.action_favor:
                         id = 2;
-
                         break;
                     case R.id.action_account:
                         id = 3;
@@ -212,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final LayoutInflater inflater = getLayoutInflater();
 
-        View mDialogView = inflater.inflate(R.layout.layout_dialog_filter_search, null);
+        View mDialogView = inflater.inflate(R.layout.dialog_filter_search_layout, null);
         Button mButtonCancel = mDialogView.findViewById(R.id.filter_dialog_cancel);
         Button mButtonOK = mDialogView.findViewById(R.id.filter_dialog_ok);
 
@@ -221,6 +262,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mFilterSpinnerCity = mDialogView.findViewById(R.id.filter_dialog_spinner_city);
         mFilterSpinnerDistrict = mDialogView.findViewById(R.id.filter_dialog_spinner_district);
         mFilterSpinnerWard = mDialogView.findViewById(R.id.filter_dialog_spinner_ward);
+
+        mFilterSpinnerType = mDialogView.findViewById(R.id.filter_dialog_spinner_type);
 
         mTextViewSizeStart = mDialogView.findViewById(R.id.size_start);
         mTextViewSizeEnd = mDialogView.findViewById(R.id.size_end);
@@ -232,23 +275,50 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mCheckBoxPrice = mDialogView.findViewById(R.id.filter_checkbox_price);
         mSpinnerPrice = mDialogView.findViewById(R.id.filter_dialog_spinner_price);
         mSpinnerPrice.setEnabled(false);
+        filters = new HashMap<>();
 
         final AlertDialog mDialog = builder.setView(mDialogView).create();
         ColorDrawable dialogBackground = new ColorDrawable(Color.TRANSPARENT);
-        InsetDrawable inset = new InsetDrawable(dialogBackground, 50);
+        InsetDrawable inset = new InsetDrawable(dialogBackground, 40, 50, 40, 50);
         mDialog.getWindow().setBackgroundDrawable(inset);
 
-        filters = new HashMap<>();
         initializeFilterAddressSpinnerData();
         initializeSliders();
         initializeCheckboxes();
 
+        ArrayAdapter<CharSequence> mTypeAdapter = ArrayAdapter.createFromResource(this, R.array.type_array, android.R.layout.simple_spinner_dropdown_item);
+        mFilterSpinnerType.setAdapter(mTypeAdapter);
+        mFilterSpinnerType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    type = "";
+                    if (filters.containsKey("type")) {
+                        filters.remove("type");
+                    }
+                } else {
+                    type = (String) mFilterSpinnerType.getItemAtPosition(position);
+                    filters.put("type", type);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                type = "";
+                if (filters.containsKey("type")) {
+                    filters.remove("type");
+                }
+            }
+        });
+
         mLayoutNearby.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                filters.put("nearby", "");
+                showNearbyDialog();
+                mDialog.dismiss();
             }
         });
+
         mButtonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,6 +341,58 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             }
         });
         mDialog.show();
+    }
+
+    private void showNearbyDialog() {
+        AlertDialog.Builder mDialogBuilderLocation = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View mDialogView = inflater.inflate(R.layout.dialog_location_layout, null);
+
+        mImageLocation = mDialogView.findViewById(R.id.dialog_location_image);
+        mTextViewLocationAddress = mDialogView.findViewById(R.id.dialog_location_address);
+        mTextViewLocationLoading = mDialogView.findViewById(R.id.dialog_location_text_view_loading);
+        mBtnLocationStartLocate = mDialogView.findViewById(R.id.dialog_location_button_start_locate);
+        mBtnLocationCancel = mDialogView.findViewById(R.id.dialog_location_btn_cancel);
+        mBtnLocationFilter = mDialogView.findViewById(R.id.dialog_location_btn_filter);
+        mAnimLocationImage = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.rotate);
+        mAnimLocationImage.setTarget(mImageLocation);
+
+        final AlertDialog mDialogLocation = mDialogBuilderLocation.setView(mDialogView).create();
+        InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
+        mDialogLocation.getWindow().setBackgroundDrawable(insetDrawable);
+
+        mBtnLocationCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogLocation.dismiss();
+            }
+        });
+
+        mBtnLocationStartLocate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isTrackingLocation) {
+                    startTrackingLocation();
+                } else {
+                    stopTrackingLocation();
+                }
+            }
+        });
+
+        mBtnLocationFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent nearbyIntent = new Intent(MainActivity.this, FilterResultActivity.class);
+                filters.put("nearby", "");
+                nearbyIntent.putExtra("filters", filters);
+                nearbyIntent.putExtra("latitude", mLatestTranslatedLocation.getLatitude());
+                nearbyIntent.putExtra("longitude", mLatestTranslatedLocation.getLongitude());
+                nearbyIntent.putExtra("address", mLatestAddress);
+                startActivity(nearbyIntent);
+                mDialogLocation.dismiss();
+            }
+        });
+        mDialogLocation.show();
     }
 
     private void initializeFilterAddressSpinnerData() {
@@ -439,15 +561,76 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                     mSpinnerPrice.setEnabled(false);
                     filters.remove("price");
                 }
-
             }
         });
+    }
+
+    private LocationRequest getLocationRequest() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
+    }
+
+    private void startTrackingLocation() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION_CODE);
+        } else {
+            mFusedLocationProviderClient.requestLocationUpdates(
+                    getLocationRequest(), mLocationCallback, null);
+        }
+
+        mBtnLocationStartLocate.setText("Ngừng định vị");
+        mTextViewLocationLoading.setVisibility(View.VISIBLE);
+        mAnimLocationImage.start();
+        isTrackingLocation = true;
+    }
+
+    private void stopTrackingLocation() {
+        if (isTrackingLocation) {
+            isTrackingLocation = false;
+            mBtnLocationStartLocate.setText("Định vị");
+            mAnimLocationImage.end();
+            mTextViewLocationLoading.setVisibility(View.GONE);
+            mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
+
+    @Override
+    public void onGetAddressCompleted(String result, Location location) {
+        mLatestAddress = result;
+        mTextViewLocationAddress.setText(result);
+        mLatestTranslatedLocation = location;
+        mBtnLocationFilter.setBackgroundResource(R.drawable.button_sign_in_background);
+        mBtnLocationFilter.setEnabled(true);
     }
 
     @Override
     public void onSignOut() {
         Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(0, true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_LOCATION_PERMISSION_CODE) {
+            if (resultCode == RESULT_OK) {
+                startTrackingLocation();
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        if (isTrackingLocation) {
+            stopTrackingLocation();
+        }
+        super.onStop();
     }
 
     @Override

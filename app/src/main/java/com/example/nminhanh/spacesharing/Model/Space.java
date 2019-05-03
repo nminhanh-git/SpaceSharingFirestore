@@ -1,5 +1,6 @@
 package com.example.nminhanh.spacesharing.Model;
 
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;

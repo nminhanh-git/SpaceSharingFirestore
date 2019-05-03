@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/card_layout_background">
+
+    <!--Dialog title-->
+    <TextView
+        android:id="@+id/dialog_location_title"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:fontFamily="@font/roboto_bold"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:text="Định vị"
+        android:textColor="#595959" />
+
+
+    <ImageView
+        android:id="@+id/dialog_location_image"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@id/dialog_location_title"
+        android:layout_centerHorizontal="true"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_location" />
+
+
+    <TextView
+        android:id="@+id/dialog_location_address"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_location_subtitle_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="20dp"
+        android:fontFamily="@font/roboto_reg"
+        android:text="Chưa xác định được vị trí"
+        android:textAlignment="center"
+        android:textColor="#595959" />
+
+    <Button
+        android:id="@+id/dialog_location_button_start_locate"
+        style="@style/TextAppearance.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_location_address"
+        android:layout_centerHorizontal="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Định vị"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary" />
+
+    <LinearLayout
+        android:id="@+id/dialog_location_subtitle_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_location_image"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/dialog_location_subtitle"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_reg"
+            android:text="vị trí của bạn" />
+
+        <TextView
+            android:id="@+id/dialog_location_text_view_loading"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_reg"
+            android:text="đang định vị..."
+            android:textColor="#e9a2a2"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
+
+        <Button
+            android:id="@+id/dialog_location_btn_cancel"
+            style="@style/TextAppearance.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_button"
+            android:fontFamily="@font/roboto_bold"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:text="Hủy bỏ"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_gray" />
+
+        <Button
+            android:id="@+id/dialog_location_btn_filter"
+            style="@style/TextAppearance.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/button_location_background"
+            android:enabled="false"
+            android:fontFamily="@font/roboto_bold"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:text="Phân loại"
+            android:textAllCaps="false"
+            android:textColor="#fafafa" />
+    </RelativeLayout>
+</RelativeLayout>

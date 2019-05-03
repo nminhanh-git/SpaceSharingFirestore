@@ -13,37 +13,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.nminhanh.spacesharing.MainActivity;
 import com.example.nminhanh.spacesharing.R;
-import com.example.nminhanh.spacesharing.SignInActivity;
 import com.example.nminhanh.spacesharing.UserInfoActivity;
-import com.example.nminhanh.spacesharing.Utils.FacebookConnectUtils;
 import com.example.nminhanh.spacesharing.WelcomeActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
-
-import javax.security.auth.callback.Callback;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -72,7 +76,6 @@ public class AccountFragment extends Fragment {
     TextView mTextViewFacebookName;
     Button mBtnConnectFacebook;
     Button mBtnChangeLanguage;
-    Button mBtnChangePassword;
     Button mBtnPolicy;
     Button mBtnRateApp;
     Button mBtnSignOut;
@@ -85,6 +88,10 @@ public class AccountFragment extends Fragment {
 
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mCurrentUser;
+    FirebaseFirestore mFirestore;
+    String mFacebookNameData;
+    String mEmailData;
+
     CallbackManager mFacebookCallbackManager;
 
 
@@ -108,20 +115,7 @@ public class AccountFragment extends Fragment {
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mCurrentUser = mFirebaseAuth.getCurrentUser();
-
-        if (mCurrentUser != null) {
-            mLayoutRecommendSignIn.setVisibility(View.GONE);
-            updateUIWithUserInfo();
-        } else {
-            mLayoutRecommendSignIn.setVisibility(View.VISIBLE);
-            mBtnRecommnedSignIn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent signInIntent = new Intent(getActivity(), WelcomeActivity.class);
-                    startActivity(signInIntent);
-                }
-            });
-        }
+        mFirestore = FirebaseFirestore.getInstance();
 
         mBtnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +152,7 @@ public class AccountFragment extends Fragment {
             public void onClick(View v) {
                 Intent editInfoIntent = new Intent(getActivity(), UserInfoActivity.class);
                 editInfoIntent.putExtra("user name", mCurrentUser.getDisplayName());
-                editInfoIntent.putExtra("user mail", mCurrentUser.getEmail());
+                editInfoIntent.putExtra("user mail", mEmailData);
                 editInfoIntent.putExtra("user phone", mCurrentUser.getPhoneNumber());
                 editInfoIntent.putExtra("provider", "account management");
                 startActivityForResult(editInfoIntent, REQUEST_EDIT_PROFILE);
@@ -193,6 +187,7 @@ public class AccountFragment extends Fragment {
         }
     }
 
+
     private void LinkWithFacebookAccount(AccessToken accessToken) {
         AuthCredential mFbCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
         mCurrentUser.linkWithCredential(mFbCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -200,6 +195,27 @@ public class AccountFragment extends Fragment {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     mShowLoadingListener.onHidingFacebookLoading();
+
+                    GraphRequest FbInfoRequest = GraphRequest.newMeRequest(
+                            AccessToken.getCurrentAccessToken(),
+                            new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(JSONObject object, GraphResponse response) {
+                                    String currentFacebookName = "null";
+                                    try {
+                                        currentFacebookName = object.getString("name");
+                                        DocumentReference mUserRef = mFirestore.collection("user_data").document(mCurrentUser.getUid());
+                                        mUserRef.update("facebookName", currentFacebookName);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                    Bundle requestFbInfoParameter = new Bundle();
+                    requestFbInfoParameter.putString("fields", "name");
+                    FbInfoRequest.setParameters(requestFbInfoParameter);
+                    FbInfoRequest.executeAsync();
+
                     Toast.makeText(getContext(), "Kết nối thành công!", Toast.LENGTH_SHORT).show();
                     updateUIWithUserInfo();
                 } else {
@@ -253,15 +269,36 @@ public class AccountFragment extends Fragment {
     }
 
     private void updateUIWithUserInfo() {
+        DocumentReference mCurrentUserDocRef = mFirestore.collection("user_data").document(mCurrentUser.getUid());
+        mCurrentUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (documentSnapshot.exists()) {
+                        Log.d(TAG, "document exists");
+                        mEmailData = documentSnapshot.get("email").toString();
+                        mTextViewEmail.setText(mEmailData);
+                        if (isLinkedWithFacebook()) {
+                            mFacebookNameData = documentSnapshot.get("facebookName").toString();
+                            mTextViewFacebookName.setText(mFacebookNameData);
+                        }
+                    } else {
+                        Log.d(TAG, "document doesn't exist");
+                    }
+                } else {
+                    Log.d(TAG, task.getException().getMessage());
+                }
+
+            }
+        });
         mTextViewName.setText(mCurrentUser.getDisplayName());
-        mTextViewEmail.setText(mCurrentUser.getEmail());
         mTextViewPhone.setText(mCurrentUser.getPhoneNumber());
         if (mCurrentUser.getPhotoUrl() != null) {
             Glide.with(this).load(mCurrentUser.getPhotoUrl()).into(mImageViewProfile);
         }
         if (isLinkedWithFacebook()) {
             mTextViewFacebookIntro.setText("Tài khoản Facebook:");
-            mTextViewFacebookName.setText(mCurrentUser.getDisplayName());
             mTextViewFacebookName.setVisibility(View.VISIBLE);
             mBtnConnectFacebook.setText("Hủy kết nối");
             mBtnConnectFacebook.setTextColor(getResources().getColor(R.color.colorPrimary, null));
@@ -297,7 +334,6 @@ public class AccountFragment extends Fragment {
         mBtnConnectFacebook = view.findViewById(R.id.account_button_connect_facebook);
 
         mBtnChangeLanguage = view.findViewById(R.id.account_button_language);
-        mBtnChangePassword = view.findViewById(R.id.account_button_password);
         mBtnPolicy = view.findViewById(R.id.account_button_policy);
         mBtnRateApp = view.findViewById(R.id.account_button_rate);
 
@@ -315,5 +351,36 @@ public class AccountFragment extends Fragment {
                 updateUIWithUserInfo();
             }
         }
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop called");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy called");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume called");
+        if (mCurrentUser != null) {
+            mLayoutRecommendSignIn.setVisibility(View.GONE);
+            updateUIWithUserInfo();
+        } else {
+            mLayoutRecommendSignIn.setVisibility(View.VISIBLE);
+            mBtnRecommnedSignIn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent signInIntent = new Intent(getActivity(), WelcomeActivity.class);
+                    startActivity(signInIntent);
+                }
+            });
+        }
+        super.onResume();
     }
 }

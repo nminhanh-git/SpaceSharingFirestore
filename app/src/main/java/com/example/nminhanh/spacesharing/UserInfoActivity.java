@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,28 +18,43 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserInfoActivity extends AppCompatActivity {
 
     private static final int REQUEST_VERIFY_PHONE_NUMBER = 1;
     private static final int REQUEST_UPDATE_PHONE_NUMBER = 2;
+    private static final String TAG = "MA:UserInfoActivity";
     Toolbar mToolbar;
     ImageView mImageViewLogo;
     TextView mTextViewSubtile;
     EditText mEditName;
-    EditText mEditMail;
     EditText mEditPhone;
+    EditText mEditMail;
     Button mBtnContinue;
     Button mBtnVerify;
     ImageView mImageViewVerified;
 
     boolean isPhoneNumberVerified = false;
     String mName = "";
+    String mFacebookName = "";
     String mMail = "";
     String mPhone = "";
     String mOldPhone = "";
@@ -46,6 +62,8 @@ public class UserInfoActivity extends AppCompatActivity {
 
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mCurrentUser;
+    FirebaseFirestore mFirestore;
+    CollectionReference mUserCollRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,34 +74,27 @@ public class UserInfoActivity extends AppCompatActivity {
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mCurrentUser = mFirebaseAuth.getCurrentUser();
+        mFirestore = FirebaseFirestore.getInstance();
+        mUserCollRef = mFirestore.collection("user_data");
 
-        Intent mIntent = getIntent();
-        mName = mIntent.getStringExtra("user name");
-        mMail = mIntent.getStringExtra("user mail");
-        mPhone = mIntent.getStringExtra("user phone");
-        mPhone = mPhone.replace("+84", "0");
-        mOldPhone = mPhone;
-        mProvider = mIntent.getStringExtra("provider");
         setupUI();
 
         mBtnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!mName.isEmpty() && !mPhone.isEmpty() && !mMail.isEmpty()
-                        && mEditName.getError() == null && mEditMail.getError() == null && mEditPhone.getError() == null
+                        && mEditName.getError() == null && mEditPhone.getError() == null && mEditMail.getError() == null
                         && isPhoneNumberVerified) {
                     UpdateUserInfo();
-
-                    Intent MainAcitivityIntent = new Intent(UserInfoActivity.this, MainActivity.class);
-                    startActivity(MainAcitivityIntent);
-                    finish();
                 } else {
                     if (mEditName.getText().toString().isEmpty()) {
                         mEditName.setError("Bạn chưa nhập họ tên");
                     }
+
                     if (mEditMail.getText().toString().isEmpty()) {
-                        mEditMail.setError("Bạn chưa nhập email");
+                        mEditMail.setError("Bạn chưa nhập địa chỉ email");
                     }
+
                     if (mEditPhone.getText().toString().isEmpty()) {
                         mBtnVerify.setVisibility(View.GONE);
                         mImageViewVerified.setVisibility(View.GONE);
@@ -117,10 +128,43 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void setupUI() {
+        Intent mIntent = getIntent();
+        mName = mIntent.getStringExtra("user name");
+        mMail = mIntent.getStringExtra("user mail");
+        mPhone = mIntent.getStringExtra("user phone");
+        mPhone = mPhone.replace("+84", "0");
+        mOldPhone = mPhone;
+        mFacebookName = "rỗng";
+        mProvider = mIntent.getStringExtra("provider");
+
         mEditName.setText(mName);
-        mEditMail.setText(mMail);
         mEditPhone.setText(mPhone);
-        if (mProvider.equalsIgnoreCase("sign up")) {
+        mEditMail.setText(mMail);
+
+
+        if (mProvider.equalsIgnoreCase("facebook")) {
+            GraphRequest mFbInfoRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken()
+                    , new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject object, GraphResponse response) {
+                            try {
+                                mFacebookName = object.getString("name");
+                                mMail = object.getString("email");
+                                mEditName.setText(mFacebookName);
+                                mEditMail.setText(mMail);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            Bundle infoParams = new Bundle();
+            infoParams.putString("fields", "name,email");
+            mFbInfoRequest.setParameters(infoParams);
+            mFbInfoRequest.executeAsync();
+        }
+
+        if (mProvider.equalsIgnoreCase("sign in")) {
+            isPhoneNumberVerified = true;
             mEditPhone.setEnabled(false);
             mBtnVerify.setVisibility(View.GONE);
             mImageViewVerified.setVisibility(View.VISIBLE);
@@ -170,16 +214,17 @@ public class UserInfoActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0) {
+                if (s.length() != 0) {
                     mMail = s.toString();
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!mMail.isEmpty()) {
+                if (!mEditMail.getText().toString().isEmpty()) {
+                    mMail = mEditMail.getText().toString();
                     if (!mMail.contains("@")) {
-                        mEditMail.setError("Bạn nhập địa chỉ email chưa đúng định dạng");
+                        mEditMail.setError("bạn nhập địa chỉ email chưa đúng định dạng");
                     } else {
                         mEditMail.setError(null);
                     }
@@ -230,20 +275,74 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void UpdateUserInfo() {
-        mCurrentUser.updateEmail(mMail).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(UserInfoActivity.this, "update mail thành công", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(UserInfoActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+        if (mProvider.equalsIgnoreCase("sign in")
+                || mProvider.equalsIgnoreCase("facebook")) {
+            Map<String, String> userData = new HashMap<>();
+            userData.put("email", mMail);
+            userData.put("facebookName", mFacebookName);
+            mUserCollRef.document(mCurrentUser.getUid()).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "setup user_data successfully");
+                    UserProfileChangeRequest profileUpdateRequest = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(mName)
+                            .build();
+                    mCurrentUser.updateProfile(profileUpdateRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "update profile successfully!");
+                                finishUpdateProfile();
+                            } else {
+                                Toast.makeText(UserInfoActivity.this, "đã xảy ra lỗi, vui lòng thử lại\n"
+                                        + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, task.getException().getMessage());
+                            }
+                        }
+                    });
                 }
-            }
-        });
-        UserProfileChangeRequest profileUpdateRequest = new UserProfileChangeRequest.Builder()
-                .setDisplayName(mName)
-                .build();
-        mCurrentUser.updateProfile(profileUpdateRequest);
+            });
+        }
+
+        if (mProvider.equalsIgnoreCase("account management")) {
+            mUserCollRef.document(mCurrentUser.getUid()).update("email", mMail)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            UserProfileChangeRequest profileUpdateRequest = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(mName)
+                                    .build();
+                            mCurrentUser.updateProfile(profileUpdateRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "update profile successfully!");
+                                        finishUpdateProfile();
+                                    } else {
+                                        Toast.makeText(UserInfoActivity.this, "đã xảy ra lỗi, vui lòng thử lại\n"
+                                                + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, task.getException().getMessage());
+                                    }
+                                }
+                            });
+                        }
+                    });
+        }
+    }
+
+    private void finishUpdateProfile() {
+        if (mProvider.equalsIgnoreCase("account management")) {
+            setResult(RESULT_OK);
+            finish();
+        }
+        if (mProvider.equalsIgnoreCase("facebook")) {
+            Intent intent = new Intent(UserInfoActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        if (mProvider.equalsIgnoreCase("sign in")) {
+            finish();
+        }
     }
 
     private void initializeView() {

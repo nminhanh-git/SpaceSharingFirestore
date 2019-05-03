@@ -14,6 +14,7 @@
         <item>TP. Hồ Chí Minh</item>
     </string-array>
     <string-array name="type_array">
+        <item>Hãy chọn loại không gian...</item>
         <item>Nhà ở</item>
         <item>Cửa hàng kinh doanh</item>
         <item>Kho thời vụ</item>
@@ -38,5 +39,6 @@
     <string name="fb_login_protocol_scheme">fb629486984183614</string>
     <string name="otp_phone_auth_error_linked_credential_string">This credential is already associated with a different user account.</string>
     <string name="fragment_account_facebook_into_string">Kết nối với Facebook để việc chia sẻ thông tin trở nên dễ dàng hơn!</string>
+    <string name="op_network_error_string">A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
 
 </resources>

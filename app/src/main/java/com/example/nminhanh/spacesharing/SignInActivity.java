@@ -32,7 +32,6 @@ public class SignInActivity extends AppCompatActivity {
     ImageView mImageViewSignIn;
     EditText mEditTextAccount;
     Button mButtonSignIn;
-    TextView mTextViewforgetPassword;
     RelativeLayout mLayoutLoading;
     RelativeLayout mLayoutSignIn;
     ImageButton mBtnBack;

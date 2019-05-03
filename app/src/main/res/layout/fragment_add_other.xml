@@ -23,10 +23,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/layout_price"
                 android:layout_alignParentStart="true"
+                android:layout_marginBottom="5dp"
                 android:layout_alignParentTop="true"
                 android:fontFamily="@font/roboto_reg"
                 android:text="Thông tin khác"
-                android:textColor="@color/colorPrimary" />
+             />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -47,7 +48,16 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:fontFamily="@font/roboto_reg"
-                    android:text="Loại không gian *"
+                    android:text="Loại không gian" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@id/other_title_space_type"
+                    android:fontFamily="@font/roboto_reg"
+                    android:text="*"
                     android:textColor="@color/colorPrimary" />
 
                 <LinearLayout
@@ -80,8 +90,7 @@
                         android:layout_alignParentStart="true"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="Hướng cửa chính"
-                        android:textColor="@color/colorPrimary" />
+                        android:text="Hướng cửa chính" />
 
 
                     <LinearLayout
@@ -109,8 +118,7 @@
                         android:layout_alignParentStart="true"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="Số phòng ngủ"
-                        android:textColor="@color/colorPrimary" />
+                        android:text="Số phòng ngủ" />
 
                     <RelativeLayout
                         android:id="@+id/layout_bedroom"
@@ -157,12 +165,11 @@
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_below="@id/layout_door"
                         android:layout_alignStart="@id/layout_bathroom"
                         android:layout_marginTop="10dp"
-                        android:layout_below="@id/layout_door"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="Số phòng vệ sinh"
-                        android:textColor="@color/colorPrimary" />
+                        android:text="Số phòng vệ sinh" />
 
                     <RelativeLayout
                         android:id="@+id/layout_bathroom"
@@ -225,8 +232,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/roboto_reg"
-                    android:text="Đặc điểm nhà đất"
-                    android:textColor="@color/colorPrimary" />
+                    android:text="Đặc điểm nhà đất" />
 
                 <LinearLayout
                     android:id="@+id/layout_detail"

@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/card_layout_background_inverse"
+                android:background="@drawable/card_layout_background"
                 android:padding="10dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -89,7 +89,7 @@
                 android:layout_height="120dp"
                 android:layout_below="@id/account_layout_info"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/card_layout_background_inverse"
+                android:background="@drawable/card_layout_background"
                 android:padding="10dp">
 
                 <ImageView
@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/accoumt_layout_facebook"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/card_layout_background_inverse"
+                android:background="@drawable/card_layout_background"
                 android:padding="10dp">
 
                 <Button
@@ -172,27 +172,12 @@
                     android:layout_marginBottom="10dp"
                     android:background="#b4b4b4" />
 
-                <Button
-                    android:id="@+id/account_button_password"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/account_divider_language"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableLeft="@drawable/ic_password"
-                    android:drawablePadding="20dp"
-                    android:drawableTint="@color/dark_gray"
-                    android:fontFamily="@font/roboto_bold"
-                    android:gravity="center_vertical"
-                    android:text="Thay đổi mật khẩu"
-                    android:textAllCaps="false"
-                    android:textColor="#595959" />
 
                 <View
                     android:id="@+id/account_divider_password"
                     android:layout_width="match_parent"
                     android:layout_height="1.5dp"
-                    android:layout_below="@id/account_button_password"
+                    android:layout_below="@id/account_button_language"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="#b4b4b4" />
