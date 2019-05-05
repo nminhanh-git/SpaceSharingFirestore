@@ -16,40 +16,41 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.firebase.ui.firestore.paging.LoadingState;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
+import java.util.Locale;
 
-public class FilterResultAdapter extends RecyclerView.Adapter<FilterResultAdapter.SpaceViewHolder> {
+public class mCustomFirestorePagingAdapter extends FirestorePagingAdapter<Space, mCustomFirestorePagingAdapter.SpaceViewHolder> {
 
     static final String IMAGE_STORAGE_BASE_URL = "gs://spacesharing-298d6.appspot.com";
     static final String LOADING_PLACEHOLDER_IMAGE = "https://media.giphy.com/media/6036p0cTnjUrNFpAlr/giphy.gif";
-    Context context;
-    ArrayList<Space> spacesList;
+
     AddressUtils mAddressUtils;
+    Context context;
 
-    public FilterResultAdapter(Context context, ArrayList<Space> spacesList) {
-        this.context = context;
-        this.spacesList = spacesList;
+    /**
+     * Construct a new FirestorePagingAdapter from the given {@link FirestorePagingOptions}.
+     *
+     * @param options
+     */
+    public mCustomFirestorePagingAdapter(@NonNull FirestorePagingOptions<Space> options, Context context) {
+        super(options);
         mAddressUtils = new AddressUtils(context);
-    }
-
-    @NonNull
-    @Override
-    public SpaceViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        return new SpaceViewHolder(inflater.inflate(R.layout.search_recycleview_item_layout, viewGroup, false));
+        this.context = context;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final SpaceViewHolder holder, int i) {
-        Space currentSpace = spacesList.get(i);
-        holder.mTextViewSpaceTitle.setText(currentSpace.getTieuDe());
+    protected void onBindViewHolder(@NonNull final SpaceViewHolder holder, int position, @NonNull Space model) {
+        holder.mTextViewSpaceTitle.setText(model.getTieuDe());
         String thanhPho = "";
-        switch (currentSpace.getThanhPhoId()) {
+        switch (model.getThanhPhoId()) {
             case "01":
                 thanhPho = "Hà Nội";
                 break;
@@ -60,15 +61,19 @@ public class FilterResultAdapter extends RecyclerView.Adapter<FilterResultAdapte
                 thanhPho = "TP.Hồ Chí Minh";
                 break;
         }
-        String quan = mAddressUtils.getDistrictName(currentSpace.getThanhPhoId(), currentSpace.getQuanId());
-        String phuong = mAddressUtils.getWardName(currentSpace.getQuanId(), currentSpace.getPhuongId());
-        holder.mTextViewAddress.setText(currentSpace.getDiaChiPho() + ", " + phuong + ", " + quan + ", " + thanhPho);
-        holder.mTextViewPrice.setText(currentSpace.getDienTich() + Html.fromHtml("m<sup>2</sup>").toString() + " - " + currentSpace.getGia() + "đồng");
-        if (!currentSpace.getFirstImagePath().equalsIgnoreCase("không có gì hết á!")) {
+        String quan = mAddressUtils.getDistrictName(model.getThanhPhoId(), model.getQuanId());
+        String phuong = mAddressUtils.getWardName(model.getQuanId(), model.getPhuongId());
+        holder.mTextViewAddress.setText(model.getDiaChiPho() + ", " + phuong + ", " + quan + ", " + thanhPho);
+
+        holder.mTextViewPrice.setText(
+                (int) model.getDienTich() + Html.fromHtml(context.getString(R.string.square_metrer_metric_string)).toString()
+                        + " - " + formatMoney((int) model.getGia()) + " đồng"
+        );
+        if (!model.getFirstImagePath().equalsIgnoreCase("không có gì hết á!")) {
             final String imageURl = IMAGE_STORAGE_BASE_URL + "/"
-                    + currentSpace.getIdChu() + "/"
-                    + currentSpace.getId() + "/"
-                    + currentSpace.getFirstImagePath();
+                    + model.getIdChu() + "/"
+                    + model.getId() + "/"
+                    + model.getFirstImagePath();
 
             Glide.with(holder.mImageView.getContext())
                     .load(LOADING_PLACEHOLDER_IMAGE).into(holder.mImageView);
@@ -93,9 +98,16 @@ public class FilterResultAdapter extends RecyclerView.Adapter<FilterResultAdapte
         }
     }
 
+    @NonNull
     @Override
-    public int getItemCount() {
-        return spacesList.size();
+    public SpaceViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+        return new SpaceViewHolder(inflater.inflate(R.layout.search_recycleview_item_layout, viewGroup, false));
+    }
+
+
+    private String formatMoney(int gia) {
+        return String.format(Locale.getDefault(), "%,d", gia);
     }
 
     public class SpaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -103,6 +115,7 @@ public class FilterResultAdapter extends RecyclerView.Adapter<FilterResultAdapte
         public TextView mTextViewAddress;
         public ImageView mImageView;
         public TextView mTextViewPrice;
+
 
         public SpaceViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -115,10 +128,13 @@ public class FilterResultAdapter extends RecyclerView.Adapter<FilterResultAdapte
 
         @Override
         public void onClick(View v) {
-            Space mCurrentSpace = spacesList.get(getAdapterPosition());
+            DocumentSnapshot documentSnapshot = getCurrentList().get(getAdapterPosition());
+            Space mCurrentSpace = documentSnapshot.toObject(Space.class);
             Intent intent = new Intent(context, SpaceDetailActivity.class);
             intent.putExtra("space title", mCurrentSpace.getTieuDe());
             context.startActivity(intent);
         }
     }
+
+
 }

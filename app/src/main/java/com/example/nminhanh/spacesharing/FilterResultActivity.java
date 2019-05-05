@@ -93,7 +93,7 @@ public class FilterResultActivity extends AppCompatActivity {
     AddressUtils mAddressUtils;
 
     FirebaseFirestore db;
-    FirestorePagingAdapter<Space, SpaceViewHolder> mFilterResultPagingAdapter;
+    FirestorePagingAdapter<Space, FilterResultAdapter.SpaceViewHolder> mFilterResultPagingAdapter;
     FilterResultAdapter mFilterResultAdapter;
     ArrayList<Space> mResultSpaceList;
     DocumentSnapshot lastVisibleItem;

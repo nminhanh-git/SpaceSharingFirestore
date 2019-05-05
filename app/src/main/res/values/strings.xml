@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SpaceSharing</string>
+    <string name="app_name">House</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -20,6 +20,7 @@
         <item>Kho thời vụ</item>
     </string-array>
     <string-array name="door_direction_array">
+        <item>Hãy chọn hướng cửa...</item>
         <item>Đông</item>
         <item>Tây</item>
         <item>Nam</item>
@@ -40,5 +41,7 @@
     <string name="otp_phone_auth_error_linked_credential_string">This credential is already associated with a different user account.</string>
     <string name="fragment_account_facebook_into_string">Kết nối với Facebook để việc chia sẻ thông tin trở nên dễ dàng hơn!</string>
     <string name="op_network_error_string">A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
+    <string name="detail_favorite_string">lưu vào mục <font color="#FF9800">yêu thích</font> </string>
+    <string name="square_metrer_metric_string"><![CDATA[m<sup>2</sup>]]></string>
 
 </resources>

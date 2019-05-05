@@ -10,7 +10,7 @@
         android:title="Không gian" />
     <item
         android:id="@+id/action_favor"
-        android:icon="@drawable/ic_favortie"
+        android:icon="@drawable/ic_favorite"
         android:title="Yêu thích" />
     <item
         android:id="@+id/action_account"

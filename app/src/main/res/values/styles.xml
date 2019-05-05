@@ -10,6 +10,7 @@
         <item name="android:fontFamily">@font/roboto_reg</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+        <item name="android:windowBackground">@color/backgroundColor</item>
     </style>
 
     <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">

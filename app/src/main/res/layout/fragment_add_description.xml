@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ebebeb"
+
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     tools:context=".Fragment.AddSpacePages.AddDescriptionFragment">
@@ -24,7 +24,8 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="@font/roboto_reg"
-                android:text="Diện tích" />
+                android:text="Diện tích"
+                android:textColor="#595959" />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Medium"
@@ -43,7 +44,7 @@
                 android:layout_height="80dp"
                 android:layout_below="@id/title_size"
                 android:layout_alignParentStart="true"
-                android:background="@drawable/edit_background_inverse"
+                android:background="@drawable/edit_background"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp">
 
@@ -58,6 +59,7 @@
                     android:layout_toStartOf="@id/metric"
                     android:background="@color/transparent"
                     android:inputType="numberDecimal"
+                    android:textColor="#595959"
                     android:maxLines="1" />
 
                 <TextView
@@ -82,7 +84,8 @@
                 android:layout_alignStart="@id/layout_price"
                 android:layout_alignParentTop="true"
                 android:fontFamily="@font/roboto_reg"
-                android:text="Giá dự kiến" />
+                android:text="Giá dự kiến"
+                android:textColor="#595959" />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Medium"
@@ -103,7 +106,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginLeft="30dp"
                 android:layout_toEndOf="@id/layout_size"
-                android:background="@drawable/edit_background_inverse"
+                android:background="@drawable/edit_background"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp">
 
@@ -116,7 +119,8 @@
                     android:background="@color/transparent"
                     android:inputType="number"
                     android:maxLines="1"
-                    android:padding="5dp" />
+                    android:padding="5dp"
+                    android:textColor="#595959"/>
 
                 <TextView
                     android:id="@+id/currency"
@@ -142,7 +146,10 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="@font/roboto_reg"
-                android:text="Mô tả" />
+                android:text="Mô tả"
+                android:textColor="#595959"
+                />
+
             <TextView
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
@@ -161,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/title_description"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/edit_background_inverse"
+                android:background="@drawable/edit_background"
                 android:padding="16dp" />
         </RelativeLayout>
     </ScrollView>

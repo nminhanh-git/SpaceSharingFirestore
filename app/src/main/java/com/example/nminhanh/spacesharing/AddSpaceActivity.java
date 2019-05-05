@@ -5,6 +5,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -52,8 +53,8 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
     private static final String TAG = "MA:AddSpaceActivity";
     Toolbar mToolbar;
-    Button mBtnCancel;
-    Button mBtnContinue;
+    TextView mBtnCancel;
+    TextView mBtnContinue;
 
     TextView mTextviewNote;
 
@@ -71,6 +72,9 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
     double latitude;
     double longitude;
+    boolean canAddressContinue = true;
+    boolean canDescriptionContinue = true;
+    boolean canOtherContinue = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +99,7 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
         mBtnContinue = findViewById(R.id.add_btn_continue);
 
         mTextviewNote = findViewById(R.id.add_textview_note);
-        String text = "Những mục có dấu <font color=#e83841>*</font> là những mục bắt buộc";
+        String text = "Những mục có dấu <font color=#FF9800>*</font> là những mục bắt buộc";
         mTextviewNote.setText(Html.fromHtml(text));
 
         mViewPagerAdd = findViewById(R.id.add_viewpager);
@@ -113,6 +117,7 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
                 switch (mViewPagerAdd.getCurrentItem()) {
                     case 0:
                         finish();
+                        break;
                     case 1:
                         mBtnCancel.setText("Hủy");
                         mBtnContinue.setText("Tiếp tục");
@@ -132,24 +137,45 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
             public void onClick(View v) {
                 switch (mViewPagerAdd.getCurrentItem()) {
                     case 0:
-                        mBtnCancel.setText("Trở về");
-                        mBtnContinue.setText("Tiếp tục");
-                        listener = (StepContinueListener) getSupportFragmentManager().getFragments().get(0);
+                        for (Fragment f : getSupportFragmentManager().getFragments()) {
+                            if (f instanceof AddAddressFragment) {
+                                listener = (StepContinueListener) f;
+                                break;
+                            }
+                        }
                         listener.onContinue();
-                        mViewPagerAdd.setCurrentItem(1);
+                        if (canAddressContinue) {
+                            mBtnCancel.setText("Trở về");
+                            mBtnContinue.setText("Tiếp tục");
+                            mViewPagerAdd.setCurrentItem(1);
+                        }
                         break;
                     case 1:
-                        mBtnCancel.setText("Trở về");
-                        mBtnContinue.setText("Lưu");
-                        listener = (StepContinueListener) getSupportFragmentManager().getFragments().get(1);
+                        for (Fragment f : getSupportFragmentManager().getFragments()) {
+                            if (f instanceof AddDescriptionFragment) {
+                                listener = (StepContinueListener) f;
+                                break;
+                            }
+                        }
                         listener.onContinue();
-                        mViewPagerAdd.setCurrentItem(2);
+                        if (canDescriptionContinue) {
+                            mBtnCancel.setText("Trở về");
+                            mBtnContinue.setText("Lưu");
+                            mViewPagerAdd.setCurrentItem(2);
+                        }
                         break;
                     case 2:
-                        listener = (StepContinueListener) getSupportFragmentManager().getFragments().get(1);
+                        for (Fragment f : getSupportFragmentManager().getFragments()) {
+                            if (f instanceof AddOtherFragment) {
+                                listener = (StepContinueListener) f;
+                                break;
+                            }
+                        }
                         listener.onContinue();
-                        saveNewSpaceObject(currentSpace);
-                        finish();
+                        if (canOtherContinue) {
+                            saveNewSpaceObject(currentSpace);
+                            finish();
+                        }
                         break;
                 }
             }
@@ -222,50 +248,71 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
     @Override
     public void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, String fullAddress, ArrayList<String> imagePath) {
-        mImagePath = new ArrayList<>(imagePath);
-        if (mImagePath != null && mImagePath.size() != 0) {
-            currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
+        if (title.isEmpty() || addressNumber.isEmpty() || cityId.equals("-1") || districtId.equals("-1") || wardId.equals("-1")
+                || fullAddress.isEmpty() || imagePath.isEmpty()) {
+            canAddressContinue = false;
         } else {
-            currentSpace.setFirstImagePath("không có gì hết á!");
-        }
-        currentSpace.setIdChu(mFirebaseUser.getUid());
-        currentSpace.setTieuDe(title);
-        currentSpace.setDiaChiPho(addressNumber);
-        currentSpace.setThanhPhoId(cityId);
-        currentSpace.setQuanId(districtId);
-        currentSpace.setPhuongId(wardId);
-
-        Geocoder mGeoCoder = new Geocoder(this);
-        List<Address> addressesList;
-        try {
-            addressesList = mGeoCoder.getFromLocationName(fullAddress, 1);
-            if (addressesList.size() > 0) {
-                Address currentAddress = addressesList.get(0);
-                latitude = currentAddress.getLatitude();
-                longitude = currentAddress.getLongitude();
+            canAddressContinue = true;
+            mImagePath = new ArrayList<>(imagePath);
+            if (mImagePath != null && mImagePath.size() != 0) {
+                currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
+            } else {
+                currentSpace.setFirstImagePath("không có gì hết á!");
             }
-        } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
-            e.printStackTrace();
-        }
+            currentSpace.setIdChu(mFirebaseUser.getUid());
+            currentSpace.setTieuDe(title);
+            currentSpace.setDiaChiPho(addressNumber);
+            currentSpace.setThanhPhoId(cityId);
+            currentSpace.setQuanId(districtId);
+            currentSpace.setPhuongId(wardId);
 
+            Geocoder mGeoCoder = new Geocoder(this);
+            List<Address> addressesList;
+            try {
+                addressesList = mGeoCoder.getFromLocationName(fullAddress, 1);
+                if (addressesList.size() > 0) {
+                    Address currentAddress = addressesList.get(0);
+                    latitude = currentAddress.getLatitude();
+                    longitude = currentAddress.getLongitude();
+                }
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void onDescriptionReceived(double size, double price, String des) {
-        currentSpace.setDienTich(size);
-        currentSpace.setGia(price);
-        currentSpace.setMoTa(des);
+        if (size == 0 || price == 0 || des.isEmpty()) {
+            canDescriptionContinue = false;
+        } else {
+            canDescriptionContinue = true;
+            currentSpace.setDienTich(size);
+            currentSpace.setGia(price);
+            currentSpace.setMoTa(des);
+        }
     }
 
 
     @Override
     public void onOtherReceived(String type, String door, int bedRoom, int bathRoom, String
             detail) {
-        currentSpace.setLoai(type);
-        currentSpace.setHuongCua(door);
-        currentSpace.setSoPhongVeSinh(bathRoom);
-        currentSpace.setSoPhongNgu(bedRoom);
-        currentSpace.setThongTinPhapLy(detail);
+        if (type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[0])) {
+            canOtherContinue = false;
+        } else if (type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1])
+                || type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])
+                ) {
+            canOtherContinue = !door.equalsIgnoreCase
+                    (getResources().getStringArray(R.array.door_direction_array)[0]);
+        } else {
+            canOtherContinue = true;
+            currentSpace.setLoai(type);
+            currentSpace.setHuongCua(door);
+            currentSpace.setSoPhongVeSinh(bathRoom);
+            currentSpace.setSoPhongNgu(bedRoom);
+            currentSpace.setThongTinPhapLy(detail);
+        }
+
     }
 }

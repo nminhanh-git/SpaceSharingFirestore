@@ -40,9 +40,29 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         Toast.makeText(context.getApplicationContext(), imagePath.size() + "", Toast.LENGTH_SHORT).show();
     }
 
+
     @Override
     public int getItemCount() {
         return imagePath.size();
+    }
+
+    public void addImage(String src) {
+        imagePath.add(src);
+        notifyItemInserted(imagePath.size() - 1);
+    }
+
+    public void removeImage(int position) {
+            imagePath.remove(position);
+            notifyItemRemoved(position);
+    }
+
+    public ArrayList<String> getImagePathList() {
+        return imagePath;
+    }
+
+    public void setImagePathList(ArrayList<String> list) {
+        imagePath.clear();
+        imagePath.addAll(list);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

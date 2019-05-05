@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#F57C00</color>
     <color name="colorAccent">#FF9800</color>
     <color name="facebook_color">#385c8d</color>
-    <color name="darkest_gray">#595959</color>
+    <color name="darkest_gray">#434343</color>
     <color name="colorCancel">#F44336</color>
+    <color name="backgroundColor">#ffff</color>
 </resources>

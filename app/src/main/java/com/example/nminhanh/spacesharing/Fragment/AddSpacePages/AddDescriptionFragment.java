@@ -36,7 +36,7 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
     EditText mEditTextDescription;
     String price = "0";
     String size = "0";
-    String description;
+    String description = "";
 
     @Override
     public void onAttach(Context context) {
@@ -70,6 +70,8 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
                 size = s.toString();
                 if (s.length() != 0) {
                     mEditTextSize.setError(null);
+                } else {
+                    size = "0";
                 }
 
             }
@@ -121,6 +123,8 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
                 if (!mEditTextSize.getText().toString().isEmpty()) {
                     price = mEditTextPrice.getText().toString();
                     price = price.replaceAll(",", "");
+                } else {
+                    price = "0";
                 }
             }
         });
@@ -157,9 +161,5 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
             mEditTextDescription.setError("Bạn chưa nhập mô tả");
         }
         receiver.onDescriptionReceived(Double.valueOf(size), Double.valueOf(price), description);
-    }
-
-    private String formattedMoney(int gia) {
-        return String.format(Locale.getDefault(), "%,d", gia);
     }
 }

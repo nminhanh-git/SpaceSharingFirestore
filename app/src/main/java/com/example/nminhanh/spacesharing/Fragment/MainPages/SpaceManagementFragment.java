@@ -1,12 +1,12 @@
 package com.example.nminhanh.spacesharing.Fragment.MainPages;
 
 
+import android.arch.paging.PagedList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +19,15 @@ import com.bumptech.glide.Glide;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
+import com.example.nminhanh.spacesharing.mCustomFirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
+import java.util.Locale;
 
 
 /**
@@ -55,7 +57,6 @@ public class SpaceManagementFragment extends Fragment {
         }
     }
 
-    FirebaseRecyclerAdapter<Space, SpaceViewHolder> mFirebaseRecyclerAdapter;
 
     public static final String SPACE_CHILD = "space";
 
@@ -65,14 +66,18 @@ public class SpaceManagementFragment extends Fragment {
     View view;
 
     AddressUtils mAddressUtils;
-    DatabaseReference mFirbaseDbReference;
+
+    FirestorePagingAdapter<Space, mCustomFirestorePagingAdapter.SpaceViewHolder> firestorePagingAdapter;
     FirebaseAuth mFirebaseAuth;
+    FirebaseFirestore db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_space_management, container, false);
         mFirebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         setHasOptionsMenu(true);
         initialize();
         return view;
@@ -92,70 +97,32 @@ public class SpaceManagementFragment extends Fragment {
 
         mAddressUtils = new AddressUtils(getActivity());
 
-        mFirbaseDbReference = FirebaseDatabase.getInstance().getReference();
-        SnapshotParser<Space> spaceSnapshotParser = new SnapshotParser<Space>() {
-            @NonNull
-            @Override
-            public Space parseSnapshot(@NonNull DataSnapshot snapshot) {
-                Space s = snapshot.getValue(Space.class);
-                if (s != null) {
-                    s.setId(snapshot.getKey());
-                    return s;
-                }
-                return null;
-            }
-        };
-        DatabaseReference mSpaceReference = mFirbaseDbReference.child(USER_SPACE_CHILD).child(SPACE_CHILD);
-        FirebaseRecyclerOptions<Space> options =
-                new FirebaseRecyclerOptions.Builder<Space>()
-                        .setQuery(mSpaceReference, spaceSnapshotParser)
-                        .build();
+        if (mFirebaseAuth.getCurrentUser() == null) {
+            mEmptyLayout.setVisibility(View.VISIBLE);
+            spaceManagementRecycleView.setVisibility(View.GONE);
+        } else {
+            CollectionReference mSpacesCollection = db.collection("space");
+            Query baseQuery = mSpacesCollection.whereEqualTo("idChu", mFirebaseAuth.getCurrentUser().getUid()).orderBy("timeAdded", Query.Direction.DESCENDING);
 
-        mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Space, SpaceViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull SpaceViewHolder holder, int position, @NonNull Space model) {
-                holder.mTextViewSpaceTitle.setText(model.getTieuDe());
-                String thanhPho = "";
-                switch (model.getThanhPhoId()) {
-                    case "01":
-                        thanhPho = "Hà Nội";
-                        break;
-                    case "48":
-                        thanhPho = "Đà Nẵng";
-                        break;
-                    case "79":
-                        thanhPho = "TP.Hồ Chí Minh";
-                        break;
-                }
-                String quan = mAddressUtils.getDistrictName(model.getThanhPhoId(), model.getQuanId());
-                String phuong = mAddressUtils.getWardName(model.getQuanId(), model.getPhuongId());
-                holder.mTextViewAddress.setText(phuong + ", " + quan + ", " + thanhPho);
-                holder.mTextViewPrice.setText(model.getDienTich() + Html.fromHtml("m<sup>2</sup>").toString() + " - " + model.getGia() + "đồng");
-            }
+            PagedList.Config config = new PagedList.Config.Builder()
+                    .setEnablePlaceholders(false)
+                    .setPrefetchDistance(5)
+                    .setPageSize(10)
+                    .build();
 
-            @NonNull
-            @Override
-            public SpaceViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-                return new SpaceViewHolder(
-                        inflater.inflate(R.layout.space_management_recycleview_item_layout,
-                                viewGroup,
-                                false));
-            }
+            FirestorePagingOptions<Space> options = new FirestorePagingOptions.Builder<Space>()
+                    .setLifecycleOwner(this)
+                    .setQuery(baseQuery, config, Space.class)
+                    .build();
 
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                if (this.getItemCount() == 0) {
-                    spaceManagementRecycleView.setVisibility(View.GONE);
-                    mEmptyLayout.setVisibility(View.VISIBLE);
-                } else {
-                    spaceManagementRecycleView.setVisibility(View.VISIBLE);
-                    mEmptyLayout.setVisibility(View.GONE);
-                }
-            }
-        };
-        spaceManagementRecycleView.setAdapter(mFirebaseRecyclerAdapter);
+            // Firestore adapter
+            firestorePagingAdapter = new mCustomFirestorePagingAdapter(options, this.getContext());
+            spaceManagementRecycleView.setAdapter(firestorePagingAdapter);
+        }
+    }
+
+    private String formatMoney(int gia) {
+        return String.format(Locale.getDefault(), "%,d", gia);
     }
 
     @Override
@@ -165,14 +132,17 @@ public class SpaceManagementFragment extends Fragment {
 
     @Override
     public void onResume() {
-        if (mFirebaseAuth.getCurrentUser() == null) {
-            mEmptyLayout.setVisibility(View.VISIBLE);
-            spaceManagementRecycleView.setVisibility(View.GONE);
-        } else {
+        if (mFirebaseAuth.getCurrentUser() != null) {
             mEmptyLayout.setVisibility(View.GONE);
             spaceManagementRecycleView.setVisibility(View.VISIBLE);
-            mFirebaseRecyclerAdapter.startListening();
+            firestorePagingAdapter.startListening();
         }
         super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        firestorePagingAdapter.stopListening();
     }
 }

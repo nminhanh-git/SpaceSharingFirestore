@@ -14,8 +14,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.StepContinueListener;
@@ -35,6 +37,9 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
     ImageButton mImgBtnBathroomIncrease;
     ImageButton mImgBtnBathroomDecrease;
     EditText mEditTextDetail;
+
+    ImageView mImageSpinnerTypeError;
+    ImageView mImageSpinnerDoorError;
 
     String currentType;
     String currentDoor;
@@ -72,14 +77,26 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
 
     @Override
     public void onContinue() {
+        if (currentType.equals(getResources().getStringArray(R.array.type_array)[0])) {
+            Toast.makeText(getContext(), "Bạn chưa chọn loại không gian", Toast.LENGTH_SHORT).show();
+            mImageSpinnerTypeError.setVisibility(View.VISIBLE);
+        }
+        if (currentType.equalsIgnoreCase("Nhà ở") || currentType.equalsIgnoreCase("Cửa hàng kinh doanh")) {
+            if(currentDoor.equalsIgnoreCase(getResources().getStringArray(R.array.door_direction_array)[0])){
+                Toast.makeText(getContext(), "Bạn chưa chọn hướng cửa", Toast.LENGTH_SHORT).show();
+                mImageSpinnerDoorError.setVisibility(View.VISIBLE);
+            }
+        }
         receiver.onOtherReceived(currentType, currentDoor, bedRoom, bathRoom, detail);
     }
 
     private void initialize() {
         mSpinnerType = view.findViewById(R.id.add_other_spinner_type);
+        mImageSpinnerTypeError = view.findViewById(R.id.add_other_spinner_type_image_error);
 
         customOptionLayout = view.findViewById(R.id.add_other_layout_custom_option);
         mSpinnerDoor = view.findViewById(R.id.add_other_spinner_door);
+        mImageSpinnerDoorError = view.findViewById(R.id.add_other_spinner_door_image_error);
 
         mEditTextBedroom = view.findViewById(R.id.add_other_edit_text_bedroom);
         mEditTextBedroom.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -151,21 +168,22 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentType = getActivity().getResources().getStringArray(R.array.type_array)[position];
-                if(currentType.equalsIgnoreCase("Nhà ở") || currentType.equalsIgnoreCase("Cửa hàng kinh doanh")){
+                if (currentType.equalsIgnoreCase("Nhà ở") || currentType.equalsIgnoreCase("Cửa hàng kinh doanh")) {
                     customOptionLayout.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     customOptionLayout.setVisibility(View.GONE);
                 }
+                mImageSpinnerTypeError.setVisibility(View.GONE);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                currentType = getActivity().getResources().getStringArray(R.array.type_array)[0];
-                if(currentType.equalsIgnoreCase("Nhà ở") || currentType.equalsIgnoreCase("Cửa hàng kinh doanh")){
-                    customOptionLayout.setVisibility(View.VISIBLE);
-                }else{
-                    customOptionLayout.setVisibility(View.GONE);
-                }
+//                currentType = getActivity().getResources().getStringArray(R.array.type_array)[0];
+//                if (currentType.equalsIgnoreCase("Nhà ở") || currentType.equalsIgnoreCase("Cửa hàng kinh doanh")) {
+//                    customOptionLayout.setVisibility(View.VISIBLE);
+//                } else {
+//                    customOptionLayout.setVisibility(View.GONE);
+//                }
             }
         });
 
@@ -175,6 +193,7 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentDoor = getActivity().getResources().getStringArray(R.array.door_direction_array)[position];
+                mImageSpinnerDoorError.setVisibility(View.GONE);
             }
 
             @Override
