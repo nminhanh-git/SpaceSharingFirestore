@@ -17,7 +17,7 @@
             <RelativeLayout
                 android:id="@+id/account_layout_info"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="160dp"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/card_layout_background"
                 android:padding="10dp">
@@ -79,6 +79,22 @@
                     android:fontFamily="@font/roboto_reg"
                     android:gravity="bottom"
                     android:text="Chỉnh sửa"
+                    android:textAllCaps="false"
+                    android:textColor="#ed8731"
+                    android:layout_marginTop="10dp"/>
+
+                <Button
+                    android:id="@+id/account_button_edit_profile_avatar"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/account_button_edit_profile"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:fontFamily="@font/roboto_reg"
+                    android:gravity="bottom"
+                    android:text="Đổi ảnh đại diện"
                     android:textAllCaps="false"
                     android:textColor="#ed8731" />
             </RelativeLayout>

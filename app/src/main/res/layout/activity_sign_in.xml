@@ -84,7 +84,7 @@
             android:background="@drawable/search_bar_background"
             android:fontFamily="@font/roboto_reg"
             android:hint="Số điện thoại"
-            android:inputType="textEmailAddress"
+            android:inputType="phone"
             android:maxLength="10"
             android:minHeight="@dimen/search_bar_height"
             android:paddingLeft="20dp"

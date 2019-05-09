@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +53,7 @@ public class UserInfoActivity extends AppCompatActivity {
     Button mBtnContinue;
     Button mBtnVerify;
     ImageView mImageViewVerified;
+    ImageButton mBtnCancel;
 
     boolean isPhoneNumberVerified = false;
     String mName = "";
@@ -170,6 +173,7 @@ public class UserInfoActivity extends AppCompatActivity {
             mImageViewVerified.setVisibility(View.VISIBLE);
         }
         if (mProvider.equalsIgnoreCase("account management")) {
+            mBtnCancel.setVisibility(View.VISIBLE);
             mBtnVerify.setVisibility(View.GONE);
             mImageViewVerified.setVisibility(View.VISIBLE);
             isPhoneNumberVerified = true;
@@ -280,6 +284,10 @@ public class UserInfoActivity extends AppCompatActivity {
             Map<String, String> userData = new HashMap<>();
             userData.put("email", mMail);
             userData.put("facebookName", mFacebookName);
+            userData.put("name", mName);
+            userData.put("phone_number", mPhone);
+            userData.put("avatar_name", "null");
+
             mUserCollRef.document(mCurrentUser.getUid()).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -305,7 +313,11 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         if (mProvider.equalsIgnoreCase("account management")) {
-            mUserCollRef.document(mCurrentUser.getUid()).update("email", mMail)
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("email", mMail);
+            updates.put("name", mName);
+            updates.put("phone_number", mPhone);
+            mUserCollRef.document(mCurrentUser.getUid()).update(updates)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -351,6 +363,13 @@ public class UserInfoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mImageViewLogo = mToolbar.findViewById(R.id.user_info_logo);
+        GlideApp.with(this).load(R.drawable.logo_2).into(mImageViewLogo);
+        mBtnCancel = findViewById(R.id.user_info_btn_cancel);
+        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
 
         mTextViewSubtile = findViewById(R.id.user_info_subtitle);
         mEditName = findViewById(R.id.user_info_edit_text_name);

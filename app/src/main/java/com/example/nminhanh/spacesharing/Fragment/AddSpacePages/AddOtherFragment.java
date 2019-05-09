@@ -19,13 +19,14 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.nminhanh.spacesharing.OtherOldDataReceiver;
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.StepContinueListener;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AddOtherFragment extends Fragment implements StepContinueListener {
+public class AddOtherFragment extends Fragment implements StepContinueListener, OtherOldDataReceiver {
 
     View view;
     Spinner mSpinnerType;
@@ -36,24 +37,39 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
     EditText mEditTextBathroom;
     ImageButton mImgBtnBathroomIncrease;
     ImageButton mImgBtnBathroomDecrease;
-    EditText mEditTextDetail;
 
     ImageView mImageSpinnerTypeError;
     ImageView mImageSpinnerDoorError;
+
+    EditText mEditTextElectric;
+    EditText mEditTextWater;
+    double electricPrice = 0;
+    double waterPrice = 0;
 
     String currentType;
     String currentDoor;
     int bedRoom = 0;
     int bathRoom = 0;
-    String detail;
+
+    Bundle oldData;
 
     RelativeLayout customOptionLayout;
 
+    @Override
+    public void onReceive(Bundle b) {
+        oldData = b;
+    }
+
     public interface OtherReceiver {
-        public void onOtherReceived(String type, String door, int bedRoom, int bathRoom, String detail);
+        void onOtherReceived(String type, String door, int bedRoom, int bathRoom, double electricPrice, double waterPrice);
+    }
+
+    public interface OtherInflatedListener {
+        void onOtherInflated();
     }
 
     OtherReceiver receiver;
+    OtherInflatedListener inflatedListener;
 
 
     public AddOtherFragment() {
@@ -63,6 +79,7 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
     @Override
     public void onAttach(Context context) {
         receiver = (OtherReceiver) context;
+        inflatedListener = (OtherInflatedListener) context;
         super.onAttach(context);
     }
 
@@ -72,22 +89,8 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_other, container, false);
         initialize();
+        inflatedListener.onOtherInflated();
         return view;
-    }
-
-    @Override
-    public void onContinue() {
-        if (currentType.equals(getResources().getStringArray(R.array.type_array)[0])) {
-            Toast.makeText(getContext(), "Bạn chưa chọn loại không gian", Toast.LENGTH_SHORT).show();
-            mImageSpinnerTypeError.setVisibility(View.VISIBLE);
-        }
-        if (currentType.equalsIgnoreCase("Nhà ở") || currentType.equalsIgnoreCase("Cửa hàng kinh doanh")) {
-            if(currentDoor.equalsIgnoreCase(getResources().getStringArray(R.array.door_direction_array)[0])){
-                Toast.makeText(getContext(), "Bạn chưa chọn hướng cửa", Toast.LENGTH_SHORT).show();
-                mImageSpinnerDoorError.setVisibility(View.VISIBLE);
-            }
-        }
-        receiver.onOtherReceived(currentType, currentDoor, bedRoom, bathRoom, detail);
     }
 
     private void initialize() {
@@ -97,6 +100,9 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
         customOptionLayout = view.findViewById(R.id.add_other_layout_custom_option);
         mSpinnerDoor = view.findViewById(R.id.add_other_spinner_door);
         mImageSpinnerDoorError = view.findViewById(R.id.add_other_spinner_door_image_error);
+
+        mEditTextElectric = view.findViewById(R.id.add_other_edit_text_electric_price);
+        mEditTextWater = view.findViewById(R.id.add_other_edit_text_water_price);
 
         mEditTextBedroom = view.findViewById(R.id.add_other_edit_text_bedroom);
         mEditTextBedroom.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -141,26 +147,6 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
         });
         mImgBtnBathroomIncrease = view.findViewById(R.id.other_bathroom_button_increase);
         mImgBtnBathroomDecrease = view.findViewById(R.id.other_bathroom_button_decrease);
-
-        mEditTextDetail = view.findViewById(R.id.add_other_edit_text_detail);
-        mEditTextDetail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!s.equals("")) {
-                    detail = s.toString();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
 
         ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.type_array, android.R.layout.simple_spinner_dropdown_item);
         mSpinnerType.setAdapter(typeAdapter);
@@ -230,5 +216,104 @@ public class AddOtherFragment extends Fragment implements StepContinueListener {
                 }
             }
         });
+
+        mEditTextElectric.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0) {
+                    electricPrice = Double.valueOf(s.toString());
+                    mEditTextElectric.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() == 0) {
+                    electricPrice = 0;
+                }
+            }
+        });
+        mEditTextWater.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0) {
+                    waterPrice = Double.valueOf(s.toString());
+                    mEditTextWater.setError(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() == 0) {
+                    waterPrice = 0;
+                }
+            }
+        });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (oldData != null) {
+            for (int i = 1; i < 4; i++) {
+                String type = getResources().getStringArray(R.array.type_array)[i];
+                if (oldData.getString("type").equalsIgnoreCase(type)) {
+                    mSpinnerType.setSelection(i, true);
+                    currentType = type;
+                    break;
+                }
+            }
+            if (currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1]) ||
+                    currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])) {
+                for (int i = 1; i < 8; i++) {
+                    String door = getResources().getStringArray(R.array.door_direction_array)[i];
+                    if (oldData.getString("door").equalsIgnoreCase(door)) {
+                        mSpinnerDoor.setSelection(i, true);
+                        currentDoor = door;
+                        break;
+                    }
+                }
+                customOptionLayout.setVisibility(View.VISIBLE);
+                electricPrice = oldData.getDouble("electric");
+                mEditTextElectric.setText(electricPrice + "");
+                waterPrice = oldData.getDouble("water");
+                mEditTextWater.setText(waterPrice + "");
+                bedRoom = oldData.getInt("bed");
+                mEditTextBedroom.setText(bedRoom + "");
+                bathRoom = oldData.getInt("bath");
+                mEditTextBathroom.setText(bathRoom + "");
+            }
+        }
+    }
+
+    @Override
+    public void onContinue() {
+        if (currentType.equals(getResources().getStringArray(R.array.type_array)[0])) {
+            Toast.makeText(getContext(), "Bạn chưa chọn loại không gian", Toast.LENGTH_SHORT).show();
+            mImageSpinnerTypeError.setVisibility(View.VISIBLE);
+        }
+        if (currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1]) ||
+                currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])) {
+            if (currentDoor.equalsIgnoreCase(getResources().getStringArray(R.array.door_direction_array)[0])) {
+                Toast.makeText(getContext(), "Bạn chưa chọn hướng cửa", Toast.LENGTH_SHORT).show();
+                mImageSpinnerDoorError.setVisibility(View.VISIBLE);
+            }
+            if (mEditTextWater.getText().toString().isEmpty() || mEditTextWater.getError() != null) {
+                mEditTextWater.setError("Bạn chưa nhập giá tiền nước");
+                mEditTextElectric.setError("Bạn chưa nhập giá tiền điện");
+            }
+        }
+        receiver.onOtherReceived(currentType, currentDoor, bedRoom, bathRoom, electricPrice, waterPrice);
+    }
+
 }

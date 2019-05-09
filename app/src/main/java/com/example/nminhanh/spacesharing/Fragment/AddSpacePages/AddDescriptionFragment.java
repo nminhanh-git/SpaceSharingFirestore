@@ -6,41 +6,75 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
+import com.example.nminhanh.spacesharing.DescriptionOldDataReceiver;
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.StepContinueListener;
 
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AddDescriptionFragment extends Fragment implements StepContinueListener {
-    public AddDescriptionFragment() {
-        // Required empty public constructor
-    }
+public class AddDescriptionFragment extends Fragment implements StepContinueListener, DescriptionOldDataReceiver {
 
-    public interface DescriptionReceiver {
-        public void onDescriptionReceived(double size, double price, String des);
-    }
 
+    private static final String TAG = "MA:DescriptionFragment";
+    private static final String ACTIVITY_TAG = "MA:AddSpaceFragments";
     DescriptionReceiver receiver;
     View view;
 
     EditText mEditTextSize;
     EditText mEditTextPrice;
     EditText mEditTextDescription;
+    CheckBox mCheckBoxPrePaid;
+    EditText mEditTextPrepaid;
+    RelativeLayout mLayoutPrepaid;
+    ImageButton mBtnPrepaidIncrease;
+    ImageButton mBtnPrepaidDecrease;
+
+
     String price = "0";
     String size = "0";
     String description = "";
+    int prepaidMonth = 0;
+
+    Bundle oldData;
+
+    public AddDescriptionFragment() {
+        // Required empty public constructor
+    }
+
+
+    public interface DescriptionReceiver {
+        void onDescriptionReceived(double size, double price, int prepaidMonth, String description);
+    }
+
+    public interface DescriptionInflatedListener {
+        void onDescriptionInflated();
+    }
+
+    DescriptionInflatedListener inflatedListener;
+
+
+    @Override
+    public void onReceive(Bundle b) {
+        oldData = b;
+    }
 
     @Override
     public void onAttach(Context context) {
         receiver = (DescriptionReceiver) context;
+        inflatedListener = (DescriptionInflatedListener) context;
+
         super.onAttach(context);
     }
 
@@ -50,6 +84,7 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_description, container, false);
         initialize();
+        inflatedListener.onDescriptionInflated();
         return view;
     }
 
@@ -57,6 +92,11 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
         mEditTextSize = view.findViewById(R.id.add_description_edit_text_size);
         mEditTextPrice = view.findViewById(R.id.add_description_price);
         mEditTextDescription = view.findViewById(R.id.add_description_des);
+        mCheckBoxPrePaid = view.findViewById(R.id.checkbox_prepaid);
+        mEditTextPrepaid = view.findViewById(R.id.add_description_prepaid);
+        mLayoutPrepaid = view.findViewById(R.id.layout_prepaid);
+        mBtnPrepaidIncrease = view.findViewById(R.id.description_prepaid_button_increase);
+        mBtnPrepaidDecrease = view.findViewById(R.id.description_prepaid_button_decrease);
 
         mEditTextSize.addTextChangedListener(new TextWatcher() {
 
@@ -120,7 +160,7 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!mEditTextSize.getText().toString().isEmpty()) {
+                if (!mEditTextPrice.getText().toString().isEmpty()) {
                     price = mEditTextPrice.getText().toString();
                     price = price.replaceAll(",", "");
                 } else {
@@ -146,8 +186,60 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
 
             }
         });
+        mCheckBoxPrePaid.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    mLayoutPrepaid.setVisibility(View.VISIBLE);
+                } else {
+                    mLayoutPrepaid.setVisibility(View.GONE);
+                    mEditTextPrepaid.setText("0");
+                    prepaidMonth = 0;
+                }
+            }
+        });
+        mBtnPrepaidIncrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prepaidMonth++;
+                mEditTextPrepaid.setText(prepaidMonth + "");
+
+            }
+        });
+        mBtnPrepaidDecrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (prepaidMonth > 0) {
+                    prepaidMonth--;
+                    mEditTextPrepaid.setText(prepaidMonth + "");
+                }
+            }
+        });
     }
 
+    @Override
+    public void onResume() {
+        Log.d(ACTIVITY_TAG, "onDescriptionResume");
+        super.onResume();
+        if (oldData != null) {
+            int size = (int) oldData.getDouble("size");
+            int price = (int) oldData.getDouble("price");
+            int prepaid = oldData.getInt("prepaid");
+            String description = oldData.getString("description");
+
+            mEditTextPrice.setText(String.valueOf(price));
+            mEditTextSize.setText(String.valueOf(size));
+
+            if (prepaid > 0) {
+                mCheckBoxPrePaid.setChecked(true);
+                mEditTextPrepaid.setText(String.valueOf(prepaid));
+                prepaidMonth = prepaid;
+            }
+            mEditTextDescription.setText(description);
+            oldData = null;
+        }
+    }
 
     @Override
     public void onContinue() {
@@ -157,9 +249,13 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
         if (mEditTextPrice.getText().toString().isEmpty()) {
             mEditTextPrice.setError("Bạn chưa nhập giá dự kiến");
         }
+        if (mCheckBoxPrePaid.isChecked() && mEditTextPrepaid.getText().toString().isEmpty()) {
+            mEditTextPrepaid.setError("Bạn chưa nhập số tháng đặt cọc dự kiến");
+        }
         if (mEditTextDescription.getText().toString().isEmpty()) {
             mEditTextDescription.setError("Bạn chưa nhập mô tả");
         }
-        receiver.onDescriptionReceived(Double.valueOf(size), Double.valueOf(price), description);
+        receiver.onDescriptionReceived(Double.valueOf(size), Double.valueOf(price), prepaidMonth, description);
     }
+
 }

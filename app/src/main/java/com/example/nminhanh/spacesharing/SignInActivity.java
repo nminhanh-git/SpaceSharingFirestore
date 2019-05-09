@@ -103,7 +103,7 @@ public class SignInActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mImageLogo = mToolbar.findViewById(R.id.sign_in_logo);
-        Glide.with(this).asBitmap().load(R.drawable.logo).into(mImageLogo);
+        Glide.with(this).asBitmap().load(R.drawable.logo_2).into(mImageLogo);
 
         mLayoutSignIn = findViewById(R.id.sign_in_layout);
         mImageViewSignIn = findViewById(R.id.image_view_sign_in);

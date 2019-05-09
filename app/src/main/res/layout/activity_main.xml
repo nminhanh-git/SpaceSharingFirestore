@@ -29,7 +29,8 @@
             <ImageView
                 android:id="@+id/main_image_toolbar_logo"
                 android:layout_width="120dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo_2" />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

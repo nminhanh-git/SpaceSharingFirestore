@@ -1,5 +1,6 @@
 package com.example.nminhanh.spacesharing;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,18 +15,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
+import com.example.nminhanh.spacesharing.Fragment.MainPages.SearchFragment;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
-import com.firebase.ui.firestore.paging.LoadingState;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Locale;
+
+import pl.droidsonroids.gif.GifImageView;
 
 public class mCustomFirestorePagingAdapter extends FirestorePagingAdapter<Space, mCustomFirestorePagingAdapter.SpaceViewHolder> {
 
@@ -34,6 +41,7 @@ public class mCustomFirestorePagingAdapter extends FirestorePagingAdapter<Space,
 
     AddressUtils mAddressUtils;
     Context context;
+    FirebaseStorage mFirebaseStorage;
 
     /**
      * Construct a new FirestorePagingAdapter from the given {@link FirestorePagingOptions}.
@@ -44,6 +52,7 @@ public class mCustomFirestorePagingAdapter extends FirestorePagingAdapter<Space,
         super(options);
         mAddressUtils = new AddressUtils(context);
         this.context = context;
+        mFirebaseStorage = FirebaseStorage.getInstance();
     }
 
     @Override
@@ -61,40 +70,26 @@ public class mCustomFirestorePagingAdapter extends FirestorePagingAdapter<Space,
                 thanhPho = "TP.Hồ Chí Minh";
                 break;
         }
-        String quan = mAddressUtils.getDistrictName(model.getThanhPhoId(), model.getQuanId());
-        String phuong = mAddressUtils.getWardName(model.getQuanId(), model.getPhuongId());
-        holder.mTextViewAddress.setText(model.getDiaChiPho() + ", " + phuong + ", " + quan + ", " + thanhPho);
-
-        holder.mTextViewPrice.setText(
-                (int) model.getDienTich() + Html.fromHtml(context.getString(R.string.square_metrer_metric_string)).toString()
-                        + " - " + formatMoney((int) model.getGia()) + " đồng"
-        );
+        holder.mTextViewAddress.setText(model.getDiaChiDayDu());
+//        String metric =;
+        holder.mTextViewPrice.setText((int) model.getDienTich()+"");
+        holder.mTextViewPrice.append(Html.fromHtml(context.getString(R.string.square_metrer_metric_string)));
+        holder.mTextViewPrice.append(" - " + formatMoney((int) model.getGia()) + " đồng");
         if (!model.getFirstImagePath().equalsIgnoreCase("không có gì hết á!")) {
-            final String imageURl = IMAGE_STORAGE_BASE_URL + "/"
-                    + model.getIdChu() + "/"
-                    + model.getId() + "/"
-                    + model.getFirstImagePath();
+            holder.mImageView.setImageResource(R.drawable.loading2);
+            final StorageReference mFirtImageRef = mFirebaseStorage.getReference(model.getIdChu()).child(model.getId()).child(1+"");
 
-            Glide.with(holder.mImageView.getContext())
-                    .load(LOADING_PLACEHOLDER_IMAGE).into(holder.mImageView);
-            StorageReference storageRef = FirebaseStorage.getInstance()
-                    .getReferenceFromUrl(imageURl);
-            storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            mFirtImageRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
                 @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        String downloadUrl = task.getResult().toString();
-                        Glide.with(holder.mImageView.getContext())
-                                .load(downloadUrl).into(holder.mImageView);
-                    } else {
-                        Toast.makeText(holder.mImageView.getContext(),
-                                "Error in loading image by Glide, or the image URL is invalid:" +
-                                        imageURl,
-                                Toast.LENGTH_SHORT).show();
-
-                    }
+                public void onSuccess(StorageMetadata storageMetadata) {
+                    long updatedTime = storageMetadata.getUpdatedTimeMillis();
+                    Glide.with(holder.mImageView.getContext())
+                            .load(mFirtImageRef)
+                            .signature(new ObjectKey(updatedTime))
+                            .into(holder.mImageView);
                 }
             });
+
         }
     }
 
@@ -131,7 +126,7 @@ public class mCustomFirestorePagingAdapter extends FirestorePagingAdapter<Space,
             DocumentSnapshot documentSnapshot = getCurrentList().get(getAdapterPosition());
             Space mCurrentSpace = documentSnapshot.toObject(Space.class);
             Intent intent = new Intent(context, SpaceDetailActivity.class);
-            intent.putExtra("space title", mCurrentSpace.getTieuDe());
+            intent.putExtra("current space", mCurrentSpace);
             context.startActivity(intent);
         }
     }

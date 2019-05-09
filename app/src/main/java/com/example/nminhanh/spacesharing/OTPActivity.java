@@ -232,7 +232,7 @@ public class OTPActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mImageViewToolbar = mToolbar.findViewById(R.id.otp_logo);
-        Glide.with(this).load(R.drawable.logo).into(mImageViewToolbar);
+        Glide.with(this).load(R.drawable.logo_2).into(mImageViewToolbar);
 
         mButtonBack = findViewById(R.id.otp_btn_back);
 
@@ -251,7 +251,10 @@ public class OTPActivity extends AppCompatActivity {
     }
 
     private void sendVerificationCode(String number) {
-        number = PhoneNumberUtils.formatNumberToE164(number, "VN");
+        StringBuilder builder = new StringBuilder(number);
+        builder.replace(0, 0, "+84");
+//        number = PhoneNumberUtils.formatNumberToE164(number, "VN");
+        number = builder.toString();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 number,
                 60,

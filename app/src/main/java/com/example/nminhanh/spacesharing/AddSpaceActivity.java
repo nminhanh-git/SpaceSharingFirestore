@@ -1,19 +1,18 @@
 package com.example.nminhanh.spacesharing;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +26,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -41,6 +37,7 @@ import com.google.firebase.storage.UploadTask;
 
 import org.imperiumlabs.geofirestore.GeoFirestore;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +46,10 @@ import java.util.Map;
 
 import github.chenupt.springindicator.SpringIndicator;
 
-public class AddSpaceActivity extends AppCompatActivity implements AddAddressFragment.AddressReceiver, AddDescriptionFragment.DescriptionReceiver, AddOtherFragment.OtherReceiver {
+public class AddSpaceActivity extends AppCompatActivity implements
+        AddAddressFragment.AddressReceiver, AddAddressFragment.AddressInflatedListener,
+        AddDescriptionFragment.DescriptionReceiver, AddDescriptionFragment.DescriptionInflatedListener,
+        AddOtherFragment.OtherReceiver, AddOtherFragment.OtherInflatedListener {
 
     private static final String TAG = "MA:AddSpaceActivity";
     Toolbar mToolbar;
@@ -61,8 +61,11 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
     NonSwipeViewPager mViewPagerAdd;
     SpringIndicator mIndicator;
 
+    RelativeLayout mAddLayoutLoading;
+    TextView mTextViewLoading;
+
     Space currentSpace;
-    ArrayList<String> mImagePath;
+    ArrayList<Bitmap> mImagePath;
     StepContinueListener listener;
     public static final String SPACE_COLLECTION = "space";
 
@@ -76,6 +79,17 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
     boolean canDescriptionContinue = true;
     boolean canOtherContinue = true;
 
+    AddressOldDataReceiver addressOldDataReceiver;
+    DescriptionOldDataReceiver descriptionOldDataReceiver;
+    OtherOldDataReceiver otherOldDataReceiver;
+    boolean isAddressOldDataSent = false;
+    boolean isDescriptionOldDataSent = false;
+    boolean isOtherOldDataSent = false;
+    String command = "";
+
+    AddCanceledListener cancelListener;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +102,11 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
             mFirebaseUser = mFirebaseAuth.getCurrentUser();
         }
 
+        Intent intent = getIntent();
+        command = intent.getStringExtra("command");
+        if (command.equalsIgnoreCase("edit space")) {
+            currentSpace = (Space) intent.getSerializableExtra("current space");
+        }
         initialize();
     }
 
@@ -110,12 +129,23 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
         mIndicator = findViewById(R.id.add_indicator);
         mIndicator.setViewPager(mViewPagerAdd);
 
+        mAddLayoutLoading = findViewById(R.id.add_loading_layout);
+        mTextViewLoading = findViewById(R.id.add_progress_text);
+
         mBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 switch (mViewPagerAdd.getCurrentItem()) {
                     case 0:
+                        for (Fragment f : getSupportFragmentManager().getFragments()) {
+                            if (f instanceof AddAddressFragment) {
+                                cancelListener = (AddCanceledListener) f;
+                                break;
+                            }
+                        }
+                        cancelListener.onCanceled();
+                        setResult(RESULT_CANCELED);
                         finish();
                         break;
                     case 1:
@@ -173,8 +203,12 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
                         }
                         listener.onContinue();
                         if (canOtherContinue) {
-                            saveNewSpaceObject(currentSpace);
-                            finish();
+                            saveSpaceObject(currentSpace);
+                            if(command.equalsIgnoreCase("edit space")){
+                                mTextViewLoading.setText("Đang cập nhật dữ liệu...");
+                            }
+                            mAddLayoutLoading.setVisibility(View.VISIBLE);
+
                         }
                         break;
                 }
@@ -182,62 +216,101 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
         });
     }
 
-    private void saveNewSpaceObject(final Space currentSpace) {
+    private void saveSpaceObject(final Space currentSpace) {
         final CollectionReference mSpacesCollRef = db.collection(SPACE_COLLECTION);
-        mSpacesCollRef.add(currentSpace).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                currentSpace.setId(documentReference.getId());
-                mSpacesCollRef.document(currentSpace.getId()).set(currentSpace);
-
-                GeoFirestore mGeoFirestore = new GeoFirestore(mSpacesCollRef);
-                mGeoFirestore.setLocation(currentSpace.getId(), new GeoPoint(latitude, longitude)
-                        , new GeoFirestore.CompletionListener() {
-                            @Override
-                            public void onComplete(Exception e) {
-                                if (e == null) {
-                                    Log.d(TAG, "add location for this document to cloud firestore successfully!");
-                                } else {
-                                    Log.d(TAG, e.getMessage());
+        Task saveTask;
+        if (command.equalsIgnoreCase("edit space")) {
+            saveTask = mSpacesCollRef.document(currentSpace.getId()).set(currentSpace);
+            saveTask.addOnSuccessListener(new OnSuccessListener() {
+                @Override
+                public void onSuccess(Object o) {
+                    DocumentReference currentSpaceRef = mSpacesCollRef.document(currentSpace.getId());
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("timeAdded", FieldValue.serverTimestamp());
+                    currentSpaceRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "successful update timestamp");
+                                if (mImagePath != null && mImagePath.size() != 0) {
+                                    putImageToStorage(currentSpace.getId());
                                 }
+                            } else {
+                                Log.d(TAG, task.getException().getMessage());
                             }
-                        });
-
-                DocumentReference currentSpaceRef = mSpacesCollRef.document(currentSpace.getId());
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("timeAdded", FieldValue.serverTimestamp());
-                currentSpaceRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "successful update timestamp");
-                            if (mImagePath != null && mImagePath.size() != 0) {
-                                putImageToStorage(currentSpace.getId());
-                            }
-                        } else {
-                            Log.d(TAG, task.getException().getMessage());
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            saveTask = mSpacesCollRef.add(currentSpace);
+            saveTask.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    currentSpace.setId(documentReference.getId());
+                    mSpacesCollRef.document(currentSpace.getId()).set(currentSpace);
 
+                    GeoFirestore mGeoFirestore = new GeoFirestore(mSpacesCollRef);
+                    mGeoFirestore.setLocation(currentSpace.getId(), new GeoPoint(latitude, longitude)
+                            , new GeoFirestore.CompletionListener() {
+                                @Override
+                                public void onComplete(Exception e) {
+                                    if (e == null) {
+                                        Log.d(TAG, "add location for this document to cloud firestore successfully!");
+                                    } else {
+                                        Log.d(TAG, e.getMessage());
+                                    }
+                                }
+                            });
+
+                    DocumentReference currentSpaceRef = mSpacesCollRef.document(currentSpace.getId());
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("timeAdded", FieldValue.serverTimestamp());
+                    currentSpaceRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "successful update timestamp");
+                                if (mImagePath != null && mImagePath.size() != 0) {
+                                    putImageToStorage(currentSpace.getId());
+                                }
+                            } else {
+                                Log.d(TAG, task.getException().getMessage());
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 
-    private void putImageToStorage(String key) {
-        for (int i = 0; i < mImagePath.size(); i++) {
-            if (!mImagePath.get(i).isEmpty()) {
-                Uri uriPath = Uri.parse(mImagePath.get(i));
+    private void putImageToStorage(final String key) {
+        for (int i = 1; i <= 5; i++) {
+            if (!mImagePath.get(i - 1).equals(null)) {
                 StorageReference storageRef = FirebaseStorage.getInstance()
                         .getReference(mFirebaseUser.getUid())
-                        .child(key).child(uriPath.getLastPathSegment());
-                storageRef.putFile(uriPath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        .child(key).child(String.valueOf(i));
+
+                final int finalI = i;
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Bitmap bitmap = mImagePath.get(i - 1);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                byte[] bitmapData = baos.toByteArray();
+
+                storageRef.putBytes(bitmapData).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    public void onComplete(@NonNull final Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "successful upload images");
+                            Log.d(TAG, "successful upload image " + finalI);
+                            Log.d(TAG, "update first image path successfully");
+                            mAddLayoutLoading.setVisibility(View.GONE);
+                            if (command.equalsIgnoreCase("edit space")) {
+                                setResult(RESULT_OK);
+                            }
+                            finish();
                         } else {
                             Log.d(TAG, task.getException().getMessage());
+                            Toast.makeText(AddSpaceActivity.this, "upload image " + (finalI + 1) + "fail", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -247,24 +320,21 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
 
 
     @Override
-    public void onAddressReceived(String title, String addressNumber, String cityId, String districtId, String wardId, String fullAddress, ArrayList<String> imagePath) {
+    public void onAddressReceived(String title, String addressNumber, String cityId, String
+            districtId, String wardId, String fullAddress, ArrayList<Bitmap> imagePath) {
         if (title.isEmpty() || addressNumber.isEmpty() || cityId.equals("-1") || districtId.equals("-1") || wardId.equals("-1")
-                || fullAddress.isEmpty() || imagePath.isEmpty()) {
+                || fullAddress.isEmpty() || imagePath.size() < 5) {
             canAddressContinue = false;
         } else {
             canAddressContinue = true;
             mImagePath = new ArrayList<>(imagePath);
-            if (mImagePath != null && mImagePath.size() != 0) {
-                currentSpace.setFirstImagePath(Uri.parse(mImagePath.get(0)).getLastPathSegment());
-            } else {
-                currentSpace.setFirstImagePath("không có gì hết á!");
-            }
             currentSpace.setIdChu(mFirebaseUser.getUid());
             currentSpace.setTieuDe(title);
             currentSpace.setDiaChiPho(addressNumber);
             currentSpace.setThanhPhoId(cityId);
             currentSpace.setQuanId(districtId);
             currentSpace.setPhuongId(wardId);
+            currentSpace.setDiaChiDayDu(fullAddress);
 
             Geocoder mGeoCoder = new Geocoder(this);
             List<Address> addressesList;
@@ -283,36 +353,113 @@ public class AddSpaceActivity extends AppCompatActivity implements AddAddressFra
     }
 
     @Override
-    public void onDescriptionReceived(double size, double price, String des) {
-        if (size == 0 || price == 0 || des.isEmpty()) {
+    public void onDescriptionReceived(double size, double price, int prepaidMonth, String
+            description) {
+        if (size == 0 || price == 0 || description.isEmpty()) {
             canDescriptionContinue = false;
         } else {
             canDescriptionContinue = true;
             currentSpace.setDienTich(size);
             currentSpace.setGia(price);
-            currentSpace.setMoTa(des);
+            currentSpace.setMoTa(description);
+            currentSpace.setThangCoc(prepaidMonth);
         }
     }
 
 
     @Override
-    public void onOtherReceived(String type, String door, int bedRoom, int bathRoom, String
-            detail) {
+    public void onOtherReceived(String type, String door, int bedRoom, int bathRoom,
+                                double electricPrice, double waterPrice) {
         if (type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[0])) {
             canOtherContinue = false;
         } else if (type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1])
                 || type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])
                 ) {
-            canOtherContinue = !door.equalsIgnoreCase
-                    (getResources().getStringArray(R.array.door_direction_array)[0]);
+            if (door.equalsIgnoreCase(getResources().getStringArray(R.array.door_direction_array)[0])
+                    || electricPrice == 0 || waterPrice == 0) {
+                canOtherContinue = false;
+            } else {
+                canOtherContinue = true;
+                currentSpace.setLoai(type);
+                currentSpace.setHuongCua(door);
+                currentSpace.setSoPhongVeSinh(bathRoom);
+                currentSpace.setSoPhongNgu(bedRoom);
+                currentSpace.setGiaDien(electricPrice);
+                currentSpace.setGiaNuoc(waterPrice);
+            }
         } else {
             canOtherContinue = true;
             currentSpace.setLoai(type);
-            currentSpace.setHuongCua(door);
-            currentSpace.setSoPhongVeSinh(bathRoom);
-            currentSpace.setSoPhongNgu(bedRoom);
-            currentSpace.setThongTinPhapLy(detail);
         }
 
+    }
+
+    @Override
+    public void onAddressInflated() {
+        if (command.equalsIgnoreCase("edit space") && !isAddressOldDataSent) {
+            for (Fragment f : getSupportFragmentManager().getFragments()) {
+                if (f instanceof AddAddressFragment) {
+                    addressOldDataReceiver = (AddressOldDataReceiver) f;
+                    break;
+                }
+            }
+            Bundle b = new Bundle();
+
+            b.putString("id", currentSpace.getId());
+            b.putString("idChu", currentSpace.getIdChu());
+            b.putString("title", currentSpace.getTieuDe());
+            b.putString("address number", currentSpace.getDiaChiPho());
+            b.putString("cityId", currentSpace.getThanhPhoId());
+            b.putString("districtId", currentSpace.getQuanId());
+            b.putString("wardId", currentSpace.getPhuongId());
+            b.putString("command", command);
+
+            addressOldDataReceiver.onReceive(b);
+            isAddressOldDataSent = true;
+        }
+    }
+
+    @Override
+    public void onDescriptionInflated() {
+        if (command.equalsIgnoreCase("edit space") && !isDescriptionOldDataSent) {
+            for (Fragment f : getSupportFragmentManager().getFragments()) {
+                if (f instanceof AddDescriptionFragment) {
+                    descriptionOldDataReceiver = (DescriptionOldDataReceiver) f;
+                    break;
+                }
+            }
+            Bundle b = new Bundle();
+
+            b.putDouble("size", currentSpace.getDienTich());
+            b.putDouble("price", currentSpace.getGia());
+            b.putInt("prepaid", currentSpace.getThangCoc());
+            b.putString("description", currentSpace.getMoTa());
+
+            descriptionOldDataReceiver.onReceive(b);
+            isDescriptionOldDataSent = true;
+        }
+    }
+
+    @Override
+    public void onOtherInflated() {
+        if (command.equalsIgnoreCase("edit space") && !isOtherOldDataSent) {
+            for (Fragment f : getSupportFragmentManager().getFragments()) {
+                if (f instanceof AddOtherFragment) {
+                    otherOldDataReceiver = (OtherOldDataReceiver) f;
+                    break;
+                }
+            }
+
+            Bundle b = new Bundle();
+            b.putDouble("electric", currentSpace.getGiaDien());
+            b.putDouble("water", currentSpace.getGiaNuoc());
+            b.putInt("bed", currentSpace.getSoPhongNgu());
+            b.putInt("bath", currentSpace.getSoPhongVeSinh());
+            b.putString("type", currentSpace.getLoai());
+            b.putString("door", currentSpace.getHuongCua());
+
+            otherOldDataReceiver.onReceive(b);
+            isOtherOldDataSent = true;
+        }
     }
 }

@@ -15,6 +15,7 @@ public class Space implements Serializable {
     private String phuongId;
     private String quanId;
     private String thanhPhoId;
+    private String diaChiDayDu;
     private double dienTich;
     private double gia;
     private String firstImagePath;
@@ -23,18 +24,15 @@ public class Space implements Serializable {
     private String loai;
     private String huongCua;
     private String moTa;
-    private String thongTinPhapLy;
+    private int thangCoc;
+    private double giaDien;
+    private double giaNuoc;
     private boolean khaDung = false;
+    private ArrayList<Double> l = new ArrayList<>();
+    private String g;
+
     @ServerTimestamp
     private Date timeAdded;
-
-    public Date getTimeAdded() {
-        return timeAdded;
-    }
-
-    public void setTimeAdded(Date timeAdded) {
-        this.timeAdded = timeAdded;
-    }
 
     public Space() {
     }
@@ -46,6 +44,9 @@ public class Space implements Serializable {
                  String diaChiPho,
                  String phuong,
                  String quan,
+                 String diaChiDayDu,
+                 String g,
+                 ArrayList<Double> l,
                  String thanhPho,
                  double dienTich,
                  double gia,
@@ -55,7 +56,9 @@ public class Space implements Serializable {
                  String loai,
                  String huongCua,
                  String moTa,
-                 String thongTinPhapLy,
+                 int thangCoc,
+                 double giaDien,
+                 double giaNuoc,
                  boolean khaDung
     ) {
         this.id = id;
@@ -65,6 +68,9 @@ public class Space implements Serializable {
         this.phuongId = phuong;
         this.quanId = quan;
         this.thanhPhoId = thanhPho;
+        this.diaChiDayDu = diaChiDayDu;
+        this.g = g;
+        this.l = new ArrayList<>(l);
         this.dienTich = dienTich;
         this.gia = gia;
         this.firstImagePath = firstImagePath;
@@ -73,7 +79,9 @@ public class Space implements Serializable {
         this.loai = loai;
         this.huongCua = huongCua;
         this.moTa = moTa;
-        this.thongTinPhapLy = thongTinPhapLy;
+        this.thangCoc = thangCoc;
+        this.giaDien = giaDien;
+        this.giaNuoc = giaNuoc;
         this.khaDung = khaDung;
     }
 
@@ -197,14 +205,6 @@ public class Space implements Serializable {
         this.moTa = moTa;
     }
 
-    public String getThongTinPhapLy() {
-        return thongTinPhapLy;
-    }
-
-    public void setThongTinPhapLy(String thongTinPhapLy) {
-        this.thongTinPhapLy = thongTinPhapLy;
-    }
-
     public boolean isKhaDung() {
         return khaDung;
     }
@@ -212,4 +212,61 @@ public class Space implements Serializable {
     public void setKhaDung(boolean khaDung) {
         this.khaDung = khaDung;
     }
+
+    public String getDiaChiDayDu() {
+        return diaChiDayDu;
+    }
+
+    public void setDiaChiDayDu(String diaChiDayDu) {
+        this.diaChiDayDu = diaChiDayDu;
+    }
+
+    public ArrayList<Double> getL() {
+        return l;
+    }
+
+    public void setL(ArrayList<Double> l) {
+        this.l = l;
+    }
+
+    public String getG() {
+        return g;
+    }
+
+    public void setG(String g) {
+        this.g = g;
+    }
+
+    public int getThangCoc() {
+        return thangCoc;
+    }
+
+    public void setThangCoc(int thangCoc) {
+        this.thangCoc = thangCoc;
+    }
+
+    public double getGiaDien() {
+        return giaDien;
+    }
+
+    public void setGiaDien(double giaDien) {
+        this.giaDien = giaDien;
+    }
+
+    public double getGiaNuoc() {
+        return giaNuoc;
+    }
+
+    public void setGiaNuoc(double giaNuoc) {
+        this.giaNuoc = giaNuoc;
+    }
+
+    public Date getTimeAdded() {
+        return timeAdded;
+    }
+
+    public void setTimeAdded(Date timeAdded) {
+        this.timeAdded = timeAdded;
+    }
+
 }

@@ -40,24 +40,6 @@ public class SpaceManagementFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public class SpaceViewHolder extends RecyclerView.ViewHolder {
-        TextView mTextViewSpaceTitle;
-        TextView mTextViewAddress;
-        ImageView mImageView;
-        TextView mTextViewPrice;
-        Switch mSwitchAvailable;
-
-        public SpaceViewHolder(@NonNull View itemView) {
-            super(itemView);
-            mTextViewSpaceTitle = itemView.findViewById(R.id.item_title);
-            mTextViewAddress = itemView.findViewById(R.id.item_address);
-            mImageView = itemView.findViewById(R.id.item_image);
-            mTextViewPrice = itemView.findViewById(R.id.item_textview_price);
-            mSwitchAvailable = itemView.findViewById(R.id.available_switch);
-        }
-    }
-
-
     public static final String SPACE_CHILD = "space";
 
     RecyclerView spaceManagementRecycleView;
@@ -101,7 +83,7 @@ public class SpaceManagementFragment extends Fragment {
             mEmptyLayout.setVisibility(View.VISIBLE);
             spaceManagementRecycleView.setVisibility(View.GONE);
         } else {
-            CollectionReference mSpacesCollection = db.collection("space");
+            CollectionReference mSpacesCollection = db.collection(SPACE_CHILD);
             Query baseQuery = mSpacesCollection.whereEqualTo("idChu", mFirebaseAuth.getCurrentUser().getUid()).orderBy("timeAdded", Query.Direction.DESCENDING);
 
             PagedList.Config config = new PagedList.Config.Builder()
@@ -143,6 +125,8 @@ public class SpaceManagementFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        firestorePagingAdapter.stopListening();
+        if (mFirebaseAuth.getCurrentUser() != null) {
+            firestorePagingAdapter.stopListening();
+        }
     }
 }

@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.PagerAdapter;
+import com.example.nminhanh.spacesharing.Fragment.MainPages.SearchFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.ShowFacebookLoadingListener;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.SignOutListener;
 import com.example.nminhanh.spacesharing.Model.City;
@@ -118,6 +120,8 @@ public class MainActivity extends AppCompatActivity
     AnimatorSet mAnimLocationImage;
     Location mLatestTranslatedLocation;
 
+    GoToTopEventListener goToTopEventListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,7 +151,7 @@ public class MainActivity extends AppCompatActivity
         mImageToolbarLogo = mToolbar.findViewById(R.id.main_image_toolbar_logo);
         Glide.with(this)
                 .asBitmap()
-                .load(R.drawable.logo)
+                .load(R.drawable.logo_2)
                 .into(mImageToolbarLogo);
 
         //Initialize ViewPager
@@ -163,6 +167,15 @@ public class MainActivity extends AppCompatActivity
                 switch (menuItem.getItemId()) {
                     case R.id.action_search:
                         id = 0;
+                        if (mViewPager.getCurrentItem() == 0) {
+                            for (Fragment f : getSupportFragmentManager().getFragments()) {
+                                if (f instanceof SearchFragment) {
+                                    goToTopEventListener = (GoToTopEventListener) f;
+                                    break;
+                                }
+                            }
+                            goToTopEventListener.GoToTop();
+                        }
                         break;
                     case R.id.action_space:
                         id = 1;
@@ -239,6 +252,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.main_menu_item_add:
                 if (mFirebaseAuth.getCurrentUser() != null) {
                     Intent intent = new Intent(MainActivity.this, AddSpaceActivity.class);
+                    intent.putExtra("command", "add space");
                     startActivityForResult(intent, REQUEST_ADD);
                 } else {
                     Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
@@ -314,7 +328,9 @@ public class MainActivity extends AppCompatActivity
         mLayoutNearby.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showNearbyDialog();
+//                showNearbyDialog();
+                Intent MapIntent = new Intent(MainActivity.this, MapsSearchActivity.class);
+                startActivity(MapIntent);
                 mDialog.dismiss();
             }
         });
@@ -582,12 +598,12 @@ public class MainActivity extends AppCompatActivity
         } else {
             mFusedLocationProviderClient.requestLocationUpdates(
                     getLocationRequest(), mLocationCallback, null);
-        }
 
-        mBtnLocationStartLocate.setText("Ngừng định vị");
-        mTextViewLocationLoading.setVisibility(View.VISIBLE);
-        mAnimLocationImage.start();
-        isTrackingLocation = true;
+            mBtnLocationStartLocate.setText("Ngừng định vị");
+            mTextViewLocationLoading.setVisibility(View.VISIBLE);
+            mAnimLocationImage.start();
+            isTrackingLocation = true;
+        }
     }
 
     private void stopTrackingLocation() {

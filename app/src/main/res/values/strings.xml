@@ -42,6 +42,9 @@
     <string name="fragment_account_facebook_into_string">Kết nối với Facebook để việc chia sẻ thông tin trở nên dễ dàng hơn!</string>
     <string name="op_network_error_string">A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
     <string name="detail_favorite_string">lưu vào mục <font color="#FF9800">yêu thích</font> </string>
-    <string name="square_metrer_metric_string"><![CDATA[m<sup>2</sup>]]></string>
+    <string name="square_metrer_metric_string"></string>
+    <string name="favor_dialog_promt_unsave_string">Bạn có muốn bỏ lưu tin đăng này không?</string>
+    <string name="favor_dialog_promt_save_string">Bạn có muốn lưu lại tin đăng này không?</string>
+    <string name="title_activity_maps_search">Map</string>
 
 </resources>

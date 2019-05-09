@@ -40,8 +40,8 @@
 
             <RelativeLayout
                 android:id="@+id/layout_size"
-                android:layout_width="150dp"
-                android:layout_height="80dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:layout_below="@id/title_size"
                 android:layout_alignParentStart="true"
                 android:background="@drawable/edit_background"
@@ -53,23 +53,24 @@
                     style="@style/TextAppearance.AppCompat.Display1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignBottom="@id/metric"
                     android:layout_alignParentStart="true"
-                    android:layout_marginRight="5dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
                     android:layout_toStartOf="@id/metric"
                     android:background="@color/transparent"
                     android:inputType="numberDecimal"
-                    android:textColor="#595959"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:paddingTop="8dp"
+
+                    android:textColor="#595959" />
 
                 <TextView
                     android:id="@+id/metric"
-                    style="@style/TextAppearance.AppCompat.Display1"
+                    style="@style/TextAppearance.AppCompat.Large"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/roboto_bold"
                     android:text="m\u00B2"
@@ -81,8 +82,10 @@
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@id/layout_price"
-                android:layout_alignParentTop="true"
+                android:layout_below="@id/layout_size"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="5dp"
                 android:fontFamily="@font/roboto_reg"
                 android:text="Giá dự kiến"
                 android:textColor="#595959" />
@@ -100,27 +103,28 @@
 
             <RelativeLayout
                 android:id="@+id/layout_price"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_below="@id/title_size"
-                android:layout_alignParentEnd="true"
-                android:layout_marginLeft="30dp"
-                android:layout_toEndOf="@id/layout_size"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/title_price"
+                android:layout_alignParentStart="true"
                 android:background="@drawable/edit_background"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp">
 
                 <EditText
                     android:id="@+id/add_description_price"
-                    style="@style/TextAppearance.AppCompat.Medium"
+                    style="@style/TextAppearance.AppCompat.Display1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@id/currency"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@id/currency"
                     android:background="@color/transparent"
                     android:inputType="number"
                     android:maxLines="1"
-                    android:padding="5dp"
-                    android:textColor="#595959"/>
+                    android:paddingLeft="8dp"
+                    android:paddingTop="8dp"
+                    android:paddingRight="8dp"
+                    android:textColor="#595959" />
 
                 <TextView
                     android:id="@+id/currency"
@@ -136,19 +140,100 @@
                     android:textColor="@color/colorPrimary" />
             </RelativeLayout>
 
+            <CheckBox
+                android:id="@+id/checkbox_prepaid"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_price"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="3dp"
+                android:checked="true"
+                android:text="Đặt cọc"
+                android:textColor="#595959" />
+
+            <RelativeLayout
+                android:id="@+id/layout_prepaid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/checkbox_prepaid">
+
+                <RelativeLayout
+                    android:id="@+id/prepaid_edit_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_toStartOf="@id/description_prepaid_button_decrease"
+                    android:background="@drawable/edit_background"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:visibility="visible">
+
+                    <EditText
+                        android:id="@+id/add_description_prepaid"
+                        style="@style/TextAppearance.AppCompat.Display1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_toStartOf="@id/prepaid_currency"
+                        android:background="@color/transparent"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingTop="8dp"
+                        android:textColor="#595959" />
+
+                    <TextView
+                        android:id="@+id/prepaid_currency"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:fontFamily="@font/roboto_bold"
+                        android:paddingLeft="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="tháng"
+                        android:textColor="@color/colorPrimary" />
+                </RelativeLayout>
+
+                <ImageButton
+                    android:id="@+id/description_prepaid_button_increase"
+                    android:layout_width="@dimen/square_button_icon_size"
+                    android:layout_height="@dimen/square_button_icon_size"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/background_button_round"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_increase"
+                    android:tint="@color/colorPrimaryDark" />
+
+                <ImageButton
+                    android:id="@+id/description_prepaid_button_decrease"
+                    android:layout_width="@dimen/square_button_icon_size"
+                    android:layout_height="@dimen/square_button_icon_size"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/background_button_round"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_decrease"
+                    android:tint="@color/colorPrimaryDark" />
+            </RelativeLayout>
+
             <TextView
                 android:id="@+id/title_description"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/layout_price"
+                android:layout_below="@id/layout_prepaid"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="@font/roboto_reg"
                 android:text="Mô tả"
-                android:textColor="#595959"
-                />
+                android:textColor="#595959" />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Medium"

@@ -33,19 +33,16 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/other_title_description"
                 android:background="@drawable/edit_background"
-                android:paddingLeft="16dp"
-                android:paddingTop="8dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="8dp">
+                android:padding="16dp">
 
                 <TextView
                     android:id="@+id/other_title_space_type"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/layout_price"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:layout_marginBottom="5dp"
                     android:fontFamily="@font/roboto_reg"
                     android:text="Loại không gian"
                     android:textColor="#595959" />
@@ -90,8 +87,7 @@
                     android:id="@+id/add_other_layout_custom_option"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/layout_type"
-                    android:visibility="gone">
+                    android:layout_below="@id/layout_type">
 
                     <TextView
                         android:id="@+id/other_title_door"
@@ -100,6 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
                         android:fontFamily="@font/roboto_reg"
                         android:text="Hướng cửa chính"
                         android:textColor="#595959" />
@@ -146,42 +143,50 @@
 
                     <RelativeLayout
                         android:id="@+id/layout_bedroom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="60dp"
-                        android:layout_below="@id/other_title_bedroom">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/other_title_bedroom"
+                        android:layout_marginTop="5dp">
 
                         <EditText
                             android:id="@+id/add_other_edit_text_bedroom"
-                            style="@style/TextAppearance.AppCompat.Medium"
-                            android:layout_width="60dp"
-                            android:layout_height="50dp"
+                            style="@style/TextAppearance.AppCompat.Display1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
+                            android:layout_toStartOf="@id/other_bedroom_button_increase"
                             android:background="@drawable/edit_background_inverse"
                             android:fontFamily="@font/roboto_reg"
                             android:inputType="number"
+                            android:padding="8dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
                             android:text="0"
-                            android:textAlignment="center" />
+                            android:textColor="@color/dark_gray" />
 
                         <ImageButton
                             android:id="@+id/other_bedroom_button_increase"
                             android:layout_width="@dimen/square_button_icon_size"
                             android:layout_height="@dimen/square_button_icon_size"
                             android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
                             android:layout_marginLeft="10dp"
-                            android:layout_toEndOf="@id/add_other_edit_text_bedroom"
-                            android:background="?attr/selectableItemBackground"
-                            android:src="@drawable/ic_increase" />
+                            android:background="@drawable/background_button_round_inverse"
+                            android:foreground="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_increase"
+                            android:tint="@color/colorPrimaryDark" />
 
                         <ImageButton
                             android:id="@+id/other_bedroom_button_decrease"
                             android:layout_width="@dimen/square_button_icon_size"
                             android:layout_height="@dimen/square_button_icon_size"
+                            android:layout_alignParentEnd="true"
                             android:layout_alignParentBottom="true"
                             android:layout_marginLeft="10dp"
-
-                            android:layout_toEndOf="@id/add_other_edit_text_bedroom"
-                            android:background="?attr/selectableItemBackground"
-                            android:src="@drawable/ic_decrease" />
+                            android:background="@drawable/background_button_round_inverse"
+                            android:foreground="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_decrease"
+                            android:tint="@color/colorPrimaryDark" />
                     </RelativeLayout>
 
                     <TextView
@@ -189,8 +194,7 @@
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/layout_door"
-                        android:layout_alignStart="@id/layout_bathroom"
+                        android:layout_below="@id/layout_bedroom"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/roboto_reg"
                         android:text="Số phòng vệ sinh"
@@ -198,86 +202,189 @@
 
                     <RelativeLayout
                         android:id="@+id/layout_bathroom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="60dp"
-                        android:layout_below="@id/other_title_bedroom"
-                        android:layout_marginLeft="40dp"
-                        android:layout_toEndOf="@id/other_title_bedroom">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/other_title_bathroom"
+                        android:layout_marginTop="5dp">
 
                         <EditText
                             android:id="@+id/add_other_edit_text_bathroom"
-                            style="@style/TextAppearance.AppCompat.Medium"
-                            android:layout_width="60dp"
-                            android:layout_height="50dp"
+                            style="@style/TextAppearance.AppCompat.Display1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
+                            android:layout_toStartOf="@id/other_bathroom_button_increase"
                             android:background="@drawable/edit_background_inverse"
                             android:fontFamily="@font/roboto_reg"
                             android:inputType="number"
+                            android:padding="8dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
                             android:text="0"
-                            android:textAlignment="center" />
+                            android:textColor="@color/dark_gray" />
 
                         <ImageButton
                             android:id="@+id/other_bathroom_button_increase"
                             android:layout_width="@dimen/square_button_icon_size"
                             android:layout_height="@dimen/square_button_icon_size"
                             android:layout_alignParentTop="true"
-                            android:layout_marginLeft="10dp"
-                            android:layout_toEndOf="@id/add_other_edit_text_bathroom"
-                            android:background="?attr/selectableItemBackground"
-                            android:src="@drawable/ic_increase" />
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="10dp"
+                            android:background="@drawable/background_button_round_inverse"
+                            android:foreground="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_increase"
+                            android:tint="@color/colorPrimaryDark" />
 
                         <ImageButton
                             android:id="@+id/other_bathroom_button_decrease"
                             android:layout_width="@dimen/square_button_icon_size"
                             android:layout_height="@dimen/square_button_icon_size"
+                            android:layout_alignParentEnd="true"
                             android:layout_alignParentBottom="true"
                             android:layout_marginLeft="10dp"
-
-                            android:layout_toEndOf="@id/add_other_edit_text_bathroom"
-                            android:background="?attr/selectableItemBackground"
-                            android:src="@drawable/ic_decrease" />
+                            android:background="@drawable/background_button_round_inverse"
+                            android:foreground="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_decrease"
+                            android:tint="@color/colorPrimaryDark" />
                     </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/other_note_room"
-                        style="@style/TextAppearance.AppCompat.Small"
-                        android:layout_width="match_parent"
+
+                    <RelativeLayout
+                        android:id="@+id/electric_layout"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/layout_bedroom"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="Đặt giá trị là 0 nếu như không gian không phải là nhà ở" />
+                        android:layout_below="@id/layout_bathroom"
+                        android:layout_marginTop="16dp">
+
+                        <TextView
+                            android:id="@+id/title_electric_price"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Giá tiền điện"
+                            android:textColor="#595959" />
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignTop="@id/title_electric_price"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@id/title_electric_price"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="*"
+                            android:textColor="@color/colorPrimary" />
+
+                        <RelativeLayout
+                            android:id="@+id/layout_electric_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_below="@id/title_electric_price"
+                            android:layout_toEndOf="@id/layout_size"
+                            android:background="@drawable/edit_background_inverse"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp">
+
+                            <EditText
+                                android:id="@+id/add_other_edit_text_electric_price"
+                                style="@style/TextAppearance.AppCompat.Display1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_toStartOf="@id/currency"
+                                android:background="@color/transparent"
+                                android:inputType="number|numberDecimal"
+                                android:maxLines="1"
+                                android:padding="8dp"
+                                android:paddingStart="16dp"
+                                android:textColor="@color/dark_gray" />
+
+                            <TextView
+                                android:id="@+id/currency"
+                                style="@style/TextAppearance.AppCompat.Medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:fontFamily="@font/roboto_bold"
+                                android:paddingBottom="8dp"
+                                android:text="đồng/số"
+                                android:textColor="@color/colorPrimary" />
+
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/electric_layout"
+                        android:layout_marginTop="16dp">
+
+                        <TextView
+                            android:id="@+id/title_water_price"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Giá tiền nước"
+                            android:textColor="#595959" />
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignTop="@id/title_water_price"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@id/title_water_price"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="*"
+                            android:textColor="@color/colorPrimary" />
+
+                        <RelativeLayout
+                            android:id="@+id/layout_water_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_below="@id/title_water_price"
+                            android:layout_toEndOf="@id/layout_size"
+                            android:background="@drawable/edit_background_inverse"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp">
+
+                            <EditText
+                                android:id="@+id/add_other_edit_text_water_price"
+                                style="@style/TextAppearance.AppCompat.Display1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_toStartOf="@id/water_currency"
+                                android:background="@color/transparent"
+                                android:inputType="number|numberDecimal"
+                                android:maxLines="1"
+                                android:padding="8dp"
+                                android:paddingStart="16dp"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
+                                android:textColor="@color/dark_gray" />
+
+                            <TextView
+                                android:id="@+id/water_currency"
+                                style="@style/TextAppearance.AppCompat.Medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:fontFamily="@font/roboto_bold"
+                                android:paddingBottom="8dp"
+                                android:text="đồng/khối"
+                                android:textColor="@color/colorPrimary" />
+
+                        </RelativeLayout>
+                    </RelativeLayout>
+
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/other_title_detail_space"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/add_other_layout_custom_option"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/roboto_reg"
-                    android:text="Đặc điểm nhà đất"
-                    android:textColor="#595959" />
 
-                <LinearLayout
-                    android:id="@+id/layout_detail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="50dp"
-                    android:layout_below="@id/other_title_detail_space"
-                    android:background="@drawable/edit_background_inverse"
-                    android:padding="10dp">
-
-                    <EditText
-                        android:id="@+id/add_other_edit_text_detail"
-                        style="@style/TextAppearance.AppCompat.Small"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/transparent"
-                        android:fontFamily="@font/roboto_reg"
-                        android:hint="Ví dụ: nhà mặt tiền, nhà trong ngõ,..." />
-                </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
     </ScrollView>

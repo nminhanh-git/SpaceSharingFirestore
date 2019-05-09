@@ -43,7 +43,7 @@
                     android:id="@+id/add_address_btn_delete_image"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginRight="15dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/background_button_round_inverse"
                     android:fontFamily="@font/roboto_reg"
@@ -54,6 +54,64 @@
                     android:textColor="@color/dark_gray"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/add_address_btn_add_image" />
+
+                <LinearLayout
+                    android:id="@+id/add_address_indicator_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/indicator_background_inverse"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <ImageView
+                        android:id="@+id/add_address_indicator_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/circle_indicator"
+                        android:tint="@color/light_gray"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/add_address_indicator_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/circle_indicator"
+                        android:tint="@color/light_gray"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/add_address_indicator_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/circle_indicator"
+                        android:tint="@color/light_gray"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/add_address_indicator_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/circle_indicator"
+                        android:tint="@color/light_gray"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/add_address_indicator_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/circle_indicator"
+                        android:tint="@color/light_gray"
+                        android:visibility="gone" />
+                </LinearLayout>
             </android.support.constraint.ConstraintLayout>
 
             <TextView
@@ -148,6 +206,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/add_address_layout_ward"
+                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/roboto_reg"
                     android:inputType="textLongMessage"
@@ -171,9 +231,7 @@
                     android:id="@+id/layout_city"
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
-                    android:layout_below="@id/add_address_text_address_number"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="10dp">
+                    android:layout_alignParentStart="true">
 
                     <TextView
                         android:id="@+id/title_city"
@@ -229,7 +287,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="Quận"
+                        android:text="Quận/Huyện"
                         android:textSize="18sp" />
 
 
@@ -263,6 +321,7 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/add_address_layout_ward"
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
                     android:layout_below="@id/layout_district"
@@ -275,7 +334,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="Phường"
+                        android:text="Phường/Xã"
                         android:textSize="18sp" />
 
                     <RelativeLayout

@@ -11,8 +11,12 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
         <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="spinnerDropDownItemStyle">@style/AppTheme.SpinnerStyle</item>
     </style>
 
+    <style name="AppTheme.SpinnerStyle" parent="Base.TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/dark_gray</item>
+    </style>
     <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="actionMenuTextColor">@color/colorPrimary</item>
         <item name="android:fontFamily">@font/roboto_bold</item>

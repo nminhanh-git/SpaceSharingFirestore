@@ -5,8 +5,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.bumptech.glide.signature.ObjectKey;
+import com.example.nminhanh.spacesharing.GlideApp;
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.UserInfoActivity;
 import com.example.nminhanh.spacesharing.WelcomeActivity;
@@ -38,18 +48,25 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.grpc.Server;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -61,6 +78,7 @@ public class AccountFragment extends Fragment {
 
     private static final String TAG = "MinhAnh:AccountFragment";
     private static final int REQUEST_EDIT_PROFILE = 1;
+    private static final int REQUEST_CHANGE_PROFILE_PICTURE = 2;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -79,6 +97,7 @@ public class AccountFragment extends Fragment {
     Button mBtnPolicy;
     Button mBtnRateApp;
     Button mBtnSignOut;
+    Button mBtnChangePicture;
     RelativeLayout mLayoutRecommendSignIn;
     Button mBtnRecommnedSignIn;
 
@@ -89,6 +108,9 @@ public class AccountFragment extends Fragment {
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mCurrentUser;
     FirebaseFirestore mFirestore;
+
+    FirebaseStorage mFirebaseStorage;
+
     String mFacebookNameData;
     String mEmailData;
 
@@ -111,11 +133,17 @@ public class AccountFragment extends Fragment {
         setHasOptionsMenu(true);
         intitializeView();
 
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         mFacebookCallbackManager = CallbackManager.Factory.create();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mCurrentUser = mFirebaseAuth.getCurrentUser();
         mFirestore = FirebaseFirestore.getInstance();
+
+        mFirebaseStorage = FirebaseStorage.getInstance();
 
         mBtnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,6 +184,14 @@ public class AccountFragment extends Fragment {
                 editInfoIntent.putExtra("user phone", mCurrentUser.getPhoneNumber());
                 editInfoIntent.putExtra("provider", "account management");
                 startActivityForResult(editInfoIntent, REQUEST_EDIT_PROFILE);
+            }
+        });
+
+        mBtnChangePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, REQUEST_CHANGE_PROFILE_PICTURE);
             }
         });
         return view;
@@ -206,13 +242,20 @@ public class AccountFragment extends Fragment {
                                         currentFacebookName = object.getString("name");
                                         DocumentReference mUserRef = mFirestore.collection("user_data").document(mCurrentUser.getUid());
                                         mUserRef.update("facebookName", currentFacebookName);
+
+                                        String facebookImageUrl = response.getJSONObject()
+                                                .getJSONObject("picture")
+                                                .getJSONObject("data")
+                                                .getString("url");
+                                        updateProfilePicture(facebookImageUrl);
+
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
                                 }
                             });
                     Bundle requestFbInfoParameter = new Bundle();
-                    requestFbInfoParameter.putString("fields", "name");
+                    requestFbInfoParameter.putString("fields", "name,picture");
                     FbInfoRequest.setParameters(requestFbInfoParameter);
                     FbInfoRequest.executeAsync();
 
@@ -283,6 +326,13 @@ public class AccountFragment extends Fragment {
                             mFacebookNameData = documentSnapshot.get("facebookName").toString();
                             mTextViewFacebookName.setText(mFacebookNameData);
                         }
+                        if (documentSnapshot.get("avatar_name") != null) {
+                            StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
+                            GlideApp.with(AccountFragment.this)
+                                    .load(mAvatarRef)
+                                    .signature(new ObjectKey(System.currentTimeMillis()))
+                                    .into(mImageViewProfile);
+                        }
                     } else {
                         Log.d(TAG, "document doesn't exist");
                     }
@@ -336,6 +386,7 @@ public class AccountFragment extends Fragment {
         mBtnChangeLanguage = view.findViewById(R.id.account_button_language);
         mBtnPolicy = view.findViewById(R.id.account_button_policy);
         mBtnRateApp = view.findViewById(R.id.account_button_rate);
+        mBtnChangePicture = view.findViewById(R.id.account_button_edit_profile_avatar);
 
         mBtnSignOut = view.findViewById(R.id.account_button_sign_out);
         mLayoutRecommendSignIn = view.findViewById(R.id.account_layout_recommend_sign_in);
@@ -349,6 +400,58 @@ public class AccountFragment extends Fragment {
         if (requestCode == REQUEST_EDIT_PROFILE) {
             if (resultCode == RESULT_OK) {
                 updateUIWithUserInfo();
+            }
+        }
+        if (requestCode == REQUEST_CHANGE_PROFILE_PICTURE) {
+            if (resultCode == RESULT_OK) {
+                Uri imagePath = data.getData();
+                updateProfilePicture(imagePath.toString());
+            }
+        }
+
+    }
+
+    private void updateProfilePicture(String imagePath) {
+        final CollectionReference mUserCollRef = mFirestore.collection("user_data");
+
+        StorageReference mUserImageRef = mFirebaseStorage.getReference(mCurrentUser.getUid()).child("avatar");
+        if (!imagePath.contains("http")) {
+            mUserImageRef.putFile(Uri.parse(imagePath)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
+                        GlideApp.with(AccountFragment.this).load(mAvatarRef).into(mImageViewProfile);
+                        Toast.makeText(getContext(), "Cập nhật ảnh đại diện thành công!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d(TAG, task.getException().getMessage());
+                        Toast.makeText(getContext(), "Có lỗi đã xảy ra, xin vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            try {
+                URL imageURL = new URL(imagePath);
+                InputStream mInputStream = (InputStream) imageURL.getContent();
+                mUserImageRef.putStream(mInputStream).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
+                            GlideApp.with(AccountFragment.this).load(mAvatarRef).into(mImageViewProfile);
+                            Toast.makeText(getContext(), "Cập nhật ảnh đại diện thành công!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, task.getException().getMessage());
+                            Toast.makeText(getContext(), "Có lỗi đã xảy ra, xin vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d(TAG, e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, e.getMessage());
             }
         }
     }
