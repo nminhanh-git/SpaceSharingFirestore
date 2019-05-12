@@ -1,5 +1,6 @@
 package com.example.nminhanh.spacesharing;
 
+import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.Model.Ward;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -40,8 +42,6 @@ import java.util.HashMap;
 
 public class FilterResultActivity extends AppCompatActivity {
 
-    static final String IMAGE_STORAGE_BASE_URL = "gs://spacesharing-298d6.appspot.com";
-    static final String LOADING_PLACEHOLDER_IMAGE = "https://media.giphy.com/media/6036p0cTnjUrNFpAlr/giphy.gif";
     private static final String TAG = "MA:filterResult";
 
     Toolbar mToolbar;
@@ -87,18 +87,12 @@ public class FilterResultActivity extends AppCompatActivity {
 
     }
 
-
     RecyclerView mRecyclerViewResult;
     RecyclerView.LayoutManager mLinearLayoutManager;
     AddressUtils mAddressUtils;
 
     FirebaseFirestore db;
-    FirestorePagingAdapter<Space, FilterResultAdapter.SpaceViewHolder> mFilterResultPagingAdapter;
-    FilterResultAdapter mFilterResultAdapter;
-    ArrayList<Space> mResultSpaceList;
-    DocumentSnapshot lastVisibleItem;
-    boolean isScrolling = false;
-    boolean isLastItemReached = false;
+    CustomFirestorePagingAdapter customFirestorePagingAdapter;
 
     HashMap<String, String> mFilters;
     ArrayList<String> mFilterArrayList;
@@ -114,9 +108,7 @@ public class FilterResultActivity extends AppCompatActivity {
     String type;
 
     GeoPoint currentNearbyGeoPoint;
-    GeoQuery geoQuery;
     String currentNearbyAddress;
-    int nearbyItemCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,22 +210,9 @@ public class FilterResultActivity extends AppCompatActivity {
         mRecyclerViewResult = findViewById(R.id.filter_result_recycler_view);
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerViewResult.setLayoutManager(mLinearLayoutManager);
-        mResultSpaceList = new ArrayList<>();
-        mFilterResultAdapter = new FilterResultAdapter(this, mResultSpaceList);
-        mRecyclerViewResult.setAdapter(mFilterResultAdapter);
 
         CollectionReference mSpacesCollection = db.collection("space");
-
-        if (!mFilters.containsKey("nearby")) {
-            setupDataForNormalFilter(mSpacesCollection);
-        } else {
-            setupDataForNearbyFilter(mSpacesCollection);
-            Log.d(TAG, "nearby filter entered!");
-        }
-    }
-
-    private void setupDataForNormalFilter(CollectionReference collectionReference) {
-        Query baseQuery = collectionReference;
+        Query baseQuery = mSpacesCollection;
         if (currentCity != null && !currentCity.getId().equals("-1")) {
             baseQuery = baseQuery.whereEqualTo("thanhPhoId", currentCity.getId());
         }
@@ -265,124 +244,29 @@ public class FilterResultActivity extends AppCompatActivity {
                 baseQuery = baseQuery.orderBy("timeAdded", Query.Direction.DESCENDING);
                 break;
         }
-        final int pagingLimit = 10;
-        Query firstQuery = baseQuery.limit(pagingLimit);
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(20)
+                .build();
 
-        final Query finalBaseQuery = baseQuery;
-        firstQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot document : task.getResult()) {
-                        Space currentSpace = document.toObject(Space.class);
-                        mResultSpaceList.add(currentSpace);
-                    }
-                    mFilterResultAdapter.notifyDataSetChanged();
-                    if (task.getResult().getDocuments().size() != 0) {
-                        lastVisibleItem = task.getResult().getDocuments().get(task.getResult().size() - 1);
+        FirestorePagingOptions<Space> options = new FirestorePagingOptions.Builder<Space>()
+                .setQuery(baseQuery, config, Space.class)
+                .build();
 
-                        RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
-                                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                                    isScrolling = true;
-                                }
-                            }
-
-                            @Override
-                            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
-
-                                LinearLayoutManager currentLayoutManager = (LinearLayoutManager) mRecyclerViewResult.getLayoutManager();
-                                int firstVisibleItemPosition = currentLayoutManager.findFirstVisibleItemPosition();
-                                int visibleItemCount = currentLayoutManager.getChildCount();
-                                int totalItemCount = currentLayoutManager.getItemCount();
-
-                                if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
-                                    isScrolling = false;
-                                    Query nextQuery = finalBaseQuery.startAfter(lastVisibleItem).limit(pagingLimit);
-                                    nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            for (DocumentSnapshot d : task.getResult()) {
-                                                Space nextSpace = d.toObject(Space.class);
-                                                mResultSpaceList.add(nextSpace);
-                                            }
-                                            mFilterResultAdapter.notifyDataSetChanged();
-                                            lastVisibleItem = task.getResult().getDocuments().get(task.getResult().size() - 1);
-
-                                            if (task.getResult().size() < pagingLimit) {
-                                                isLastItemReached = true;
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        };
-                        mRecyclerViewResult.setOnScrollListener(onScrollListener);
-                    }
-                }
-            }
-        });
-    }
-
-    private void setupDataForNearbyFilter(CollectionReference collectionReference) {
-        GeoFirestore geoFirestore = new GeoFirestore(collectionReference);
-        geoQuery = geoFirestore.queryAtLocation(currentNearbyGeoPoint, 2);
-        geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
-            @Override
-            public void onDocumentEntered(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                if (nearbyItemCount <= 10) {
-                    Space currentSpace = documentSnapshot.toObject(Space.class);
-                    mResultSpaceList.add(currentSpace);
-                    mFilterResultAdapter.notifyDataSetChanged();
-                    Log.d(TAG, "onDocEntered");
-                    nearbyItemCount++;
-                } else {
-                    geoQuery.removeAllListeners();
-                }
-            }
-
-            @Override
-            public void onDocumentExited(DocumentSnapshot documentSnapshot) {
-                Log.d(TAG, "onDocExited");
-
-            }
-
-            @Override
-            public void onDocumentMoved(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                Log.d(TAG, "onDocMoved");
-
-            }
-
-            @Override
-            public void onDocumentChanged(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                Log.d(TAG, "onDocChanged");
-            }
-
-            @Override
-            public void onGeoQueryReady() {
-                Log.d(TAG, "onGeoQueryReady");
-            }
-
-            @Override
-            public void onGeoQueryError(Exception e) {
-                Log.d(TAG, "onGeoQueryError" + e.getMessage());
-            }
-        });
+        customFirestorePagingAdapter = new CustomFirestorePagingAdapter(options,this);
+        mRecyclerViewResult.setAdapter(customFirestorePagingAdapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        customFirestorePagingAdapter.startListening();
     }
 
     @Override
     protected void onStop() {
-        if (geoQuery != null) {
-            geoQuery.removeAllListeners();
-        }
         super.onStop();
+        customFirestorePagingAdapter.stopListening();
     }
 }

@@ -2,16 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search"
-        android:title="Tìm kiếm" />
-    <item
-        android:id="@+id/action_space"
         android:icon="@drawable/ic_space"
-        android:title="Không gian" />
+        android:title="Trang chủ" />
+
     <item
-        android:id="@+id/action_favor"
-        android:icon="@drawable/ic_favorite"
-        android:title="Yêu thích" />
+        android:id="@+id/action_chat"
+        android:icon="@drawable/ic_conversation3"
+        android:title="Chat" />
     <item
         android:id="@+id/action_account"
         android:icon="@drawable/ic_user"

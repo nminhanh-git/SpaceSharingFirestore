@@ -286,7 +286,7 @@ public class UserInfoActivity extends AppCompatActivity {
             userData.put("facebookName", mFacebookName);
             userData.put("name", mName);
             userData.put("phone_number", mPhone);
-            userData.put("avatar_name", "null");
+//            userData.put("avatar_name", "null");
 
             mUserCollRef.document(mCurrentUser.getUid()).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override

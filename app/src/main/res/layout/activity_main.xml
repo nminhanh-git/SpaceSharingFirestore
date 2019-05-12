@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context=".MainActivity">
     <!--ToolBar-->
     <android.support.design.widget.AppBarLayout
@@ -12,9 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:background="@android:color/transparent"
+        android:background="@color/transparent"
         android:focusable="true"
         app:elevation="0dp">
 
@@ -23,16 +20,39 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:minHeight="?attr/actionBarSize"
-            android:orientation="horizontal"
-            android:theme="@style/AppTheme.ActionBar">
+            android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/main_image_toolbar_logo"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/logo_2" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/main_image_toolbar_logo"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/logo_2" />
+
+                <TextView
+                    android:id="@+id/main_btn_filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/roboto_bold"
+                    android:gravity="center"
+                    android:paddingEnd="16dp"
+                    android:text="Phân loại"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/suggestion_body_text_size" />
+            </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+
 
     <!--fragment container-->
     <include
@@ -41,8 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/navigation_view"
-        android:layout_below="@id/appbar_layout"
-        android:layout_marginBottom="10dp" />
+        android:layout_below="@id/appbar_layout" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation_view"
@@ -50,7 +69,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/transparent"
+        android:background="@drawable/toolbar_background_inverse"
+        android:elevation="4dp"
         android:focusable="true"
         android:minHeight="?attr/actionBarSize"
         app:itemIconTint="@color/navigation_color_selector"

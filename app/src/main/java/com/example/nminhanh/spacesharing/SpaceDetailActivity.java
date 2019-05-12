@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,13 @@ import android.widget.Toast;
 import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.DetailImageAdapter;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.Model.UserFavoriteSpace;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -44,12 +52,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SpaceDetailActivity extends AppCompatActivity {
+public class SpaceDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int REQUEST_EDIT_SPACE = 1;
+    private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     Toolbar mToolbar;
     ImageButton mBtnBack;
     ImageButton mBtnFavorite;
@@ -90,6 +102,8 @@ public class SpaceDetailActivity extends AppCompatActivity {
     ImageView mImageIndicator4;
     ImageView mImageIndicator5;
 
+    MapView mAddressMapView;
+
     RecyclerView mRecyclerViewImage;
     ArrayList<String> mImageNameList;
 
@@ -122,10 +136,57 @@ public class SpaceDetailActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mCurrentUser = mFirebaseAuth.getCurrentUser();
 
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        }
+
         initializeView();
         setupInfo();
         setupOwnerInfo();
         setupButton();
+
+        mAddressMapView.onCreate(mapViewBundle);
+        mAddressMapView.getMapAsync(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            mapViewBundle.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
+            mAddressMapView.onSaveInstanceState(mapViewBundle);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAddressMapView.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAddressMapView.onResume();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng currentLatLng = new LatLng(mCurrentSpace.getL().get(0), mCurrentSpace.getL().get(1));
+        googleMap.addMarker(new MarkerOptions().position(currentLatLng));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
+//        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+//            @Override
+//            public void onMapClick(LatLng latLng) {
+//                Intent intent = new Intent(SpaceDetailActivity.this, MapsSearchActivity.class);
+//                intent.putExtra("current latLng", latLng);
+//                intent.putExtra("c")
+//            }
+//        });
     }
 
     private void initializeView() {
@@ -174,6 +235,7 @@ public class SpaceDetailActivity extends AppCompatActivity {
         mImageIndicator4 = findViewById(R.id.detail_indicator_4);
         mImageIndicator5 = findViewById(R.id.detail_indicator_5);
 
+        mAddressMapView = findViewById(R.id.map);
         setUpImageRecyclerView();
     }
 
@@ -249,26 +311,17 @@ public class SpaceDetailActivity extends AppCompatActivity {
         mTextViewDate.setText("ngày đăng: " + mDateFormat.format(mCurrentDate));
 
         // Price data
-        double price = 0;
-        String priceStr = String.valueOf(mCurrentSpace.getGia());
-        if (priceStr.length() >= 10) {
-            price = mCurrentSpace.getGia() / 1000000000;
-            mTextViewPrice.setText(String.format("%.1f tỉ", price));
-        } else if (priceStr.length() >= 7) {
-            price = mCurrentSpace.getGia() / 1000000;
-            mTextViewPrice.setText(String.format("%.1f triệu", price));
-        } else if (priceStr.length() >= 4) {
-            price = mCurrentSpace.getGia() / 1000;
-            mTextViewPrice.setText((int) price + " nghìn");
-        } else {
-            mTextViewPrice.setText((int) price + " đồng");
-        }
+        String priceStr = formatMoney((int) mCurrentSpace.getGia());
+        mTextViewPrice.setText(priceStr + "\nđồng");
+
 
         // Prepaid data
-        if (mCurrentSpace.getThangCoc() > 0) {
+        if (mCurrentSpace.getThangCoc() > 0 && mCurrentSpace.getThangCoc() <= 10) {
             mTextViewPrePaid.setText(mCurrentSpace.getThangCoc() + " tháng");
+        } else if (mCurrentSpace.getThangCoc() > 10) {
+            mTextViewPrePaid.setText(formatMoney(mCurrentSpace.getThangCoc()) + "\nđồng");
         } else {
-            mTextViewPrePaid.setText("không");
+            mTextViewPrePaid.setText("Không");
         }
 
         // Size data
@@ -286,11 +339,16 @@ public class SpaceDetailActivity extends AppCompatActivity {
 
         // Type related data
         if (!mCurrentSpace.getLoai().equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[3])) {
-            mTextViewDoor.setText("Hướng cửa chính phía " + mCurrentSpace.getHuongCua());
+            if (mCurrentSpace.getHuongCua().equalsIgnoreCase(
+                    getResources().getStringArray(R.array.door_direction_array)[0])) {
+                mTextViewDoor.setText("Hướng cửa chính phía " + mCurrentSpace.getHuongCua());
+            } else {
+                mLayoutDoor.setVisibility(View.GONE);
+            }
             mTextViewBed.setText(mCurrentSpace.getSoPhongNgu() + " phòng ngủ");
             mTextViewBath.setText(mCurrentSpace.getSoPhongVeSinh() + " phòng vệ sinh");
-            mTextViewWater.setText(mCurrentSpace.getGiaNuoc() + " nghìn/khối");
-            mTextViewElectric.setText(mCurrentSpace.getGiaDien() + " nghìn/số");
+            mTextViewWater.setText(formatMoney((int) mCurrentSpace.getGiaNuoc()) + " đồng/khối");
+            mTextViewElectric.setText(formatMoney((int) mCurrentSpace.getGiaDien()) + " đồng/số");
         } else {
             mLayoutDoor.setVisibility(View.GONE);
             mLayoutBed.setVisibility(View.GONE);
@@ -378,7 +436,7 @@ public class SpaceDetailActivity extends AppCompatActivity {
         TextView mBtnCancel = mDialogView.findViewById(R.id.dialog_favor_no);
         TextView mBtnOk = mDialogView.findViewById(R.id.dialog_favor_yes);
 
-        if(isFavorite){
+        if (isFavorite) {
             mTextViewSubtile.setText(getString(R.string.favor_dialog_promt_unsave_string));
             mBtnOk.setText("Bỏ lưu");
         }
@@ -392,9 +450,9 @@ public class SpaceDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 favorDialog.dismiss();
-                if(!isFavorite) {
+                if (!isFavorite) {
                     mBtnFavorite.setImageResource(R.drawable.ic_favorite_unselected);
-                }else{
+                } else {
                     mBtnFavorite.setImageResource(R.drawable.ic_favorite);
                 }
             }
@@ -403,31 +461,28 @@ public class SpaceDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String id = mCurrentSpace.getId();
-                String ownerId = mCurrentSpace.getIdChu();
-                String title = mCurrentSpace.getTieuDe();
-                StringBuilder addressBuilder = new StringBuilder();
-                String[] addressArray = mCurrentSpace.getDiaChiDayDu().split(",");
-                for (int i = 1; i < addressArray.length; i++) {
-                    addressBuilder.append(addressArray[i]);
-                    if (i != addressArray.length - 1) {
-                        addressBuilder.append(",");
-                    }
-                }
-                String shortAddress = addressBuilder.toString();
+
                 DocumentReference userFavorSpaceDocRef = mUserDataCollRef
                         .document(mCurrentUser.getUid())
-                        .collection("favorite_space").document(mCurrentSpace.getId());
-                if(!isFavorite) {
-                    userFavorSpaceDocRef.set(new UserFavoriteSpace(id, ownerId, title, shortAddress))
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    favorDialog.dismiss();
-                                    isFavorite = true;
-                                    Toast.makeText(SpaceDetailActivity.this, "Đã lưu vào mục yêu thích", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }else{
+                        .collection("favorite_space").document(id);
+                if (!isFavorite) {
+                    Map<String, Object> idField = new HashMap<>();
+                    idField.put("id", id);
+                    userFavorSpaceDocRef.set(idField).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                favorDialog.dismiss();
+                                isFavorite = true;
+                                Toast.makeText(SpaceDetailActivity.this, "Đã lưu vào mục yêu thích", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(SpaceDetailActivity.this, "Đã có lỗi xảy ra, xin vui lòng thử lại sau", Toast.LENGTH_SHORT).show();
+                                favorDialog.dismiss();
+                                isFavorite = false;
+                            }
+                        }
+                    });
+                } else {
                     userFavorSpaceDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -448,13 +503,11 @@ public class SpaceDetailActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 String ownerName = documentSnapshot.get("name").toString();
                 String ownerPhoneNumber = documentSnapshot.get("phone_number").toString();
-                String ownerAvatarName = documentSnapshot.get("avatar_name").toString();
                 String ownerEmail = documentSnapshot.get("email").toString();
 
-                if (!ownerAvatarName.equalsIgnoreCase("null")) {
-                    StorageReference mAvaImageRef = mFirebaseStorage.getReference(mCurrentSpace.getIdChu()).child(ownerAvatarName);
-                    GlideApp.with(SpaceDetailActivity.this).load(mAvaImageRef).into(mImageOwnerAva);
-                }
+                StorageReference mAvaImageRef = mFirebaseStorage.getReference(mCurrentSpace.getIdChu()).child("avatar");
+                GlideApp.with(SpaceDetailActivity.this).load(mAvaImageRef).into(mImageOwnerAva);
+
                 mTextViewOwnerName.setText(ownerName);
                 mTextViewOwnerPhone.setText(ownerPhoneNumber);
                 mTextViewOwnerEmail.setText(ownerEmail);
@@ -490,5 +543,33 @@ public class SpaceDetailActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private String formatMoney(int gia) {
+        return String.format(Locale.getDefault(), "%,d", gia);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mAddressMapView.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAddressMapView.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAddressMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mAddressMapView.onLowMemory();
     }
 }

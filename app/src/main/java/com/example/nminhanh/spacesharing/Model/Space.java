@@ -17,7 +17,7 @@ public class Space implements Serializable {
     private String thanhPhoId;
     private String diaChiDayDu;
     private double dienTich;
-    private double gia;
+    private int gia;
     private String firstImagePath;
     private int soPhongNgu;
     private int soPhongVeSinh;
@@ -25,8 +25,8 @@ public class Space implements Serializable {
     private String huongCua;
     private String moTa;
     private int thangCoc;
-    private double giaDien;
-    private double giaNuoc;
+    private int giaDien;
+    private int giaNuoc;
     private boolean khaDung = false;
     private ArrayList<Double> l = new ArrayList<>();
     private String g;
@@ -49,7 +49,7 @@ public class Space implements Serializable {
                  ArrayList<Double> l,
                  String thanhPho,
                  double dienTich,
-                 double gia,
+                 int gia,
                  String firstImagePath,
                  int soPhongNgu,
                  int soPhongVeSinh,
@@ -57,8 +57,8 @@ public class Space implements Serializable {
                  String huongCua,
                  String moTa,
                  int thangCoc,
-                 double giaDien,
-                 double giaNuoc,
+                 int giaDien,
+                 int giaNuoc,
                  boolean khaDung
     ) {
         this.id = id;
@@ -149,11 +149,11 @@ public class Space implements Serializable {
         this.dienTich = dienTich;
     }
 
-    public double getGia() {
+    public int getGia() {
         return gia;
     }
 
-    public void setGia(double gia) {
+    public void setGia(int gia) {
         this.gia = gia;
     }
 
@@ -245,19 +245,19 @@ public class Space implements Serializable {
         this.thangCoc = thangCoc;
     }
 
-    public double getGiaDien() {
+    public int getGiaDien() {
         return giaDien;
     }
 
-    public void setGiaDien(double giaDien) {
+    public void setGiaDien(int giaDien) {
         this.giaDien = giaDien;
     }
 
-    public double getGiaNuoc() {
+    public int getGiaNuoc() {
         return giaNuoc;
     }
 
-    public void setGiaNuoc(double giaNuoc) {
+    public void setGiaNuoc(int giaNuoc) {
         this.giaNuoc = giaNuoc;
     }
 

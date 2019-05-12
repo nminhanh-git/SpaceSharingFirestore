@@ -113,19 +113,7 @@
                             android:id="@+id/add_other_spinner_door"
                             style="@style/Widget.AppCompat.DropDownItem.Spinner"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_toStartOf="@id/add_other_spinner_door_image_error"
-                            android:spinnerMode="dropdown" />
-
-                        <ImageView
-                            android:id="@+id/add_other_spinner_door_image_error"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="10dp"
-                            android:src="@drawable/ic_error"
-                            android:visibility="gone" />
+                            android:layout_height="50dp"/>
                     </RelativeLayout>
 
 

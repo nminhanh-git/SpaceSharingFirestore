@@ -64,34 +64,34 @@ public class FilterResultAdapter extends RecyclerView.Adapter<FilterResultAdapte
         String phuong = mAddressUtils.getWardName(currentSpace.getQuanId(), currentSpace.getPhuongId());
         holder.mTextViewAddress.setText(currentSpace.getDiaChiPho() + ", " + phuong + ", " + quan + ", " + thanhPho);
         holder.mTextViewPrice.setText(currentSpace.getDienTich() + Html.fromHtml("m<sup>2</sup>").toString() + " - " + currentSpace.getGia() + "đồng");
-        if (!currentSpace.getFirstImagePath().equalsIgnoreCase("không có gì hết á!")) {
-            final String imageURl = IMAGE_STORAGE_BASE_URL + "/"
-                    + currentSpace.getIdChu() + "/"
-                    + currentSpace.getId() + "/"
-                    + currentSpace.getFirstImagePath();
 
-            Glide.with(holder.mImageView.getContext())
-                    .load(LOADING_PLACEHOLDER_IMAGE).into(holder.mImageView);
-            StorageReference storageRef = FirebaseStorage.getInstance()
-                    .getReferenceFromUrl(imageURl);
-            storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        String downloadUrl = task.getResult().toString();
-                        Glide.with(holder.mImageView.getContext())
-                                .load(downloadUrl).into(holder.mImageView);
-                    } else {
-                        Toast.makeText(holder.mImageView.getContext(),
-                                "Error in loading image by Glide, or the image URL is invalid:" +
-                                        imageURl,
-                                Toast.LENGTH_SHORT).show();
+        final String imageURl = IMAGE_STORAGE_BASE_URL + "/"
+                + currentSpace.getIdChu() + "/"
+                + currentSpace.getId() + "/"
+                + currentSpace.getFirstImagePath();
 
-                    }
+        Glide.with(holder.mImageView.getContext())
+                .load(LOADING_PLACEHOLDER_IMAGE).into(holder.mImageView);
+        StorageReference storageRef = FirebaseStorage.getInstance()
+                .getReferenceFromUrl(imageURl);
+        storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    String downloadUrl = task.getResult().toString();
+                    Glide.with(holder.mImageView.getContext())
+                            .load(downloadUrl).into(holder.mImageView);
+                } else {
+                    Toast.makeText(holder.mImageView.getContext(),
+                            "Error in loading image by Glide, or the image URL is invalid:" +
+                                    imageURl,
+                            Toast.LENGTH_SHORT).show();
+
                 }
-            });
-        }
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {

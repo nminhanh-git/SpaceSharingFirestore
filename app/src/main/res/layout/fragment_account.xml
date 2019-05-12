@@ -6,258 +6,290 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.MainPages.AccountFragment">
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp">
 
-        <RelativeLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <!--account information-->
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true">
+
             <RelativeLayout
-                android:id="@+id/account_layout_info"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/card_layout_background"
-                android:padding="10dp">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/account_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginRight="10dp"
-                    android:src="@drawable/ic_face_placeholder"
-                    app:civ_border_color="#ffff"
-                    app:civ_circle_background_color="#ffff" />
-
+                android:layout_height="wrap_content">
+                <!--account information-->
                 <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/account_image"
-                    android:layout_alignBottom="@id/account_image"
-                    android:layout_toEndOf="@id/account_image">
+                    android:id="@+id/account_layout_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/card_layout_background"
+                    android:padding="10dp">
 
-                    <TextView
-                        android:id="@+id/account_text_view_name"
-                        style="@style/TextAppearance.AppCompat.Headline"
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/account_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/ic_face_placeholder"
+                        app:civ_border_color="#ffff"
+                        app:civ_circle_background_color="#ffff" />
+
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:fontFamily="@font/roboto_bold"
-                        android:text="Trần Văn A"
-                        android:textColor="#595959" />
+                        android:layout_alignTop="@id/account_image"
+                        android:layout_alignBottom="@id/account_image"
+                        android:layout_toEndOf="@id/account_image">
 
-                    <TextView
-                        android:id="@+id/account_text_view_email"
+                        <TextView
+                            android:id="@+id/account_text_view_name"
+                            style="@style/TextAppearance.AppCompat.Headline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Trần Văn A"
+                            android:textColor="#595959" />
+
+                        <TextView
+                            android:id="@+id/account_text_view_email"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="atranvan@gmail.com" />
+
+                        <TextView
+                            android:id="@+id/account_text_view_phone"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="0943223856" />
+                    </RelativeLayout>
+
+                    <Button
+                        android:id="@+id/account_button_edit_profile"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="10dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="atranvan@gmail.com" />
+                        android:gravity="bottom"
+                        android:text="Chỉnh sửa"
+                        android:textAllCaps="false"
+                        android:textColor="#ed8731" />
 
-                    <TextView
-                        android:id="@+id/account_text_view_phone"
+                    <Button
+                        android:id="@+id/account_button_edit_profile_avatar"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
+                        android:layout_marginEnd="20dp"
+                        android:layout_toStartOf="@id/account_button_edit_profile"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:fontFamily="@font/roboto_reg"
-                        android:text="0943223856" />
+                        android:gravity="bottom"
+                        android:text="Đổi ảnh đại diện"
+                        android:textAllCaps="false"
+                        android:textColor="#ed8731" />
+                </RelativeLayout>
+                <!--Facebook information-->
+                <RelativeLayout
+                    android:id="@+id/account_layout_facebook"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_below="@id/account_layout_info"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/card_layout_background"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/account_facebook_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginRight="10dp"
+                        android:padding="5dp"
+                        android:src="@drawable/facebook_logo_colored" />
+
+                    <TextView
+                        android:id="@+id/account_facebook_text_view_intro"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/account_facebook_image"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="@string/fragment_account_facebook_into_string" />
+
+                    <TextView
+                        android:id="@+id/account_facebook_text_view_name"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/account_facebook_text_view_intro"
+                        android:layout_toEndOf="@id/account_facebook_image"
+                        android:fontFamily="@font/roboto_bold"
+                        android:text="Trần Văn A"
+                        android:textColor="#595959"
+                        android:visibility="gone" />
+
+
+                    <Button
+                        android:id="@+id/account_button_connect_facebook"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:fontFamily="@font/roboto_reg"
+                        android:gravity="bottom"
+                        android:paddingEnd="8dp"
+                        android:text="Kết nối ngay"
+                        android:textAllCaps="false"
+                        android:textColor="@color/facebook_color" />
+                </RelativeLayout>
+                <!--Other setting-->
+
+
+                <!--Space Management button-->
+                <RelativeLayout
+                    android:id="@+id/account_button_space_management"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/account_layout_facebook"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/card_layout_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/account_management_image"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginRight="10dp"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_house2"
+                        android:tint="@color/colorPrimary" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/account_management_image"
+                        android:layout_alignBottom="@id/account_management_image"
+                        android:layout_toEndOf="@id/account_management_image"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/account_management_text_view_intro"
+                            style="@style/TextAppearance.AppCompat.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/account_management_title"
+
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Bấm vào đây để quản lý thông tin của những tin đăng mà bạn đã đăng." />
+
+                        <TextView
+                            android:id="@+id/account_management_title"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Quản lý không gian"
+                            android:textColor="@color/darkest_gray" />
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <!--Favorite space button-->
+                <RelativeLayout
+                    android:id="@+id/account_button_favorite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/account_button_space_management"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/card_layout_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:id="@+id/account_favor_image"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginRight="10dp"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_favorite"
+                        android:tint="@color/colorPrimary" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/account_favor_image"
+                        android:layout_alignBottom="@id/account_favor_image"
+                        android:layout_toEndOf="@id/account_favor_image"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/account_favor_title"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Không gian ưa thích"
+                            android:textColor="@color/darkest_gray" />
+
+                        <TextView
+                            android:id="@+id/account_favor_text_view_intro"
+                            style="@style/TextAppearance.AppCompat.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/account_favor_title"
+
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Bấm vào đây để quản lý thông tin của những tin đăng mà bạn đã lưu vào mục yêu thích." />
+
+                    </RelativeLayout>
                 </RelativeLayout>
 
                 <Button
-                    android:id="@+id/account_button_edit_profile"
+                    android:id="@+id/account_button_sign_out"
                     style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:fontFamily="@font/roboto_reg"
-                    android:gravity="bottom"
-                    android:text="Chỉnh sửa"
-                    android:textAllCaps="false"
-                    android:textColor="#ed8731"
-                    android:layout_marginTop="10dp"/>
-
-                <Button
-                    android:id="@+id/account_button_edit_profile_avatar"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/account_button_edit_profile"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginEnd="20dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:fontFamily="@font/roboto_reg"
-                    android:gravity="bottom"
-                    android:text="Đổi ảnh đại diện"
-                    android:textAllCaps="false"
-                    android:textColor="#ed8731" />
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_below="@id/account_button_favorite"
+                    android:background="@drawable/button_sign_out_background"
+                    android:drawableRight="@drawable/ic_sign_out"
+                    android:elevation="4dp"
+                    android:fontFamily="@font/roboto_bold"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="Đăng xuất"
+                    android:textColor="#fafafa" />
             </RelativeLayout>
-            <!--Facebook information-->
-            <RelativeLayout
-                android:id="@+id/accoumt_layout_facebook"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_below="@id/account_layout_info"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/card_layout_background"
-                android:padding="10dp">
+        </ScrollView>
 
-                <ImageView
-                    android:id="@+id/account_facebook_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginRight="10dp"
-                    android:padding="5dp"
-                    android:src="@drawable/facebook_logo_colored" />
-
-                <TextView
-                    android:id="@+id/account_facebook_text_view_intro"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/account_facebook_image"
-                    android:fontFamily="@font/roboto_reg"
-                    android:text="@string/fragment_account_facebook_into_string" />
-
-                <TextView
-                    android:id="@+id/account_facebook_text_view_name"
-                    style="@style/TextAppearance.AppCompat.Headline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/account_facebook_text_view_intro"
-                    android:layout_toEndOf="@id/account_facebook_image"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="Trần Văn A"
-                    android:textColor="#595959"
-                    android:visibility="gone" />
-
-
-                <Button
-                    android:id="@+id/account_button_connect_facebook"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:fontFamily="@font/roboto_reg"
-                    android:gravity="bottom"
-                    android:paddingEnd="8dp"
-                    android:text="Kết nối ngay"
-                    android:textAllCaps="false"
-                    android:textColor="@color/facebook_color" />
-            </RelativeLayout>
-            <!--Other setting-->
-            <RelativeLayout
-                android:id="@+id/account_layout_other_setting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/accoumt_layout_facebook"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/card_layout_background"
-                android:padding="10dp">
-
-                <Button
-                    android:id="@+id/account_button_language"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableLeft="@drawable/ic_language"
-                    android:drawablePadding="20dp"
-                    android:drawableTint="@color/dark_gray"
-                    android:fontFamily="@font/roboto_bold"
-                    android:gravity="center_vertical"
-                    android:text="Thay đổi ngôn ngữ"
-                    android:textAllCaps="false"
-                    android:textColor="#595959" />
-
-                <View
-                    android:id="@+id/account_divider_language"
-                    android:layout_width="match_parent"
-                    android:layout_height="1.5dp"
-                    android:layout_below="@id/account_button_language"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="#b4b4b4" />
-
-
-                <View
-                    android:id="@+id/account_divider_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="1.5dp"
-                    android:layout_below="@id/account_button_language"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="#b4b4b4" />
-
-                <Button
-                    android:id="@+id/account_button_policy"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/account_divider_password"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableLeft="@drawable/ic_policy"
-                    android:drawablePadding="20dp"
-                    android:drawableTint="@color/dark_gray"
-                    android:fontFamily="@font/roboto_bold"
-                    android:gravity="center_vertical"
-                    android:text="Chính sách bảo mật"
-                    android:textAllCaps="false"
-                    android:textColor="#595959" />
-
-                <View
-                    android:id="@+id/account_divider_policy"
-                    android:layout_width="match_parent"
-                    android:layout_height="1.5dp"
-                    android:layout_below="@id/account_button_policy"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="#b4b4b4" />
-
-                <Button
-                    android:id="@+id/account_button_rate"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/account_divider_policy"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableLeft="@drawable/ic_star"
-                    android:drawablePadding="20dp"
-                    android:drawableTint="@color/dark_gray"
-                    android:fontFamily="@font/roboto_bold"
-                    android:gravity="center_vertical"
-                    android:text="Đánh giá ứng dụng SpaceSharing"
-                    android:textAllCaps="false"
-                    android:textColor="#595959" />
-            </RelativeLayout>
-
-            <Button
-                android:id="@+id/account_button_sign_out"
-                style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_below="@id/account_layout_other_setting"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/button_sign_out_background"
-                android:drawableRight="@drawable/ic_sign_out"
-                android:fontFamily="@font/roboto_bold"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:gravity="start|center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="Đăng xuất"
-                android:textColor="#fafafa" />
-        </RelativeLayout>
-    </ScrollView>
+        <!--reccommend sign in layout-->
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/account_layout_recommend_sign_in"
@@ -296,11 +328,10 @@
             android:layout_below="@id/account_text_view_recommend_login"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:background="@drawable/button_sign_out_background"
+            android:background="@drawable/button_sign_in_background"
             android:fontFamily="@font/roboto_bold"
             android:padding="10dp"
             android:text="Đăng nhập ngay" />
     </RelativeLayout>
-
 
 </FrameLayout>

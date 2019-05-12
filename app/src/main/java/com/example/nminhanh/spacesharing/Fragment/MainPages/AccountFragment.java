@@ -5,14 +5,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +21,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.signature.ObjectKey;
+import com.example.nminhanh.spacesharing.FavoriteSpaceActivity;
 import com.example.nminhanh.spacesharing.GlideApp;
 import com.example.nminhanh.spacesharing.R;
+import com.example.nminhanh.spacesharing.SpaceManagementActivity;
 import com.example.nminhanh.spacesharing.UserInfoActivity;
 import com.example.nminhanh.spacesharing.WelcomeActivity;
 import com.facebook.AccessToken;
@@ -40,7 +37,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -48,7 +44,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -66,7 +61,6 @@ import java.net.URL;
 import java.util.Arrays;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.grpc.Server;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -93,13 +87,12 @@ public class AccountFragment extends Fragment {
     TextView mTextViewFacebookIntro;
     TextView mTextViewFacebookName;
     Button mBtnConnectFacebook;
-    Button mBtnChangeLanguage;
-    Button mBtnPolicy;
-    Button mBtnRateApp;
+    RelativeLayout mBtnSpaceManagement;
+    RelativeLayout mBtnFavoriteSpace;
     Button mBtnSignOut;
     Button mBtnChangePicture;
     RelativeLayout mLayoutRecommendSignIn;
-    Button mBtnRecommnedSignIn;
+    Button mBtnRecommenddSignIn;
 
 
     SignOutListener mSignOutListener;
@@ -159,6 +152,14 @@ public class AccountFragment extends Fragment {
             }
         });
 
+        mBtnRecommenddSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signInIntent = new Intent(getActivity(), WelcomeActivity.class);
+                startActivity(signInIntent);
+            }
+        });
+
         mBtnConnectFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,6 +193,22 @@ public class AccountFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, REQUEST_CHANGE_PROFILE_PICTURE);
+            }
+        });
+
+        mBtnSpaceManagement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), SpaceManagementActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mBtnFavoriteSpace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FavoriteSpaceActivity.class);
+                startActivity(intent);
             }
         });
         return view;
@@ -383,14 +400,13 @@ public class AccountFragment extends Fragment {
         mTextViewFacebookName = view.findViewById(R.id.account_facebook_text_view_name);
         mBtnConnectFacebook = view.findViewById(R.id.account_button_connect_facebook);
 
-        mBtnChangeLanguage = view.findViewById(R.id.account_button_language);
-        mBtnPolicy = view.findViewById(R.id.account_button_policy);
-        mBtnRateApp = view.findViewById(R.id.account_button_rate);
+        mBtnSpaceManagement = view.findViewById(R.id.account_button_space_management);
+        mBtnFavoriteSpace = view.findViewById(R.id.account_button_favorite);
         mBtnChangePicture = view.findViewById(R.id.account_button_edit_profile_avatar);
 
         mBtnSignOut = view.findViewById(R.id.account_button_sign_out);
         mLayoutRecommendSignIn = view.findViewById(R.id.account_layout_recommend_sign_in);
-        mBtnRecommnedSignIn = view.findViewById(R.id.account_button_sign_in);
+        mBtnRecommenddSignIn = view.findViewById(R.id.account_button_sign_in);
     }
 
     @Override
@@ -412,8 +428,6 @@ public class AccountFragment extends Fragment {
     }
 
     private void updateProfilePicture(String imagePath) {
-        final CollectionReference mUserCollRef = mFirestore.collection("user_data");
-
         StorageReference mUserImageRef = mFirebaseStorage.getReference(mCurrentUser.getUid()).child("avatar");
         if (!imagePath.contains("http")) {
             mUserImageRef.putFile(Uri.parse(imagePath)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -421,7 +435,10 @@ public class AccountFragment extends Fragment {
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
-                        GlideApp.with(AccountFragment.this).load(mAvatarRef).into(mImageViewProfile);
+                        GlideApp.with(AccountFragment.this)
+                                .load(mAvatarRef)
+                                .signature(new ObjectKey(System.currentTimeMillis()))
+                                .into(mImageViewProfile);
                         Toast.makeText(getContext(), "Cập nhật ảnh đại diện thành công!", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d(TAG, task.getException().getMessage());
@@ -476,13 +493,6 @@ public class AccountFragment extends Fragment {
             updateUIWithUserInfo();
         } else {
             mLayoutRecommendSignIn.setVisibility(View.VISIBLE);
-            mBtnRecommnedSignIn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent signInIntent = new Intent(getActivity(), WelcomeActivity.class);
-                    startActivity(signInIntent);
-                }
-            });
         }
         super.onResume();
     }

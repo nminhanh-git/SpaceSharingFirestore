@@ -3,52 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".Fragment.MainPages.SearchFragment">
     <!--Search bar-->
-    <RelativeLayout
+
+    <!--Place List-->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/search_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/appbar_layout"
-            android:background="@drawable/search_bar_background"
-            android:fontFamily="@font/roboto_reg"
-            android:hint="Tìm kiếm địa điểm..."
-            android:inputType="textPostalAddress"
-            android:maxLines="1"
-            android:minLines="1"
-            android:padding="10dp"
-            android:textColorHint="#7f7f7f" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/search_bar"
-            android:layout_alignRight="@id/search_bar"
-            android:layout_alignBottom="@id/search_bar"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="false"
-            android:paddingRight="12dp"
-            android:src="@drawable/ic_search_bar" />
-
-
-        <!--Place List-->
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/search_refresh_layout"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycleView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/search_bar">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycleView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent" />
-        </android.support.v4.widget.SwipeRefreshLayout>
-    </RelativeLayout>
-
-
+            android:background="@android:color/transparent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class PagerAdapter extends FragmentPagerAdapter {
     private Context context;
-    private static final int PAGE_COUNT = 4;
+    private static final int PAGE_COUNT = 3;
 
     public PagerAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -21,10 +21,8 @@ public class PagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new SearchFragment();
             case 1:
-                return new SpaceManagementFragment();
+                return new ChatFragment();
             case 2:
-                return new FavoriteFragment();
-            case 3:
                 return new AccountFragment();
             default:
                 return null;
@@ -36,13 +34,12 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Tìm kiếm";
+                return "Trang chủ";
             case 1:
-                return "Không gian";
-            case 2:
                 return "Yêu thích";
-            case 3:
+            case 2:
                 return "Tài khoản";
+
         }
         return null;
     }

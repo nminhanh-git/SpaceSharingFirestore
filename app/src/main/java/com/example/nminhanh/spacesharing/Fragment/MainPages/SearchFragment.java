@@ -1,6 +1,7 @@
 package com.example.nminhanh.spacesharing.Fragment.MainPages;
 
 
+import android.app.Activity;
 import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,17 +9,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.nminhanh.spacesharing.GoToTopEventListener;
-import com.example.nminhanh.spacesharing.MainActivity;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.R;
 
-import com.example.nminhanh.spacesharing.mCustomFirestorePagingAdapter;
+import com.example.nminhanh.spacesharing.CustomFirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 
@@ -41,7 +42,7 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     AddressUtils mAddressUtils;
 
-    FirestorePagingAdapter<Space, mCustomFirestorePagingAdapter.SpaceViewHolder> firestorePagingAdapter;
+    FirestorePagingAdapter<Space, CustomFirestorePagingAdapter.SpaceViewHolder> firestorePagingAdapter;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -58,8 +59,6 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
 
         mRecycleView = view.findViewById(R.id.recycleView);
-        mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mRecycleView.setLayoutManager(mLinearLayoutManager);
 
         mSwipeRefreshLayout = view.findViewById(R.id.search_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -80,6 +79,13 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
         super.onStart();
         firestorePagingAdapter.startListening();
 
+        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5000);
     }
 
     @Override
@@ -91,6 +97,16 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onStop() {
         super.onStop();
         firestorePagingAdapter.stopListening();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CustomFirestorePagingAdapter.REQUEST_DETAIL_SPACE) {
+            if (resultCode == ((Activity) getContext()).RESULT_OK) {
+                onRefresh();
+            }
+        }
     }
 
     public void createNewFirestorePagingAdapterInstance() {
@@ -109,8 +125,9 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 .build();
 
         // Firestore adapter
-        firestorePagingAdapter = new mCustomFirestorePagingAdapter(options, this.getContext());
-
+        mLinearLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+        mRecycleView.setLayoutManager(mLinearLayoutManager);
+        firestorePagingAdapter = new CustomFirestorePagingAdapter(options, this.getContext());
     }
 
     @Override
@@ -125,7 +142,7 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
-        },5000);
+        }, 5000);
     }
 
     @Override

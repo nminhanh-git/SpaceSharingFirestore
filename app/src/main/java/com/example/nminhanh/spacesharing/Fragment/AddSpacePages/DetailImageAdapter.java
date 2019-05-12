@@ -46,8 +46,10 @@ public class DetailImageAdapter extends RecyclerView.Adapter<DetailImageAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        DrawableImageViewTarget imageViewTarget = new DrawableImageViewTarget(viewHolder.mImageView);
-        GlideApp.with(context).load(R.raw.loading2).into(imageViewTarget);
+        GlideApp.with(context)
+                .load(R.raw.loading2)
+                .useAnimationPool(true)
+                .into(viewHolder.mImageView);
         String name = imagePath.get(i);
         final StorageReference mImageRef = mFirebaseStorage.getReference(mCurrentOwnerId).child(mCurrentSpaceId).child(name);
 

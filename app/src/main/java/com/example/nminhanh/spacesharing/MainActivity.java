@@ -3,6 +3,7 @@ package com.example.nminhanh.spacesharing;
 import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -20,7 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,6 +35,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.nminhanh.spacesharing.Fragment.MainPages.AccountFragment;
+import com.example.nminhanh.spacesharing.Fragment.MainPages.ChatFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.PagerAdapter;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.SearchFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.ShowFacebookLoadingListener;
@@ -49,6 +51,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,10 +71,10 @@ public class MainActivity extends AppCompatActivity
     ImageView mImageToolbarLogo;
     ViewPager mViewPager;
     BottomNavigationView mNavigationView;
-    Menu mOptionMenu;
     RelativeLayout mLayoutFacebookLoading;
     ImageView mImageFacebookLoading;
     FirebaseAuth mFirebaseAuth;
+    TextView mBtnFilter;
 
     HashMap<String, String> filters;
 
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity
 
     GoToTopEventListener goToTopEventListener;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,6 +157,13 @@ public class MainActivity extends AppCompatActivity
                 .asBitmap()
                 .load(R.drawable.logo_2)
                 .into(mImageToolbarLogo);
+        mBtnFilter = findViewById(R.id.main_btn_filter);
+        mBtnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFilterDialog();
+            }
+        });
 
         //Initialize ViewPager
         mViewPager = findViewById(R.id.main_pager);
@@ -176,15 +187,15 @@ public class MainActivity extends AppCompatActivity
                             }
                             goToTopEventListener.GoToTop();
                         }
+                        mBtnFilter.setVisibility(View.VISIBLE);
                         break;
-                    case R.id.action_space:
+                    case R.id.action_chat:
                         id = 1;
-                        break;
-                    case R.id.action_favor:
-                        id = 2;
+                        mBtnFilter.setVisibility(View.GONE);
                         break;
                     case R.id.action_account:
-                        id = 3;
+                        id = 2;
+                        mBtnFilter.setVisibility(View.GONE);
                         break;
                 }
                 invalidateOptionsMenu();
@@ -207,60 +218,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPageSelected(int i) {
         mNavigationView.getMenu().getItem(i).setChecked(true);
+        if (i != 0) {
+            mBtnFilter.setVisibility(View.INVISIBLE);
+        } else {
+            mBtnFilter.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onPageScrollStateChanged(int i) {
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        mOptionMenu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem filterItem = menu.findItem(R.id.main_menu_item_filter);
-        MenuItem addItem = menu.findItem(R.id.main_menu_item_add);
-        switch (mViewPager.getCurrentItem()) {
-            case 0:
-                filterItem.setVisible(true);
-                addItem.setVisible(false);
-                break;
-            case 1:
-                filterItem.setVisible(false);
-                addItem.setVisible(true);
-                break;
-            case 2:
-            case 3:
-                filterItem.setVisible(false);
-                addItem.setVisible(false);
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.main_menu_item_filter:
-                showFilterDialog();
-                break;
-            case R.id.main_menu_item_add:
-                if (mFirebaseAuth.getCurrentUser() != null) {
-                    Intent intent = new Intent(MainActivity.this, AddSpaceActivity.class);
-                    intent.putExtra("command", "add space");
-                    startActivityForResult(intent, REQUEST_ADD);
-                } else {
-                    Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void showFilterDialog() {
@@ -629,6 +596,14 @@ public class MainActivity extends AppCompatActivity
     public void onSignOut() {
         Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(0, true);
+       SignOutListener listener = null;
+        for(Fragment f: getSupportFragmentManager().getFragments()){
+            if(f instanceof ChatFragment){
+                listener = (SignOutListener) f;
+                break;
+            }
+        }
+        listener.onSignOut();
     }
 
     @Override
@@ -637,6 +612,15 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == REQUEST_LOCATION_PERMISSION_CODE) {
             if (resultCode == RESULT_OK) {
                 startTrackingLocation();
+            }
+        }
+        if (requestCode == CustomFirestorePagingAdapter.REQUEST_DETAIL_SPACE) {
+            if (resultCode == RESULT_OK) {
+                for (Fragment f : getSupportFragmentManager().getFragments()) {
+                    if (f instanceof SearchFragment) {
+                        f.onActivityResult(requestCode, resultCode, data);
+                    }
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,9 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        android:focusable="true"
-        app:elevation="0dp">
+        android:background="@drawable/toolbar_background_inverse"
+        android:elevation="16dp"
+        android:focusable="true">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/detail_toolbar"
@@ -93,8 +94,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/appbar_layout"
-        android:layout_marginBottom="16dp">
+        android:layout_below="@id/appbar_layout">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -116,13 +116,13 @@
                     android:id="@+id/detail_indicator_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/indicator_background_inverse"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginBottom="10dp">
+                    app:layout_constraintStart_toStartOf="parent">
 
                     <ImageView
                         android:id="@+id/detail_indicator_1"
@@ -137,7 +137,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:src="@drawable/circle_indicator"
-                        android:tint="@color/light_gray"/>
+                        android:tint="@color/light_gray" />
 
                     <ImageView
                         android:id="@+id/detail_indicator_3"
@@ -244,6 +244,7 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_reg"
                         android:text="4 triệu"
+                        android:textAlignment="center"
                         android:textColor="@color/colorPrimary" />
                 </LinearLayout>
 
@@ -270,6 +271,7 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_reg"
                         android:text="30m2"
+                        android:textAlignment="center"
                         android:textColor="@color/colorPrimary" />
                 </LinearLayout>
 
@@ -296,6 +298,7 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_reg"
                         android:text="4 triệu"
+                        android:textAlignment="center"
                         android:textColor="@color/colorPrimary" />
                 </LinearLayout>
             </LinearLayout>
@@ -349,11 +352,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/detail_account_text_view_name"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@id/detail_account_image"
                     android:fontFamily="@font/roboto_reg"
-                    android:text="atranvan@gmail.com"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"/>
+                    android:text="atranvan@gmail.com" />
 
                 <TextView
                     android:id="@+id/detail_account_text_view_phone"
@@ -373,41 +376,67 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detail_account_layout"
-                android:layout_margin="16dp"
-                android:background="@drawable/edit_background"
-                android:padding="16dp">
+                android:layout_margin="16dp">
 
-                <ImageView
-                    android:id="@+id/detail_image_view_address"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerVertical="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_location" />
-
-                <TextView
-                    android:id="@+id/detail_text_view_address_title"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/roboto_reg"
-                    android:text="Địa chỉ"
-                    android:textColor="@color/darkest_gray" />
-
-                <TextView
-                    android:id="@+id/detail_text_view_address_value"
-                    style="@style/TextAppearance.AppCompat.Small"
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/detail_text_view_address_title"
-                    android:layout_toStartOf="@id/detail_image_view_address"
-                    android:text="Số 43, ngách 29, ngõ 169A Tây Sơn, phường Quang Trung, quận Đống Đa, thành phố Hà Nội"
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/dark_gray" />
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/light_gray"
+                    app:cardCornerRadius="15dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout xmlns:map="http://schemas.android.com/apk/res-auto"
+                            android:id="@+id/detail_address_content_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+                            <ImageView
+                                android:id="@+id/detail_image_view_address"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerVertical="true"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_location" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_address_title"
+                                style="@style/TextAppearance.AppCompat.Medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="Địa chỉ"
+                                android:textColor="@color/darkest_gray" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_address_value"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_below="@id/detail_text_view_address_title"
+                                android:layout_toStartOf="@id/detail_image_view_address"
+                                android:text="Số 43, ngách 29, ngõ 169A Tây Sơn, phường Quang Trung, quận Đống Đa, thành phố Hà Nội"
+                                android:textAlignment="viewStart"
+                                android:textColor="@color/dark_gray" />
+                        </RelativeLayout>
+
+                        <com.google.android.gms.maps.MapView
+                            android:id="@+id/map"
+                            android:layout_width="match_parent"
+                            android:layout_height="150dp"
+                            android:layout_below="@id/detail_address_content_layout"
+                            map:cameraZoom="13"
+                            map:liteMode="true" />
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
             </RelativeLayout>
 
             <!--Description Layout-->
@@ -453,6 +482,7 @@
                 android:layout_below="@id/detail_description_layout"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/edit_background"
                 android:padding="16dp">
 

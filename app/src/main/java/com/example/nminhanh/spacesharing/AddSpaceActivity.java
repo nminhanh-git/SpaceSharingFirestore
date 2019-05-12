@@ -204,7 +204,7 @@ public class AddSpaceActivity extends AppCompatActivity implements
                         listener.onContinue();
                         if (canOtherContinue) {
                             saveSpaceObject(currentSpace);
-                            if(command.equalsIgnoreCase("edit space")){
+                            if (command.equalsIgnoreCase("edit space")) {
                                 mTextViewLoading.setText("Đang cập nhật dữ liệu...");
                             }
                             mAddLayoutLoading.setVisibility(View.VISIBLE);
@@ -353,7 +353,7 @@ public class AddSpaceActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDescriptionReceived(double size, double price, int prepaidMonth, String
+    public void onDescriptionReceived(double size, int price, int prepaidMonth, String
             description) {
         if (size == 0 || price == 0 || description.isEmpty()) {
             canDescriptionContinue = false;
@@ -369,14 +369,13 @@ public class AddSpaceActivity extends AppCompatActivity implements
 
     @Override
     public void onOtherReceived(String type, String door, int bedRoom, int bathRoom,
-                                double electricPrice, double waterPrice) {
+                                int electricPrice, int waterPrice) {
         if (type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[0])) {
             canOtherContinue = false;
         } else if (type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1])
                 || type.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])
                 ) {
-            if (door.equalsIgnoreCase(getResources().getStringArray(R.array.door_direction_array)[0])
-                    || electricPrice == 0 || waterPrice == 0) {
+            if (electricPrice == 0 || waterPrice == 0) {
                 canOtherContinue = false;
             } else {
                 canOtherContinue = true;
@@ -431,7 +430,7 @@ public class AddSpaceActivity extends AppCompatActivity implements
             Bundle b = new Bundle();
 
             b.putDouble("size", currentSpace.getDienTich());
-            b.putDouble("price", currentSpace.getGia());
+            b.putInt("price", currentSpace.getGia());
             b.putInt("prepaid", currentSpace.getThangCoc());
             b.putString("description", currentSpace.getMoTa());
 
@@ -451,8 +450,8 @@ public class AddSpaceActivity extends AppCompatActivity implements
             }
 
             Bundle b = new Bundle();
-            b.putDouble("electric", currentSpace.getGiaDien());
-            b.putDouble("water", currentSpace.getGiaNuoc());
+            b.putInt("electric", currentSpace.getGiaDien());
+            b.putInt("water", currentSpace.getGiaNuoc());
             b.putInt("bed", currentSpace.getSoPhongNgu());
             b.putInt("bath", currentSpace.getSoPhongVeSinh());
             b.putString("type", currentSpace.getLoai());

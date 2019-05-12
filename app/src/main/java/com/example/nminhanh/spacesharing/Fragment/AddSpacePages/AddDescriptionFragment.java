@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.nminhanh.spacesharing.DescriptionOldDataReceiver;
 import com.example.nminhanh.spacesharing.R;
@@ -40,6 +41,8 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
     RelativeLayout mLayoutPrepaid;
     ImageButton mBtnPrepaidIncrease;
     ImageButton mBtnPrepaidDecrease;
+    TextView mTextViewPrepaidMonth;
+    TextView mTextViewPrepaidMoney;
 
 
     String price = "0";
@@ -55,7 +58,7 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
 
 
     public interface DescriptionReceiver {
-        void onDescriptionReceived(double size, double price, int prepaidMonth, String description);
+        void onDescriptionReceived(double size, int price, int prepaidMonth, String description);
     }
 
     public interface DescriptionInflatedListener {
@@ -97,6 +100,8 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
         mLayoutPrepaid = view.findViewById(R.id.layout_prepaid);
         mBtnPrepaidIncrease = view.findViewById(R.id.description_prepaid_button_increase);
         mBtnPrepaidDecrease = view.findViewById(R.id.description_prepaid_button_decrease);
+        mTextViewPrepaidMoney = view.findViewById(R.id.prepaid_money_currency);
+        mTextViewPrepaidMonth = view.findViewById(R.id.prepaid_month_currency);
 
         mEditTextSize.addTextChangedListener(new TextWatcher() {
 
@@ -139,7 +144,7 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
                 }
 
                 try {
-                    String value = s.toString().replace(",", "");
+                    String value = s.toString().replaceAll(",", "");
                     String reverseValue = new StringBuilder(value).reverse()
                             .toString();
                     StringBuilder finalValue = new StringBuilder();
@@ -186,6 +191,68 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
 
             }
         });
+        mEditTextPrepaid.addTextChangedListener(new TextWatcher() {
+            boolean isManualChange;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0) {
+                    mEditTextPrice.setError(null);
+                }
+                if (isManualChange) {
+                    isManualChange = false;
+                    return;
+                }
+
+                try {
+                    String value = s.toString().replaceAll(",", "");
+                    String reverseValue = new StringBuilder(value).reverse()
+                            .toString();
+                    StringBuilder finalValue = new StringBuilder();
+                    for (int i = 1; i <= reverseValue.length(); i++) {
+                        char val = reverseValue.charAt(i - 1);
+                        finalValue.append(val);
+                        if (i % 3 == 0 && i != reverseValue.length() && i > 0) {
+                            finalValue.append(",");
+                        }
+                    }
+                    isManualChange = true;
+                    mEditTextPrepaid.setText(finalValue.reverse());
+                    mEditTextPrepaid.setSelection(finalValue.length());
+                } catch (Exception e) {
+                    // Do nothing since not a number
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() != 0) {
+                    prepaidMonth = Integer.valueOf(s.toString().replaceAll(",", ""));
+                    if (prepaidMonth >= 0 && prepaidMonth <= 10) {
+                        mBtnPrepaidIncrease.setVisibility(View.VISIBLE);
+                        mBtnPrepaidDecrease.setVisibility(View.VISIBLE);
+                        mTextViewPrepaidMonth.setVisibility(View.VISIBLE);
+                        mTextViewPrepaidMoney.setVisibility(View.GONE);
+                    } else if (prepaidMonth > 10) {
+                        mBtnPrepaidIncrease.setVisibility(View.GONE);
+                        mBtnPrepaidDecrease.setVisibility(View.GONE);
+                        mTextViewPrepaidMonth.setVisibility(View.GONE);
+                        mTextViewPrepaidMoney.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    mBtnPrepaidIncrease.setVisibility(View.VISIBLE);
+                    mBtnPrepaidDecrease.setVisibility(View.VISIBLE);
+                    mTextViewPrepaidMonth.setVisibility(View.VISIBLE);
+                    mTextViewPrepaidMoney.setVisibility(View.VISIBLE);
+                    prepaidMonth = 0;
+                }
+            }
+        });
         mCheckBoxPrePaid.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -223,8 +290,8 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
         Log.d(ACTIVITY_TAG, "onDescriptionResume");
         super.onResume();
         if (oldData != null) {
-            int size = (int) oldData.getDouble("size");
-            int price = (int) oldData.getDouble("price");
+            double size = oldData.getDouble("size");
+            int price = (int) oldData.getInt("price");
             int prepaid = oldData.getInt("prepaid");
             String description = oldData.getString("description");
 
@@ -243,10 +310,10 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
 
     @Override
     public void onContinue() {
-        if (mEditTextSize.getText().toString().isEmpty()) {
+        if (mEditTextSize.getText().toString().isEmpty() || size.equalsIgnoreCase("0")) {
             mEditTextSize.setError("Bạn chưa nhập diện tích");
         }
-        if (mEditTextPrice.getText().toString().isEmpty()) {
+        if (mEditTextPrice.getText().toString().isEmpty() || price.equalsIgnoreCase("0")) {
             mEditTextPrice.setError("Bạn chưa nhập giá dự kiến");
         }
         if (mCheckBoxPrePaid.isChecked() && mEditTextPrepaid.getText().toString().isEmpty()) {
@@ -255,7 +322,7 @@ public class AddDescriptionFragment extends Fragment implements StepContinueList
         if (mEditTextDescription.getText().toString().isEmpty()) {
             mEditTextDescription.setError("Bạn chưa nhập mô tả");
         }
-        receiver.onDescriptionReceived(Double.valueOf(size), Double.valueOf(price), prepaidMonth, description);
+        receiver.onDescriptionReceived(Double.valueOf(size), Integer.valueOf(price), prepaidMonth, description);
     }
 
 }

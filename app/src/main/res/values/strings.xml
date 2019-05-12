@@ -20,7 +20,7 @@
         <item>Kho thời vụ</item>
     </string-array>
     <string-array name="door_direction_array">
-        <item>Hãy chọn hướng cửa...</item>
+        <item>Không</item>
         <item>Đông</item>
         <item>Tây</item>
         <item>Nam</item>
@@ -42,7 +42,7 @@
     <string name="fragment_account_facebook_into_string">Kết nối với Facebook để việc chia sẻ thông tin trở nên dễ dàng hơn!</string>
     <string name="op_network_error_string">A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
     <string name="detail_favorite_string">lưu vào mục <font color="#FF9800">yêu thích</font> </string>
-    <string name="square_metrer_metric_string"></string>
+    <string name="square_metrer_metric_string">m<sup><small>2</small></sup></string>
     <string name="favor_dialog_promt_unsave_string">Bạn có muốn bỏ lưu tin đăng này không?</string>
     <string name="favor_dialog_promt_save_string">Bạn có muốn lưu lại tin đăng này không?</string>
     <string name="title_activity_maps_search">Map</string>

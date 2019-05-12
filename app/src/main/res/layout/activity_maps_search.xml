@@ -1,9 +1,244 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MapsSearchActivity" />
+    android:layout_height="match_parent">
+
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        tools:context=".MapsSearchActivity" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/edit_background_inverse"
+        android:elevation="16dp">
+
+        <ImageButton
+            android:id="@+id/map_search_btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/ic_back" />
+
+        <View
+            android:id="@+id/map_search_divider_line"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@id/map_search_btn_back"
+            android:layout_alignBottom="@id/map_search_btn_back"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_toEndOf="@id/map_search_btn_back"
+            android:background="@drawable/vertical_stroke" />
+
+        <EditText
+            android:id="@+id/map_edit_text_search"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@id/map_search_btn_back"
+            android:layout_alignBottom="@id/map_search_btn_back"
+            android:layout_toStartOf="@id/map_btn_search"
+            android:layout_toEndOf="@id/map_search_divider_line"
+            android:background="@color/transparent"
+            android:hint="nhập địa chi tìm kiếm"
+            android:inputType="textLongMessage"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/dark_gray" />
+
+        <ImageButton
+            android:id="@+id/map_btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@id/map_search_btn_back"
+            android:layout_alignBottom="@id/map_search_btn_back"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_search_2"
+            android:tint="@color/colorPrimary" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/map_footer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp">
+
+        <RelativeLayout
+            android:id="@+id/map_filter_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_toStartOf="@id/map_btn_location"
+            android:background="@drawable/edit_background_inverse"
+            android:clickable="true"
+            android:elevation="6dp"
+            android:focusable="true"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/map_text_view_filter_title"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:fontFamily="@font/roboto_reg"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="5dp"
+                android:text="Tìm kiếm các địa điểm gần đây"
+                android:textColor="@color/darkest_gray" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/map_text_view_filter_title"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:weightSum="4">
+
+                <EditText
+                    android:id="@+id/map_edit_result_number"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1.4"
+                    android:background="@drawable/edit_background"
+                    android:hint="số kết quả"
+                    android:inputType="number"
+                    android:padding="8dp"
+                    android:textAlignment="center" />
+
+                <EditText
+                    android:id="@+id/map_edit_radius"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1.7"
+                    android:background="@drawable/edit_background"
+                    android:hint="bán kính (km)"
+                    android:inputType="number|numberDecimal"
+                    android:padding="8dp"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/map_btn_filter"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.9"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/roboto_bold"
+                    android:gravity="center"
+                    android:text="Tìm kiếm"
+                    android:textColor="@color/colorPrimary" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/map_btn_location"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_location_2" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/map_marker_info_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:elevation="8dp">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/map_info_item_image"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/sign_in_image" />
+
+                <TextView
+                    android:id="@+id/map_info_item_title"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_toEndOf="@id/map_info_item_image"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_reg"
+                    android:maxLines="2"
+                    android:scrollHorizontally="true"
+                    android:text="cho thuê nhà giá hạt dẻ tại số 43 ngõ 169A Tây Sơn Đống Đa Hà Nội"
+                    android:textColor="@color/darkest_gray" />
+
+                <TextView
+                    android:id="@+id/map_info_item_address"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/map_info_item_title"
+                    android:layout_alignStart="@id/map_info_item_title"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_reg"
+                    android:maxLines="1"
+                    android:text="Quang Trung, Đống Đa, Hà Nội"
+                    android:textColor="@color/dark_gray" />
+
+                <TextView
+                    android:id="@+id/map_info_item_get_detail"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/roboto_reg"
+                    android:text="chi tiết"
+                    android:textColor="@color/colorPrimaryDark" />
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+
+</RelativeLayout>

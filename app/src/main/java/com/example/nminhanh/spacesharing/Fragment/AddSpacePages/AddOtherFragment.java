@@ -23,6 +23,8 @@ import com.example.nminhanh.spacesharing.OtherOldDataReceiver;
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.StepContinueListener;
 
+import java.util.Locale;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -39,12 +41,11 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
     ImageButton mImgBtnBathroomDecrease;
 
     ImageView mImageSpinnerTypeError;
-    ImageView mImageSpinnerDoorError;
 
     EditText mEditTextElectric;
     EditText mEditTextWater;
-    double electricPrice = 0;
-    double waterPrice = 0;
+    int electricPrice = 0;
+    int waterPrice = 0;
 
     String currentType;
     String currentDoor;
@@ -61,7 +62,7 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
     }
 
     public interface OtherReceiver {
-        void onOtherReceived(String type, String door, int bedRoom, int bathRoom, double electricPrice, double waterPrice);
+        void onOtherReceived(String type, String door, int bedRoom, int bathRoom, int electricPrice, int waterPrice);
     }
 
     public interface OtherInflatedListener {
@@ -99,7 +100,6 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
 
         customOptionLayout = view.findViewById(R.id.add_other_layout_custom_option);
         mSpinnerDoor = view.findViewById(R.id.add_other_spinner_door);
-        mImageSpinnerDoorError = view.findViewById(R.id.add_other_spinner_door_image_error);
 
         mEditTextElectric = view.findViewById(R.id.add_other_edit_text_electric_price);
         mEditTextWater = view.findViewById(R.id.add_other_edit_text_water_price);
@@ -179,7 +179,6 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentDoor = getActivity().getResources().getStringArray(R.array.door_direction_array)[position];
-                mImageSpinnerDoorError.setVisibility(View.GONE);
             }
 
             @Override
@@ -218,6 +217,8 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
         });
 
         mEditTextElectric.addTextChangedListener(new TextWatcher() {
+            boolean isManualChange;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -226,8 +227,30 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0) {
-                    electricPrice = Double.valueOf(s.toString());
                     mEditTextElectric.setError(null);
+                }
+                if (isManualChange) {
+                    isManualChange = false;
+                    return;
+                }
+
+                try {
+                    String value = s.toString().replace(",", "");
+                    String reverseValue = new StringBuilder(value).reverse()
+                            .toString();
+                    StringBuilder finalValue = new StringBuilder();
+                    for (int i = 1; i <= reverseValue.length(); i++) {
+                        char val = reverseValue.charAt(i - 1);
+                        finalValue.append(val);
+                        if (i % 3 == 0 && i != reverseValue.length() && i > 0) {
+                            finalValue.append(",");
+                        }
+                    }
+                    isManualChange = true;
+                    mEditTextElectric.setText(finalValue.reverse());
+                    mEditTextElectric.setSelection(finalValue.length());
+                } catch (Exception e) {
+                    // Do nothing since not a number
                 }
             }
 
@@ -235,10 +258,16 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
             public void afterTextChanged(Editable s) {
                 if (s.toString().length() == 0) {
                     electricPrice = 0;
+                } else {
+                    String electricPriceStr = s.toString();
+                    electricPriceStr = electricPriceStr.replace(",", "");
+                    electricPrice = Integer.valueOf(electricPriceStr);
                 }
             }
         });
         mEditTextWater.addTextChangedListener(new TextWatcher() {
+            boolean isManualChange;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -247,8 +276,30 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0) {
-                    waterPrice = Double.valueOf(s.toString());
                     mEditTextWater.setError(null);
+                }
+                if (isManualChange) {
+                    isManualChange = false;
+                    return;
+                }
+
+                try {
+                    String value = s.toString().replace(",", "");
+                    String reverseValue = new StringBuilder(value).reverse()
+                            .toString();
+                    StringBuilder finalValue = new StringBuilder();
+                    for (int i = 1; i <= reverseValue.length(); i++) {
+                        char val = reverseValue.charAt(i - 1);
+                        finalValue.append(val);
+                        if (i % 3 == 0 && i != reverseValue.length() && i > 0) {
+                            finalValue.append(",");
+                        }
+                    }
+                    isManualChange = true;
+                    mEditTextWater.setText(finalValue.reverse());
+                    mEditTextWater.setSelection(finalValue.length());
+                } catch (Exception e) {
+                    // Do nothing since not a number
                 }
             }
 
@@ -256,6 +307,10 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
             public void afterTextChanged(Editable s) {
                 if (s.toString().length() == 0) {
                     waterPrice = 0;
+                } else {
+                    String waterPriceStr = s.toString();
+                    waterPriceStr = waterPriceStr.replace(",", "");
+                    waterPrice = Integer.valueOf(waterPriceStr);
                 }
             }
         });
@@ -284,9 +339,9 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
                     }
                 }
                 customOptionLayout.setVisibility(View.VISIBLE);
-                electricPrice = oldData.getDouble("electric");
+                electricPrice = oldData.getInt("electric");
                 mEditTextElectric.setText(electricPrice + "");
-                waterPrice = oldData.getDouble("water");
+                waterPrice = oldData.getInt("water");
                 mEditTextWater.setText(waterPrice + "");
                 bedRoom = oldData.getInt("bed");
                 mEditTextBedroom.setText(bedRoom + "");
@@ -304,16 +359,7 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
         }
         if (currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1]) ||
                 currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])) {
-            if (currentDoor.equalsIgnoreCase(getResources().getStringArray(R.array.door_direction_array)[0])) {
-                Toast.makeText(getContext(), "Bạn chưa chọn hướng cửa", Toast.LENGTH_SHORT).show();
-                mImageSpinnerDoorError.setVisibility(View.VISIBLE);
-            }
-            if (mEditTextWater.getText().toString().isEmpty() || mEditTextWater.getError() != null) {
-                mEditTextWater.setError("Bạn chưa nhập giá tiền nước");
-                mEditTextElectric.setError("Bạn chưa nhập giá tiền điện");
-            }
         }
         receiver.onOtherReceived(currentType, currentDoor, bedRoom, bathRoom, electricPrice, waterPrice);
     }
-
 }
