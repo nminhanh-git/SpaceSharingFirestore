@@ -281,12 +281,11 @@ public class UserInfoActivity extends AppCompatActivity {
     private void UpdateUserInfo() {
         if (mProvider.equalsIgnoreCase("sign in")
                 || mProvider.equalsIgnoreCase("facebook")) {
-            Map<String, String> userData = new HashMap<>();
+            Map<String, Object> userData = new HashMap<>();
             userData.put("email", mMail);
             userData.put("facebookName", mFacebookName);
             userData.put("name", mName);
             userData.put("phone_number", mPhone);
-//            userData.put("avatar_name", "null");
 
             mUserCollRef.document(mCurrentUser.getUid()).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override

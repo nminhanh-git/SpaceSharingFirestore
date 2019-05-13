@@ -94,12 +94,7 @@ public class ChatFragment extends Fragment implements SignOutListener {
 
     @Override
     public void onStart() {
-        if (mCurrentUser != null) {
-            mConversationAdapter.startListening();
-            mLayoutSignIn.setVisibility(View.GONE);
-        } else {
-            mLayoutSignIn.setVisibility(View.VISIBLE);
-        }
+
         super.onStart();
 
     }
@@ -169,6 +164,17 @@ public class ChatFragment extends Fragment implements SignOutListener {
             }
         };
         mChatRecyclerView.setAdapter(mConversationAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mCurrentUser != null) {
+            mConversationAdapter.startListening();
+            mLayoutSignIn.setVisibility(View.GONE);
+        } else {
+            mLayoutSignIn.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeView() {

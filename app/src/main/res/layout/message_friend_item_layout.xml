@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/bubble_chat_image_ava"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/ic_people"
+        app:civ_border_color="@color/light_gray"
+        app:civ_border_width="0.5dp" />
+
+
+    <TextView
+        android:id="@+id/bubble_chat_text_message"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/bubble_chat_image_ava"
+        android:background="@drawable/chat_background"
+        android:inputType="textMultiLine|textLongMessage"
+        android:maxWidth="280dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="fdsfdsfsdfsfsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsfsfsdfsfdsfsfsdfsdfdsfdsfsdfsdfdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdsfsfdsfsfsdfsdfdsffffff"
+        android:textColor="@color/darkest_gray"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/bubble_chat_text_date"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bubble_chat_text_message"
+        android:layout_alignStart="@id/bubble_chat_text_message"
+        android:layout_marginTop="4dp"
+        android:text="đã gửi lúc 8h45"
+        android:textSize="10sp" />
+</RelativeLayout>

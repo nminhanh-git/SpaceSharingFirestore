@@ -1,9 +1,12 @@
 package com.example.nminhanh.spacesharing;
 
-import android.app.Application;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -20,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.signature.ObjectKey;
+import com.example.nminhanh.spacesharing.Model.Conversation;
 import com.example.nminhanh.spacesharing.Model.Message;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -28,7 +36,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,9 +43,9 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
@@ -46,11 +53,9 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -137,38 +142,71 @@ public class ChatActivity extends AppCompatActivity {
         mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!mEditMessage.getText().toString().isEmpty()) {
-                    final CollectionReference mMessageFriendRef = mFirestore
+                if (!mEditMessage.getText().toString().isEmpty()) {
+
+
+                    final DocumentReference mConversationFriendDocRef = mFirestore
                             .collection("user_data")
                             .document(mConversationId)
                             .collection("conversation")
-                            .document(mCurrentUser.getUid())
+                            .document(mCurrentUser.getUid());
+
+                    mConversationFriendDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (!task.getResult().exists()) {
+                                Conversation currentFriendConversation = new Conversation(mCurrentUser.getUid(), new Date());
+                                mConversationFriendDocRef.set(currentFriendConversation);
+                            }
+                        }
+                    });
+
+                    final CollectionReference mMessageFriendColRef = mConversationFriendDocRef
                             .collection("message");
 
-                    final CollectionReference mMessageUserRef = mFirestore
+
+                    final DocumentReference mConversationUserDocRef = mFirestore
                             .collection("user_data")
                             .document(mCurrentUser.getUid())
                             .collection("conversation")
-                            .document(mConversationId)
+                            .document(mConversationId);
+
+                    mConversationUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (!task.getResult().exists()) {
+                                Conversation currentUserConversation = new Conversation(mConversationId, new Date());
+                                mConversationUserDocRef.set(currentUserConversation);
+                            }
+                        }
+                    });
+
+                    final CollectionReference mMessageUserColRef = mConversationUserDocRef
                             .collection("message");
 
                     final Message currentMessage = new Message(mCurrentUser.getUid(), "", message, System.currentTimeMillis());
-                    mMessageUserRef.add(currentMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    mMessageUserColRef.add(currentMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "update user's conversation successfully");
+                                Map<String, Object> updates =new HashMap<>();
+                                updates.put("timeAdded",FieldValue.serverTimestamp());
+                                mConversationUserDocRef.update(updates);
                             } else {
                                 Log.d(TAG, "update user's conversation error: " + task.getException().getMessage());
                             }
                         }
                     });
 
-                    mMessageFriendRef.add(currentMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    mMessageFriendColRef.add(currentMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "update friend's conversation successfully");
+                                Map<String, Object> updates =new HashMap<>();
+                                updates.put("timeAdded",FieldValue.serverTimestamp());
+                                mConversationFriendDocRef.update(updates);
                             } else {
                                 Log.d(TAG, "update friend's conversation error: " + task.getException().getMessage());
                             }
@@ -177,7 +215,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     mRecyclerViewBubbleChat.scrollToPosition(mMessageAdapter.getItemCount() - 1);
                     mEditMessage.setText("");
-                }else{
+                } else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi một tin nhắn rỗng!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -203,11 +241,9 @@ public class ChatActivity extends AppCompatActivity {
 
         mEditMessage = findViewById(R.id.chat_edit_text_message);
         mBtnSend = findViewById(R.id.chat_btn_send);
-        mBtnSend.setVisibility(View.GONE);
 
         mRecyclerViewBubbleChat = findViewById(R.id.chat_message_recycle_view);
     }
-
 
     private void setupInfo() {
         StorageReference mFriendImageRef = mFirebaseStorage
@@ -272,12 +308,21 @@ public class ChatActivity extends AppCompatActivity {
                 } else {
                     ((MessageUserViewHolder) holder).mTextViewMessage.setText(model.getMessage());
 
-                    LocalDateTime date = Instant.ofEpochMilli(model.getTimeAdded())
+                    LocalDate today = LocalDate.now();
+                    LocalDateTime currentDate = Instant.ofEpochMilli(model.getTimeAdded())
                             .atZone(ZoneId.systemDefault())
                             .toLocalDateTime();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-                    ((MessageUserViewHolder) holder).mTextViewDate.setText(date.format(formatter));
+                    DateTimeFormatter formatter;
+                    if (today.isEqual(currentDate.toLocalDate())) {
+                        formatter = DateTimeFormatter.ofPattern("HH:mm");
+                        ((MessageUserViewHolder) holder).mTextViewDate.setText("Hôm nay lúc " + currentDate.format(formatter));
+                    } else if (today.isEqual(currentDate.toLocalDate().minusDays(1))) {
+                        formatter = DateTimeFormatter.ofPattern("HH:mm");
+                        ((MessageUserViewHolder) holder).mTextViewDate.setText("Hôm qua lúc " + currentDate.format(formatter));
+                    } else {
+                        formatter = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
+                        ((MessageUserViewHolder) holder).mTextViewDate.setText("Hôm qua lúc " + currentDate.format(formatter));
+                    }
 
                     StorageReference mImageAvaRef = mFirebaseStorage.getReference()
                             .child(mCurrentUser.getUid())
@@ -285,7 +330,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     GlideApp.with(ChatActivity.this)
                             .load(mImageAvaRef)
-                            .signature(new ObjectKey(mCurrentUser.getUid()))
+                            .signature(new ObjectKey(System.currentTimeMillis()))
                             .into(((MessageUserViewHolder) holder).mImageViewAva);
                 }
             }
@@ -295,10 +340,10 @@ public class ChatActivity extends AppCompatActivity {
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 View view;
                 if (i == VIEW_TYPE_FRIEND) {
-                    view = getLayoutInflater().inflate(R.layout.friend_message_item_layout, viewGroup, false);
+                    view = getLayoutInflater().inflate(R.layout.message_friend_item_layout, viewGroup, false);
                     return new MessageFriendViewHolder(view);
                 } else if (i == VIEW_TYPE_USER) {
-                    view = getLayoutInflater().inflate(R.layout.user_message_item_layout, viewGroup, false);
+                    view = getLayoutInflater().inflate(R.layout.message_user_item_layout, viewGroup, false);
                     return new MessageUserViewHolder(view);
                 }
                 return null;
@@ -329,6 +374,89 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = new MenuInflater(this);
+        inflater.inflate(R.menu.chat_option_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.option_delete:
+                showDeleteConversationDialog();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteConversationDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+
+        final View mDialogView = inflater.inflate(R.layout.detail_delete_dialog_layout, null);
+        TextView mTextView = mDialogView.findViewById(R.id.dialog_delete_subtitle);
+        TextView mBtnCancel = mDialogView.findViewById(R.id.dialog_delete_no);
+        TextView mBtnOk = mDialogView.findViewById(R.id.dialog_delete_yes);
+
+        mTextView.setText("Bạn có thực sự muốn xóa cuộc trò chuyện này không? Bạn sẽ không thể khôi phục lại sau khi xóa. Cuộc trò chuyện này sẽ chỉ bị xóa trên thiết bị của bạn.");
+
+        final AlertDialog deleteDialog = builder.setView(mDialogView).create();
+        ColorDrawable dialogBackground = new ColorDrawable(Color.TRANSPARENT);
+        InsetDrawable inset = new InsetDrawable(dialogBackground, 40, 50, 40, 50);
+        deleteDialog.getWindow().setBackgroundDrawable(inset);
+
+        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDialog.dismiss();
+            }
+        });
+        mBtnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference conversationDocRef = mFirestore
+                        .collection("user_data")
+                        .document(mCurrentUser.getUid())
+                        .collection("conversation")
+                        .document(mConversationId);
+                conversationDocRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "delete conversation successfully");
+                        } else {
+                            Log.d(TAG, task.getException().getMessage());
+                        }
+                    }
+                });
+                final CollectionReference messageColRef = conversationDocRef.collection("message");
+                messageColRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            final List<DocumentSnapshot> messageList = task.getResult().getDocuments();
+                            int count = 0;
+                            for (DocumentSnapshot d : messageList) {
+                                messageColRef.document(d.getId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "Delete Message successfully");
+                                        }
+                                    }
+                                });
+                            }
+                            deleteDialog.dismiss();
+                            finish();
+                        }
+                    }
+                });
+            }
+        });
+        deleteDialog.show();
     }
 
     @Override

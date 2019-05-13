@@ -24,15 +24,15 @@
                 <RelativeLayout
                     android:id="@+id/account_layout_info"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp"
+                    android:layout_height="130dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/card_layout_background"
                     android:padding="10dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/account_image"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:layout_alignParentStart="true"
                         android:layout_marginRight="10dp"
                         android:src="@drawable/ic_face_placeholder"
@@ -48,7 +48,7 @@
 
                         <TextView
                             android:id="@+id/account_text_view_name"
-                            style="@style/TextAppearance.AppCompat.Headline"
+                            style="@style/TextAppearance.AppCompat.Medium"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentTop="true"
@@ -58,7 +58,7 @@
 
                         <TextView
                             android:id="@+id/account_text_view_email"
-                            style="@style/TextAppearance.AppCompat.Medium"
+                            style="@style/TextAppearance.AppCompat.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
@@ -67,7 +67,7 @@
 
                         <TextView
                             android:id="@+id/account_text_view_phone"
-                            style="@style/TextAppearance.AppCompat.Medium"
+                            style="@style/TextAppearance.AppCompat.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
@@ -264,10 +264,11 @@
                             android:layout_below="@id/account_favor_title"
 
                             android:fontFamily="@font/roboto_reg"
-                            android:text="Bấm vào đây để quản lý thông tin của những tin đăng mà bạn đã lưu vào mục yêu thích." />
+                            android:text="Bấm vào đây để quản lý những tin đăng mà bạn đã lưu vào mục ưa thích." />
 
                     </RelativeLayout>
                 </RelativeLayout>
+
 
                 <Button
                     android:id="@+id/account_button_sign_out"

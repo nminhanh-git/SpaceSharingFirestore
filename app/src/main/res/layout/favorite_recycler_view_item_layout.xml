@@ -10,7 +10,7 @@
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="125dp"
+        android:layout_height="130dp"
         android:backgroundTint="@color/light_gray"
         app:cardCornerRadius="15dp"
         app:cardElevation="0dp">
@@ -51,7 +51,8 @@
                 android:layout_toEndOf="@id/favor_item_image"
                 android:fontFamily="@font/roboto_reg"
                 android:text="Quang Trung, Đống Đa, Hà Nội"
-                android:textColor="@color/dark_gray" />
+                android:textColor="@color/dark_gray"
+                android:ellipsize="end"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

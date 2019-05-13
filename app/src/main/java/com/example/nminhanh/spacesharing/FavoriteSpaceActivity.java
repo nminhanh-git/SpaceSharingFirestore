@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.signature.ObjectKey;
@@ -42,6 +43,7 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mCurrentUser;
 
+    RelativeLayout mLayoutEmpty;
     ImageButton mBtnBack;
     RecyclerView mFavorRecyclerView;
     FirestoreRecyclerAdapter<UserFavoriteSpace, FavorSpaceViewHolder> mFirestoreRecyclerAdapter;
@@ -99,7 +101,9 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
             public void onDataChanged() {
                 super.onDataChanged();
                 if (getItemCount() == 0) {
-
+                    mLayoutEmpty.setVisibility(View.VISIBLE);
+                }else{
+                    mLayoutEmpty.setVisibility(View.GONE);
                 }
             }
 
@@ -142,14 +146,13 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
                                     Intent intent = new Intent(FavoriteSpaceActivity.this, SpaceDetailActivity.class);
-
+                                    intent.putExtra("current space", currentSpace[0]);
+                                    startActivity(intent);
                                 }
                             });
                         }
                     }
                 });
-
-
             }
 
             @NonNull
@@ -168,6 +171,7 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
     private void initializeView() {
         mFavorRecyclerView = findViewById(R.id.favor_recycle_view);
         mBtnBack = findViewById(R.id.favor_btn_back);
+        mLayoutEmpty = findViewById(R.id.favor_empty_layout);
     }
 
     @Override

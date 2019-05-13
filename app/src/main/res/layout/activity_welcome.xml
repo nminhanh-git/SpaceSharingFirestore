@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@id/welcome_subtitle"
             android:fontFamily="@font/roboto_black"
-            android:text="Chào mừng bạn\nđến với SHARE!"
+            android:text="Chào mừng bạn\nđến với HOUSE!"
             android:textColor="#404040" />
 
         <TextView

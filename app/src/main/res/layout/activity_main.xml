@@ -32,23 +32,44 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/logo_2" />
 
-                <TextView
+                <!--<TextView-->
+                <!--android:id="@+id/main_btn_filter"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+                <!--android:clickable="true"-->
+                <!--android:focusable="true"-->
+                <!--android:fontFamily="@font/roboto_bold"-->
+                <!--android:gravity="center"-->
+                <!--android:paddingEnd="16dp"-->
+                <!--android:text="Phân loại"-->
+                <!--android:textAllCaps="false"-->
+                <!--android:textColor="@color/colorPrimary"-->
+                <!--android:textSize="@dimen/suggestion_body_text_size" />-->
+
+
+                <ImageButton
                     android:id="@+id/main_btn_filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     android:fontFamily="@font/roboto_bold"
                     android:gravity="center"
                     android:paddingEnd="16dp"
+                    android:src="@drawable/ic_filter"
                     android:text="Phân loại"
                     android:textAllCaps="false"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/suggestion_body_text_size" />
+                    android:textSize="@dimen/suggestion_body_text_size"
+                    android:tint="@color/colorPrimary" />
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -70,7 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/toolbar_background_inverse"
-        android:elevation="4dp"
+        app:elevation="4dp"
         android:focusable="true"
         android:minHeight="?attr/actionBarSize"
         app:itemIconTint="@color/navigation_color_selector"
@@ -78,9 +99,6 @@
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_navigation_menu" />
 
-    <include
-        android:id="@+id/account_facebook_loading"
-        layout="@layout/facebook_loading_layout"
-        android:visibility="gone" />
+
 
 </RelativeLayout>

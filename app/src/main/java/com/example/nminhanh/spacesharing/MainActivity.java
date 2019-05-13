@@ -3,7 +3,6 @@ package com.example.nminhanh.spacesharing;
 import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -28,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -35,7 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.nminhanh.spacesharing.Fragment.MainPages.AccountFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.ChatFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.PagerAdapter;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.SearchFragment;
@@ -51,7 +50,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
-import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,7 +72,7 @@ public class MainActivity extends AppCompatActivity
     RelativeLayout mLayoutFacebookLoading;
     ImageView mImageFacebookLoading;
     FirebaseAuth mFirebaseAuth;
-    TextView mBtnFilter;
+    ImageButton mBtnFilter;
 
     HashMap<String, String> filters;
 
@@ -205,9 +203,12 @@ public class MainActivity extends AppCompatActivity
         });
         mViewPager.setOnPageChangeListener(this);
 
-        mLayoutFacebookLoading = findViewById(R.id.account_facebook_loading);
-        mImageFacebookLoading = findViewById(R.id.loading_image);
-        Glide.with(this).load("https://media.giphy.com/media/eBb2W1OYVHou9l6W7N/giphy.gif").into(mImageFacebookLoading);
+//        mLayoutFacebookLoading = findViewById(R.layout.facebook_loading_layout);
+//        mImageFacebookLoading = findViewById(R.id.fb_loading_image);
+//        GlideApp.with(this)
+//                .load(R.raw.fb_emo)
+//                .useAnimationPool(true)
+//                .into(mImageFacebookLoading);
     }
 
     @Override
@@ -596,9 +597,9 @@ public class MainActivity extends AppCompatActivity
     public void onSignOut() {
         Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
         mViewPager.setCurrentItem(0, true);
-       SignOutListener listener = null;
-        for(Fragment f: getSupportFragmentManager().getFragments()){
-            if(f instanceof ChatFragment){
+        SignOutListener listener = null;
+        for (Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f instanceof ChatFragment) {
                 listener = (SignOutListener) f;
                 break;
             }

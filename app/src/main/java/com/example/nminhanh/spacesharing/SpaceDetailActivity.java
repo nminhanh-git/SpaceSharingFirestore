@@ -1,9 +1,11 @@
 package com.example.nminhanh.spacesharing;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.net.Uri;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,8 +29,6 @@ import android.widget.Toast;
 
 import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.DetailImageAdapter;
 import com.example.nminhanh.spacesharing.Model.Space;
-import com.example.nminhanh.spacesharing.Model.UserFavoriteSpace;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -65,7 +64,11 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
     Toolbar mToolbar;
     ImageButton mBtnBack;
     ImageButton mBtnFavorite;
-    Button mBtnEdit;
+    ImageButton mBtnEdit;
+    ImageButton mBtnDelete;
+    ImageButton mBtnCall;
+    ImageButton mBtnChat;
+    ImageButton mBtnEmail;
 
     TextView mTextViewType;
     TextView mTextViewTitle;
@@ -198,6 +201,10 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
         mBtnBack = mToolbar.findViewById(R.id.detail_btn_cancel);
         mBtnFavorite = mToolbar.findViewById(R.id.detail_btn_favorite);
         mBtnEdit = mToolbar.findViewById(R.id.detail_btn_edit);
+        mBtnDelete = mToolbar.findViewById(R.id.detail_btn_delete);
+        mBtnCall = findViewById(R.id.detail_btn_call);
+        mBtnChat = findViewById(R.id.detail_btn_chat);
+        mBtnEmail = findViewById(R.id.detail_btn_mail);
 
         mTextViewType = findViewById(R.id.detail_text_view_type);
         mTextViewTitle = findViewById(R.id.detail_text_view_title);
@@ -385,7 +392,6 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
                     setResult(RESULT_CANCELED);
                 }
                 finish();
-
             }
         });
 
@@ -420,11 +426,91 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
             if (mCurrentUser.getUid().equalsIgnoreCase(mCurrentSpace.getIdChu())) {
                 mBtnFavorite.setVisibility(View.GONE);
                 mBtnEdit.setVisibility(View.VISIBLE);
+                mBtnDelete.setVisibility(View.VISIBLE);
             } else {
                 mBtnFavorite.setVisibility(View.VISIBLE);
                 mBtnEdit.setVisibility(View.GONE);
+                mBtnDelete.setVisibility(View.GONE);
             }
         }
+
+        mBtnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteDialog();
+            }
+        });
+        mBtnCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phoneUri = "tel:" + mTextViewOwnerPhone.getText().toString();
+                Intent intentCall = new Intent(Intent.ACTION_DIAL, Uri.parse(phoneUri));
+                startActivity(intentCall);
+            }
+        });
+        mBtnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentChat = new Intent(SpaceDetailActivity.this, ChatActivity.class);
+                intentChat.putExtra("conversation id", mCurrentSpace.getIdChu());
+                intentChat.putExtra("conversation name", mTextViewOwnerName.getText().toString());
+                intentChat.putExtra("conversation phone", mTextViewOwnerPhone.getText().toString());
+                startActivity(intentChat);
+            }
+        });
+
+        mBtnEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String emailUri = "mailto:" + mTextViewOwnerEmail.getText().toString();
+                Intent mailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse(emailUri));
+                try {
+                    startActivity(mailIntent);
+                }catch (ActivityNotFoundException e){
+                    Toast.makeText(SpaceDetailActivity.this, "đã xảy ra lỗi! Bạn không có ứng dụng email nào để hoàn thành tác vụ", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void showDeleteDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+
+        final View mDialogView = inflater.inflate(R.layout.detail_delete_dialog_layout, null);
+        TextView mBtnCancel = mDialogView.findViewById(R.id.dialog_delete_no);
+        TextView mBtnOk = mDialogView.findViewById(R.id.dialog_delete_yes);
+
+        final AlertDialog deleteDialog = builder.setView(mDialogView).create();
+        ColorDrawable dialogBackground = new ColorDrawable(Color.TRANSPARENT);
+        InsetDrawable inset = new InsetDrawable(dialogBackground, 40, 50, 40, 50);
+        deleteDialog.getWindow().setBackgroundDrawable(inset);
+
+        mBtnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDialog.dismiss();
+            }
+        });
+        mBtnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id = mCurrentSpace.getId();
+
+                DocumentReference spaceDocRef = mFirestore
+                        .collection("space")
+                        .document(id);
+                spaceDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        deleteDialog.dismiss();
+                        finish();
+                        Toast.makeText(SpaceDetailActivity.this, "Xóa tin đăng thành công", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        deleteDialog.show();
     }
 
     private void showAddFavoritePromtDialog() {

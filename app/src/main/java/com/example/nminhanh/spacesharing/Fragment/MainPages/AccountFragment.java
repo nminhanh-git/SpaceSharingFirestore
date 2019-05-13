@@ -2,9 +2,13 @@ package com.example.nminhanh.spacesharing.Fragment.MainPages;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -16,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,6 +98,7 @@ public class AccountFragment extends Fragment {
     Button mBtnChangePicture;
     RelativeLayout mLayoutRecommendSignIn;
     Button mBtnRecommenddSignIn;
+    AlertDialog facebookLoadingDialog;
 
 
     SignOutListener mSignOutListener;
@@ -166,8 +172,7 @@ public class AccountFragment extends Fragment {
                 if (isLinkedWithFacebook()) {
                     showUnlinkFacebookDialog();
                 } else {
-                    mShowLoadingListener.onShowingFacebookLoading();
-
+                    facebookLoadingDialog.show();
                     if (AccessToken.getCurrentAccessToken() != null) {
                         LoginManager.getInstance().logOut();
                     }
@@ -211,33 +216,33 @@ public class AccountFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (!isLinkedWithFacebook()) {
-            LoginManager.getInstance().registerCallback(mFacebookCallbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    Log.d(TAG, "registerCallback:onSuccess");
-                    LinkWithFacebookAccount(loginResult.getAccessToken());
+        LoginManager.getInstance().registerCallback(mFacebookCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "registerCallback:onSuccess");
+                LinkWithFacebookAccount(loginResult.getAccessToken());
 
-                }
+            }
 
-                @Override
-                public void onCancel() {
-                    Log.d(TAG, "registerCallback:onCancel");
-                    mShowLoadingListener.onHidingFacebookLoading();
-                }
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "registerCallback:onCancel");
+                mShowLoadingListener.onHidingFacebookLoading();
+            }
 
-                @Override
-                public void onError(FacebookException error) {
-                    Log.d(TAG, "registerCallback:onError", error);
-                }
-            });
-        }
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "registerCallback:onError", error);
+            }
+        });
     }
 
 
@@ -247,8 +252,7 @@ public class AccountFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    mShowLoadingListener.onHidingFacebookLoading();
-
+                    facebookLoadingDialog.dismiss();
                     GraphRequest FbInfoRequest = GraphRequest.newMeRequest(
                             AccessToken.getCurrentAccessToken(),
                             new GraphRequest.GraphJSONObjectCallback() {
@@ -298,34 +302,43 @@ public class AccountFragment extends Fragment {
     }
 
     private void showUnlinkFacebookDialog() {
-        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(this.getContext())
-                .setTitle("Huỷ liên kết với tài khoản Facebook")
-                .setMessage("Bạn có thực sự muốn hủy liên kết với tài khoản Facebook " + mTextViewFacebookName.getText().toString() + " không?")
-                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(this.getContext());
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_unlink_fb_layout, null);
+        TextView mTextViewCancel = view.findViewById(R.id.dialog_facebook_no);
+        TextView mTextViewOk = view.findViewById(R.id.dialog_facebook_yes);
+
+        mDialogBuilder.setView(view);
+        final AlertDialog mFacebookDialog = mDialogBuilder.create();
+        InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
+        mFacebookDialog.getWindow().setBackgroundDrawable(insetDrawable);
+
+        mTextViewCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFacebookDialog.cancel();
+            }
+        });
+        mTextViewOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentUser.unlink("facebook.com").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onClick(final DialogInterface dialog, int which) {
-                        mCurrentUser.unlink("facebook.com").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getActivity(), "Hủy liên kết thành công", Toast.LENGTH_SHORT).show();
-                                    updateUIWithUserInfo();
-                                    LoginManager.getInstance().logOut();
-                                    dialog.dismiss();
-                                }
-                            }
-                        });
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Hủy liên kết thành công", Toast.LENGTH_SHORT).show();
+                            updateUIWithUserInfo();
+                            LoginManager.getInstance().logOut();
+                            mFacebookDialog.dismiss();
+                        }
                     }
-                })
-                .setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .setIcon(this.getResources().getDrawable(R.drawable.facebook_logo_colored, null));
-        AlertDialog mFacebookDialog = mDialogBuilder.create();
+                });
+            }
+        });
+
         mFacebookDialog.show();
+
+
     }
 
     private void updateUIWithUserInfo() {
@@ -343,13 +356,6 @@ public class AccountFragment extends Fragment {
                             mFacebookNameData = documentSnapshot.get("facebookName").toString();
                             mTextViewFacebookName.setText(mFacebookNameData);
                         }
-                        if (documentSnapshot.get("avatar_name") != null) {
-                            StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
-                            GlideApp.with(AccountFragment.this)
-                                    .load(mAvatarRef)
-                                    .signature(new ObjectKey(System.currentTimeMillis()))
-                                    .into(mImageViewProfile);
-                        }
                     } else {
                         Log.d(TAG, "document doesn't exist");
                     }
@@ -361,14 +367,18 @@ public class AccountFragment extends Fragment {
         });
         mTextViewName.setText(mCurrentUser.getDisplayName());
         mTextViewPhone.setText(mCurrentUser.getPhoneNumber());
-        if (mCurrentUser.getPhotoUrl() != null) {
-            Glide.with(this).load(mCurrentUser.getPhotoUrl()).into(mImageViewProfile);
+        StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
+        if (!mAvatarRef.getDownloadUrl().isSuccessful()) {
+            GlideApp.with(this)
+                    .load(mAvatarRef)
+                    .signature(new ObjectKey(System.currentTimeMillis()))
+                    .into(mImageViewProfile);
         }
         if (isLinkedWithFacebook()) {
             mTextViewFacebookIntro.setText("Tài khoản Facebook:");
             mTextViewFacebookName.setVisibility(View.VISIBLE);
             mBtnConnectFacebook.setText("Hủy kết nối");
-            mBtnConnectFacebook.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+            mBtnConnectFacebook.setTextColor(getResources().getColor(R.color.colorCancel, null));
         } else {
             mTextViewFacebookIntro.setText(R.string.fragment_account_facebook_into_string);
             mTextViewFacebookName.setText("");
@@ -402,11 +412,23 @@ public class AccountFragment extends Fragment {
 
         mBtnSpaceManagement = view.findViewById(R.id.account_button_space_management);
         mBtnFavoriteSpace = view.findViewById(R.id.account_button_favorite);
+
         mBtnChangePicture = view.findViewById(R.id.account_button_edit_profile_avatar);
 
         mBtnSignOut = view.findViewById(R.id.account_button_sign_out);
         mLayoutRecommendSignIn = view.findViewById(R.id.account_layout_recommend_sign_in);
         mBtnRecommenddSignIn = view.findViewById(R.id.account_button_sign_in);
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.facebook_loading_layout, null);
+        ImageView mImageFbLoading = view.findViewById(R.id.fb_loading_image);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setView(view);
+        GlideApp.with(this)
+                .load(R.raw.fb_emo)
+                .into(mImageFbLoading);
+        facebookLoadingDialog = builder.create();
+        InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
+        facebookLoadingDialog.getWindow().setBackgroundDrawable(insetDrawable);
     }
 
     @Override

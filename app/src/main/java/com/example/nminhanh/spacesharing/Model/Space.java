@@ -1,6 +1,5 @@
 package com.example.nminhanh.spacesharing.Model;
 
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
@@ -27,7 +26,6 @@ public class Space implements Serializable {
     private int thangCoc;
     private int giaDien;
     private int giaNuoc;
-    private boolean khaDung = false;
     private ArrayList<Double> l = new ArrayList<>();
     private String g;
 
@@ -58,8 +56,7 @@ public class Space implements Serializable {
                  String moTa,
                  int thangCoc,
                  int giaDien,
-                 int giaNuoc,
-                 boolean khaDung
+                 int giaNuoc
     ) {
         this.id = id;
         this.idChu = idChu;
@@ -82,7 +79,6 @@ public class Space implements Serializable {
         this.thangCoc = thangCoc;
         this.giaDien = giaDien;
         this.giaNuoc = giaNuoc;
-        this.khaDung = khaDung;
     }
 
     public String getId() {
@@ -203,14 +199,6 @@ public class Space implements Serializable {
 
     public void setMoTa(String moTa) {
         this.moTa = moTa;
-    }
-
-    public boolean isKhaDung() {
-        return khaDung;
-    }
-
-    public void setKhaDung(boolean khaDung) {
-        this.khaDung = khaDung;
     }
 
     public String getDiaChiDayDu() {

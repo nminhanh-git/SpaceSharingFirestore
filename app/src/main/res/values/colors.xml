@@ -9,4 +9,5 @@
     <color name="backgroundColor">#ffff</color>
     <color name="map_circle_fill_color">#6475a5f5</color>
     <color name="map_circle_stroke_color">#448aff</color>
+    <color name="switch_enabled_track_tint">#fddeb1</color>
 </resources>

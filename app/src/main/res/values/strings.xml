@@ -46,5 +46,10 @@
     <string name="favor_dialog_promt_unsave_string">Bạn có muốn bỏ lưu tin đăng này không?</string>
     <string name="favor_dialog_promt_save_string">Bạn có muốn lưu lại tin đăng này không?</string>
     <string name="title_activity_maps_search">Map</string>
+    <string name="post_status_enabled_string">Tin đăng đã được duyệt</string>
+    <string name="post_status_pending_string">Tin đăng đang được kiểm duyệt</string>
+    <string name="post_status_disabled_string">tin đăng chưa được kiểm duyệt</string>
+    <string name="enable_dialog_promt_string">bạn có muốn cho phép tin này được đăng lên không?</string>
+    <string name="disable_dialog_promt_string">Bạn có muốn gỡ bỏ tin đăng này xuống không?</string>
 
 </resources>

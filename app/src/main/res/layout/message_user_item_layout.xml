@@ -11,32 +11,36 @@
         android:layout_height="25dp"
         android:src="@drawable/ic_people"
         app:civ_border_color="@color/light_gray"
-        app:civ_border_width="0.5dp" />
+        app:civ_border_width="0.5dp"
+        android:layout_alignParentEnd="true"/>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/bubble_chat_image_ava"
-        android:background="@drawable/edit_background"
-        android:padding="8dp"
-        android:layout_marginStart="8dp">
 
         <TextView
             android:id="@+id/bubble_chat_text_message"
-            style="@style/TextAppearance.AppCompat.Medium"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine|textLongMessage"
-            android:maxWidth="220dp"
-            android:textColor="@color/darkest_gray"
-            android:text="fdsfdsfsdfsfsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsfsfsdfsfdsfsfsdfsdfdsfdsfsdfsdfdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdsfsfdsfsfsdfsdfdsffffff" />
+            android:maxWidth="280dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/bubble_chat_image_ava"
+            android:background="@drawable/chat_background_gradient"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textSize="16sp"
+            android:text="fdsfdsfsdfsfsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsfsfsdfsfdsfsfsdfsdfdsfdsfsdfsdfdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdsfsfdsfsfsdfsdfdsffffff"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/bubble_chat_text_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/bubble_chat_text_message"
-            android:layout_marginTop="8dp"
-            android:text="đã gửi lúc 8h45"/>
-    </RelativeLayout>
+            android:layout_marginTop="4dp"
+            android:text="đã gửi lúc 8h45"
+            android:textColor="@color/dark_gray"
+            android:textSize="10sp"
+            android:layout_alignEnd="@id/bubble_chat_text_message"/>
 </RelativeLayout>

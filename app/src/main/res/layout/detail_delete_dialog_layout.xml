@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/edit_background_inverse"
+    android:padding="16dp"
+    android:layout_margin="16dp">
+
+    <ImageView
+        android:id="@+id/dialog_delete_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginEnd="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_delete2" />
+
+    <TextView
+        android:id="@+id/dialog_delete_title"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/dialog_delete_image"
+        android:layout_toEndOf="@id/dialog_delete_image"
+        android:fontFamily="@font/roboto_med"
+        android:text="Thông báo"
+        android:textColor="@color/darkest_gray" />
+
+    <TextView
+        android:id="@+id/dialog_delete_subtitle"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_delete_title"
+        android:layout_marginBottom="16dp"
+        android:layout_toEndOf="@id/dialog_delete_image"
+        android:fontFamily="@font/roboto_light"
+        android:text="Bạn có thực sự muốn xóa tin đăng này không? tin đăng bị xóa sẽ không thể khôi phục được nữa. " />
+
+    <TextView
+        android:id="@+id/dialog_delete_yes"
+        style="@style/TextAppearance.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_delete_subtitle"
+        android:layout_alignParentEnd="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto_bold"
+        android:text="xóa"
+        android:focusable="true"
+        android:clickable="true"
+        android:textAllCaps="true"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/dialog_delete_no"
+        style="@style/TextAppearance.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_delete_subtitle"
+        android:layout_marginRight="60dp"
+        android:layout_toStartOf="@id/dialog_delete_yes"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Hủy"
+        android:focusable="true"
+        android:clickable="true"
+        android:textAllCaps="true"
+        android:textColor="@color/colorPrimary" />
+</RelativeLayout>

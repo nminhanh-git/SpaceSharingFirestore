@@ -66,4 +66,33 @@
         android:layout_height="match_parent"
         android:layout_below="@id/appbar_layout"
         />
+
+    <RelativeLayout
+        android:id="@+id/favor_empty_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        >
+
+        <ImageView
+            android:id="@+id/favor_empty_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_favorite"
+            android:tint="#595959"/>
+
+        <TextView
+            android:id="@+id/favor_title"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/favor_empty_image"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/roboto_reg"
+            android:paddingHorizontal="100dp"
+            android:text="Bạn chưa có không gian yêu thích nào cả..."
+            android:textAlignment="center"
+            android:textColor="@color/dark_gray" />
+    </RelativeLayout>
 </RelativeLayout>
