@@ -42,7 +42,6 @@ public class OTPActivity extends AppCompatActivity {
     private static final String TAG = "MinhAnhOTPActivity";
     private static final int REQUEST_NEW_USER_INFO = 1;
     Toolbar mToolbar;
-    ImageView mImageViewToolbar;
     ImageButton mButtonBack;
     ImageView mImageBackground;
     OtpView mOtpView;
@@ -230,9 +229,6 @@ public class OTPActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        mImageViewToolbar = mToolbar.findViewById(R.id.otp_logo);
-        Glide.with(this).load(R.drawable.logo_2).into(mImageViewToolbar);
 
         mButtonBack = findViewById(R.id.otp_btn_back);
 

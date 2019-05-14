@@ -28,13 +28,7 @@
                 android:minHeight="?attr/actionBarSize"
                 android:orientation="horizontal"
                 android:theme="@style/AppTheme.ActionBar"
-                app:contentInsetStart="0dp">
-
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/logo_2" />
-            </android.support.v7.widget.Toolbar>
+                app:contentInsetStart="0dp"></android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
         <ImageView
@@ -67,20 +61,19 @@
             android:text="Chia sẻ không gian chưa bao giờ dễ đến thế!" />
 
 
-            <Button
-                android:id="@+id/btn_welcome_sign_in"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/welcome_fb_button"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/button_sign_in_background"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:fontFamily="@font/roboto_black"
-                android:text="tiếp tục với số điện thoại"
-                android:textColor="#fff"
-                android:paddingLeft="20dp"
-                android:drawableLeft="@drawable/ic_phone"
-                />
+        <Button
+            android:id="@+id/btn_welcome_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/welcome_fb_button"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/button_sign_in_background"
+            android:drawableLeft="@drawable/ic_phone"
+            android:fontFamily="@font/roboto_black"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:paddingLeft="20dp"
+            android:text="tiếp tục với số điện thoại"
+            android:textColor="#fff" />
 
 
         <Button
@@ -90,8 +83,8 @@
             android:layout_above="@id/welcome_text_view_divider"
             android:background="@drawable/background_fb_button"
             android:drawableLeft="@drawable/facebook_logo_drawble_left_btn"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:fontFamily="@font/roboto_black"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:paddingLeft="20dp"
             android:text="tiếp tục với facebook"
             android:textColor="#fff" />
@@ -117,8 +110,8 @@
             android:layout_centerHorizontal="true"
             android:background="?attr/selectableItemBackground"
             android:fontFamily="@font/roboto_reg"
-            android:text="Tiếp tục sử dụng mà không cần đăng nhập"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:text="Tiếp tục sử dụng mà không cần đăng nhập"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/colorPrimary" />

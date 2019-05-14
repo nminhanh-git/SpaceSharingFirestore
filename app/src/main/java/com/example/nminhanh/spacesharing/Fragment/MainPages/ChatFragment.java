@@ -169,6 +169,7 @@ public class ChatFragment extends Fragment implements SignOutListener {
     @Override
     public void onResume() {
         super.onResume();
+        mCurrentUser = mFirebaseAuth.getCurrentUser();
         if (mCurrentUser != null) {
             mConversationAdapter.startListening();
             mLayoutSignIn.setVisibility(View.GONE);

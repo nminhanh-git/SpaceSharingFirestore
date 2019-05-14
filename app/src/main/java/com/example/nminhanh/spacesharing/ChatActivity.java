@@ -229,6 +229,7 @@ public class ChatActivity extends AppCompatActivity {
         mMessageAdapter.startListening();
     }
 
+
     private void initializeView() {
         mToolbar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(mToolbar);

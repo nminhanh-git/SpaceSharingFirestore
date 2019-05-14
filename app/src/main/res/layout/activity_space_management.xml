@@ -45,29 +45,28 @@
                     android:id="@+id/space_management_btn_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/ic_back" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/space_management_btn_add"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:fontFamily="@font/roboto_bold"
-                    android:text="Thêm mới"
                     android:textAlignment="viewEnd"
                     android:textAllCaps="false"
-                    android:textColor="@color/colorPrimary"
-                    android:visibility="gone" />
+                    android:src="@drawable/ic_add"
+                    android:textColor="@color/colorPrimary" />
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>

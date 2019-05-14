@@ -510,6 +510,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onResume() {
         Log.d(TAG, "onResume called");
+        mCurrentUser = mFirebaseAuth.getCurrentUser();
         if (mCurrentUser != null) {
             mLayoutRecommendSignIn.setVisibility(View.GONE);
             updateUIWithUserInfo();

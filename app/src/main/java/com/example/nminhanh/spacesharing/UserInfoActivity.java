@@ -45,7 +45,6 @@ public class UserInfoActivity extends AppCompatActivity {
     private static final int REQUEST_UPDATE_PHONE_NUMBER = 2;
     private static final String TAG = "MA:UserInfoActivity";
     Toolbar mToolbar;
-    ImageView mImageViewLogo;
     TextView mTextViewSubtile;
     EditText mEditName;
     EditText mEditPhone;
@@ -361,8 +360,6 @@ public class UserInfoActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        mImageViewLogo = mToolbar.findViewById(R.id.user_info_logo);
-        GlideApp.with(this).load(R.drawable.logo_2).into(mImageViewLogo);
         mBtnCancel = findViewById(R.id.user_info_btn_cancel);
         mBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override

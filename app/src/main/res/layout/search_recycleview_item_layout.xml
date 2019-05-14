@@ -4,20 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:background="@drawable/edit_background_inverse"
+    android:background="@drawable/edit_background"
     android:clickable="true"
+    android:elevation="4dp"
     android:focusable="true"
+
     android:foreground="?attr/selectableItemBackgroundBorderless"
-    android:outlineProvider="bounds">
+    android:outlineProvider="background">
 
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="#ffff"
         app:cardCornerRadius="15dp"
-        android:backgroundTint="@color/light_gray"
-        app:cardElevation="0dp">
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,70 +30,69 @@
             <ImageView
                 android:id="@+id/item_image"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="200dp"
                 android:layout_alignParentTop="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_location" />
 
 
-            <TextView
-                android:id="@+id/item_type"
-                style="@style/TextAppearance.AppCompat.Small"
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/item_image"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="8dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/roboto_reg"
-                android:text="type"
-                android:textColor="@color/colorPrimaryDark" />
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/item_title"
-                style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_type"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="8dp"
-                android:ellipsize="end"
+                <TextView
 
-                android:fontFamily="@font/roboto_reg"
-                android:text="Tiêu đề"
-                android:textColor="@color/darkest_gray" />
+                    android:id="@+id/item_type"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_reg"
+                    android:text="type"
+                    android:textColor="@color/colorPrimaryDark" />
 
-
-            <TextView
-                android:id="@+id/item_address"
-                style="@style/TextAppearance.AppCompat.Small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_title"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="8dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/roboto_reg"
-
-                android:text="subtitle" />
+                <TextView
+                    android:id="@+id/item_title"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/item_type"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_reg"
+                    android:maxLines="1"
+                    android:text="Tiêu đề"
+                    android:textColor="@color/darkest_gray" />
 
 
-            <TextView
-                android:id="@+id/item_textview_price"
-                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/item_address"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="8dp"
-                android:fontFamily="@font/roboto_reg"
-                android:gravity="center_vertical"
-                android:text="3,000,000" />
+                <TextView
+                    android:id="@+id/item_address"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/item_title"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="middle"
+                    android:fontFamily="@font/roboto_reg"
+                    android:singleLine="true"
+                    android:text="subtitle" />
+
+
+                <TextView
+                    android:id="@+id/item_textview_price"
+                    style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/item_address"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/roboto_reg"
+                    android:gravity="center_vertical"
+                    android:text="3,000,000" />
+            </RelativeLayout>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

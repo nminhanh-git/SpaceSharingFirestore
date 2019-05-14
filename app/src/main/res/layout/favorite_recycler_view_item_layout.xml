@@ -48,6 +48,7 @@
                 android:layout_below="@id/favor_item_title"
                 android:layout_alignStart="@id/favor_item_title"
                 android:layout_marginBottom="8dp"
+                android:maxLines="2"
                 android:layout_toEndOf="@id/favor_item_image"
                 android:fontFamily="@font/roboto_reg"
                 android:text="Quang Trung, Đống Đa, Hà Nội"

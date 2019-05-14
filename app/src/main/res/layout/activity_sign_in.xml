@@ -47,11 +47,6 @@
                 android:orientation="horizontal"
                 android:theme="@style/AppTheme.ActionBar"
                 app:contentInsetStart="0dp">
-
-                <ImageView
-                    android:id="@+id/sign_in_logo"
-                    android:layout_width="120dp"
-                    android:layout_height="match_parent" />
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 

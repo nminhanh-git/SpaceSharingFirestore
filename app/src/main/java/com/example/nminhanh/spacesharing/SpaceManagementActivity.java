@@ -42,7 +42,7 @@ public class SpaceManagementActivity extends AppCompatActivity implements Custom
     RecyclerView spaceManagementRecycleView;
     RelativeLayout mEmptyLayout;
     ImageView mImageEmpty;
-    Button mBtnAdd;
+    ImageButton mBtnAdd;
     Button mBtnEmptyAdd;
 
     AddressUtils mAddressUtils;

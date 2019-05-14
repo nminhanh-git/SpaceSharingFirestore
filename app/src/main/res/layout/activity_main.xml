@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#fcfcfc"
     tools:context=".MainActivity">
     <!--ToolBar-->
     <android.support.design.widget.AppBarLayout
@@ -11,14 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/transparent"
-        android:focusable="true"
-        app:elevation="0dp">
+        android:background="@drawable/toolbar_background_inverse"
+        app:elevation="0dp"
+        android:focusable="true">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="?attr/actionBarSize"
             android:minHeight="?attr/actionBarSize"
             android:orientation="horizontal">
 
@@ -26,11 +27,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
+                <TextView
                     android:id="@+id/main_image_toolbar_logo"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/logo_2" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/roboto_black"
+                    android:text="house"
+                    android:textSize="32sp"
+                    android:gravity="center"/>
 
                 <!--<TextView-->
                 <!--android:id="@+id/main_btn_filter"-->
@@ -91,14 +95,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/toolbar_background_inverse"
-        app:elevation="4dp"
         android:focusable="true"
         android:minHeight="?attr/actionBarSize"
+        app:elevation="4dp"
         app:itemIconTint="@color/navigation_color_selector"
         app:itemTextColor="@color/navigation_color_selector"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_navigation_menu" />
-
 
 
 </RelativeLayout>

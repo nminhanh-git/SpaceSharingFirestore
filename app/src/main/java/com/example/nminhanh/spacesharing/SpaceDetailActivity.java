@@ -346,7 +346,7 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
 
         // Type related data
         if (!mCurrentSpace.getLoai().equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[3])) {
-            if (mCurrentSpace.getHuongCua().equalsIgnoreCase(
+            if (!mCurrentSpace.getHuongCua().equalsIgnoreCase(
                     getResources().getStringArray(R.array.door_direction_array)[0])) {
                 mTextViewDoor.setText("Hướng cửa chính phía " + mCurrentSpace.getHuongCua());
             } else {

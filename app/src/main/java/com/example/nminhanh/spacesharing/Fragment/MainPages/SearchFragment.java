@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.nminhanh.spacesharing.GoToTopEventListener;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
@@ -125,7 +127,7 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 .build();
 
         // Firestore adapter
-        mLinearLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
         mRecycleView.setLayoutManager(mLinearLayoutManager);
         firestorePagingAdapter = new CustomFirestorePagingAdapter(options, this.getContext());
     }

@@ -35,7 +35,6 @@ public class SignInActivity extends AppCompatActivity {
     RelativeLayout mLayoutLoading;
     RelativeLayout mLayoutSignIn;
     ImageButton mBtnBack;
-    ImageView mImageLogo;
 
     String userName = "";
     boolean isSignInBtnClicked = false;
@@ -102,8 +101,6 @@ public class SignInActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        mImageLogo = mToolbar.findViewById(R.id.sign_in_logo);
-        Glide.with(this).asBitmap().load(R.drawable.logo_2).into(mImageLogo);
 
         mLayoutSignIn = findViewById(R.id.sign_in_layout);
         mImageViewSignIn = findViewById(R.id.image_view_sign_in);

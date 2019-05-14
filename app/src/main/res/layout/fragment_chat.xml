@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.MainPages.ChatFragment"
-    android:padding="16dp">
+    tools:context=".Fragment.MainPages.ChatFragment">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/conversation_recycle_view"
         android:layout_width="match_parent"
@@ -17,8 +17,7 @@
         android:layout_height="match_parent"
         android:background="#ffffff"
         android:gravity="center_vertical"
-        android:visibility="visible"
-        >
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/conversation_group_image"
@@ -26,9 +25,7 @@
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/ic_conversation_large"
-            android:tint="#595959"
-
-            />
+            android:tint="#595959" />
 
         <TextView
             android:id="@+id/conversation_text_view_recommend_login"
@@ -36,10 +33,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/conversation_group_image"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/roboto_reg"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
-            android:layout_marginTop="20dp"
             android:text="Hãy đăng nhập để có thể\n trò chuyện nhé"
             android:textAlignment="center"
             android:textColor="@color/dark_gray" />

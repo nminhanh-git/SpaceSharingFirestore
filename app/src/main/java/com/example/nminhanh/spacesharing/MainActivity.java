@@ -6,6 +6,8 @@ import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.location.Location;
@@ -34,7 +36,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.ChatFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.PagerAdapter;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.SearchFragment;
@@ -66,11 +67,10 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_LOCATION_PERMISSION_CODE = 1;
 
     Toolbar mToolbar;
-    ImageView mImageToolbarLogo;
+    TextView mTextViewToolbar;
     ViewPager mViewPager;
     BottomNavigationView mNavigationView;
     RelativeLayout mLayoutFacebookLoading;
-    ImageView mImageFacebookLoading;
     FirebaseAuth mFirebaseAuth;
     ImageButton mBtnFilter;
 
@@ -112,11 +112,10 @@ public class MainActivity extends AppCompatActivity
     String mLatestAddress;
     boolean isTrackingLocation = false;
 
-    ImageView mImageLocation;
     TextView mTextViewLocationAddress;
     TextView mTextViewLocationLoading;
     Button mBtnLocationStartLocate;
-    Button mBtnLocationCancel;
+
     Button mBtnLocationFilter;
     AnimatorSet mAnimLocationImage;
     Location mLatestTranslatedLocation;
@@ -150,11 +149,16 @@ public class MainActivity extends AppCompatActivity
         mToolbar = findViewById(R.id.main_toolbar);
         this.setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        mImageToolbarLogo = mToolbar.findViewById(R.id.main_image_toolbar_logo);
-        Glide.with(this)
-                .asBitmap()
-                .load(R.drawable.logo_2)
-                .into(mImageToolbarLogo);
+
+        mTextViewToolbar = mToolbar.findViewById(R.id.main_image_toolbar_logo);
+        mTextViewToolbar.setText("house");
+        Shader textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                , Color.rgb(242, 153, 74), Color.rgb(242, 201, 76)
+                , Shader.TileMode.REPEAT);
+        mTextViewToolbar.setTextColor(Color.rgb(242, 153, 74));
+        mTextViewToolbar.getPaint().setShader(textShader);
+
+
         mBtnFilter = findViewById(R.id.main_btn_filter);
         mBtnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +177,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id = 0;
+                Shader textShader;
                 switch (menuItem.getItemId()) {
                     case R.id.action_search:
                         id = 0;
@@ -185,15 +190,33 @@ public class MainActivity extends AppCompatActivity
                             }
                             goToTopEventListener.GoToTop();
                         }
+                        mTextViewToolbar.setText("house");
+                        textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                                , Color.rgb(242, 153, 74), Color.rgb(242, 201, 76)
+                                , Shader.TileMode.REPEAT);
+                        mTextViewToolbar.setTextColor(Color.rgb(242, 153, 74));
+                        mTextViewToolbar.getPaint().setShader(textShader);
                         mBtnFilter.setVisibility(View.VISIBLE);
                         break;
                     case R.id.action_chat:
                         id = 1;
                         mBtnFilter.setVisibility(View.GONE);
+                        mTextViewToolbar.setText("chat");
+                        textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                                , Color.rgb(89, 89, 89), Color.rgb(89, 89, 89)
+                                , Shader.TileMode.REPEAT);
+                        mTextViewToolbar.setTextColor(Color.rgb(89, 89, 89));
+                        mTextViewToolbar.getPaint().setShader(textShader);
                         break;
                     case R.id.action_account:
                         id = 2;
                         mBtnFilter.setVisibility(View.GONE);
+                        mTextViewToolbar.setText("tài khoản");
+                        textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                                , Color.rgb(89, 89, 89), Color.rgb(89, 89, 89)
+                                , Shader.TileMode.REPEAT);
+                        mTextViewToolbar.setTextColor(Color.rgb(89, 89, 89));
+                        mTextViewToolbar.getPaint().setShader(textShader);
                         break;
                 }
                 invalidateOptionsMenu();
@@ -219,10 +242,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPageSelected(int i) {
         mNavigationView.getMenu().getItem(i).setChecked(true);
-        if (i != 0) {
-            mBtnFilter.setVisibility(View.INVISIBLE);
-        } else {
-            mBtnFilter.setVisibility(View.VISIBLE);
+        Shader textShader;
+        switch (i) {
+            case 0:
+                mTextViewToolbar.setText("house");
+                textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                        , Color.rgb(242, 153, 74), Color.rgb(242, 201, 76)
+                        , Shader.TileMode.REPEAT);
+                mTextViewToolbar.setTextColor(Color.rgb(242, 153, 74));
+                mTextViewToolbar.getPaint().setShader(textShader);
+                mBtnFilter.setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                mTextViewToolbar.setText("chat");
+                textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                        , Color.rgb(89, 89, 89), Color.rgb(89, 89, 89)
+                        , Shader.TileMode.REPEAT);
+                mTextViewToolbar.setTextColor(Color.rgb(89, 89, 89));
+                mTextViewToolbar.getPaint().setShader(textShader);
+                break;
+            case 2:
+                mTextViewToolbar.setText("tài khoản");
+                textShader = new LinearGradient(0, 0, 0, mTextViewToolbar.getLineHeight()
+                        , Color.rgb(89, 89, 89), Color.rgb(89, 89, 89)
+                        , Shader.TileMode.REPEAT);
+                mTextViewToolbar.setTextColor(Color.rgb(89, 89, 89));
+                mTextViewToolbar.getPaint().setShader(textShader);
+                break;
         }
     }
 
@@ -327,57 +373,6 @@ public class MainActivity extends AppCompatActivity
         mDialog.show();
     }
 
-    private void showNearbyDialog() {
-        AlertDialog.Builder mDialogBuilderLocation = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View mDialogView = inflater.inflate(R.layout.dialog_location_layout, null);
-
-        mImageLocation = mDialogView.findViewById(R.id.dialog_location_image);
-        mTextViewLocationAddress = mDialogView.findViewById(R.id.dialog_location_address);
-        mTextViewLocationLoading = mDialogView.findViewById(R.id.dialog_location_text_view_loading);
-        mBtnLocationStartLocate = mDialogView.findViewById(R.id.dialog_location_button_start_locate);
-        mBtnLocationCancel = mDialogView.findViewById(R.id.dialog_location_btn_cancel);
-        mBtnLocationFilter = mDialogView.findViewById(R.id.dialog_location_btn_filter);
-        mAnimLocationImage = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.rotate);
-        mAnimLocationImage.setTarget(mImageLocation);
-
-        final AlertDialog mDialogLocation = mDialogBuilderLocation.setView(mDialogView).create();
-        InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
-        mDialogLocation.getWindow().setBackgroundDrawable(insetDrawable);
-
-        mBtnLocationCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialogLocation.dismiss();
-            }
-        });
-
-        mBtnLocationStartLocate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isTrackingLocation) {
-                    startTrackingLocation();
-                } else {
-                    stopTrackingLocation();
-                }
-            }
-        });
-
-        mBtnLocationFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent nearbyIntent = new Intent(MainActivity.this, FilterResultActivity.class);
-                filters.put("nearby", "");
-                nearbyIntent.putExtra("filters", filters);
-                nearbyIntent.putExtra("latitude", mLatestTranslatedLocation.getLatitude());
-                nearbyIntent.putExtra("longitude", mLatestTranslatedLocation.getLongitude());
-                nearbyIntent.putExtra("address", mLatestAddress);
-                startActivity(nearbyIntent);
-                mDialogLocation.dismiss();
-            }
-        });
-        mDialogLocation.show();
-    }
 
     private void initializeFilterAddressSpinnerData() {
         districtList = new ArrayList<>();
