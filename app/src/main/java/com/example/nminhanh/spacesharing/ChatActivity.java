@@ -290,12 +290,12 @@ public class ChatActivity extends AppCompatActivity {
                     if (today.isEqual(currentDate.toLocalDate())) {
                         formatter = DateTimeFormatter.ofPattern("HH:mm");
                         ((MessageFriendViewHolder) holder).mTextViewDate.setText("Hôm nay lúc " + currentDate.format(formatter));
-                    } else if (today.isEqual(currentDate.toLocalDate().minusDays(1))) {
+                    } else if (today.isEqual(currentDate.toLocalDate().plusDays(1))) {
                         formatter = DateTimeFormatter.ofPattern("HH:mm");
                         ((MessageFriendViewHolder) holder).mTextViewDate.setText("Hôm qua lúc " + currentDate.format(formatter));
                     } else {
                         formatter = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
-                        ((MessageFriendViewHolder) holder).mTextViewDate.setText("Hôm qua lúc " + currentDate.format(formatter));
+                        ((MessageFriendViewHolder) holder).mTextViewDate.setText(currentDate.format(formatter));
                     }
 
 
@@ -317,12 +317,12 @@ public class ChatActivity extends AppCompatActivity {
                     if (today.isEqual(currentDate.toLocalDate())) {
                         formatter = DateTimeFormatter.ofPattern("HH:mm");
                         ((MessageUserViewHolder) holder).mTextViewDate.setText("Hôm nay lúc " + currentDate.format(formatter));
-                    } else if (today.isEqual(currentDate.toLocalDate().minusDays(1))) {
+                    } else if (today.isEqual(currentDate.toLocalDate().plusDays(1))) {
                         formatter = DateTimeFormatter.ofPattern("HH:mm");
                         ((MessageUserViewHolder) holder).mTextViewDate.setText("Hôm qua lúc " + currentDate.format(formatter));
                     } else {
                         formatter = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
-                        ((MessageUserViewHolder) holder).mTextViewDate.setText("Hôm qua lúc " + currentDate.format(formatter));
+                        ((MessageUserViewHolder) holder).mTextViewDate.setText(currentDate.format(formatter));
                     }
 
                     StorageReference mImageAvaRef = mFirebaseStorage.getReference()
