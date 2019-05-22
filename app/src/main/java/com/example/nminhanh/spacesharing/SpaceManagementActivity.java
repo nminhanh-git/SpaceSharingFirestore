@@ -45,8 +45,6 @@ public class SpaceManagementActivity extends AppCompatActivity implements Custom
     ImageButton mBtnAdd;
     Button mBtnEmptyAdd;
 
-    AddressUtils mAddressUtils;
-
     CustomFirestoreRecyclerAdapter mFirestoreRecyclerAdapter;
     FirebaseAuth mFirebaseAuth;
     FirebaseFirestore db;
@@ -112,8 +110,6 @@ public class SpaceManagementActivity extends AppCompatActivity implements Custom
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         spaceManagementRecycleView.setLayoutManager(layoutManager);
 
-        mAddressUtils = new AddressUtils(this);
-
         if (mFirebaseAuth.getCurrentUser() == null) {
             mEmptyLayout.setVisibility(View.VISIBLE);
             spaceManagementRecycleView.setVisibility(View.GONE);
@@ -152,10 +148,13 @@ public class SpaceManagementActivity extends AppCompatActivity implements Custom
 
     @Override
     public void onRecyclerViewDataChanged(int itemCount) {
-        if(itemCount == 0){
+        if (itemCount == 0) {
             mEmptyLayout.setVisibility(View.VISIBLE);
-        }else{
+            mBtnAdd.setVisibility(View.GONE);
+        } else {
             mEmptyLayout.setVisibility(View.GONE);
+            mBtnAdd.setVisibility(View.VISIBLE);
+
         }
     }
 }

@@ -226,6 +226,7 @@ public class AddSpaceActivity extends AppCompatActivity implements
                 public void onSuccess(Object o) {
                     DocumentReference currentSpaceRef = mSpacesCollRef.document(currentSpace.getId());
                     Map<String, Object> updates = new HashMap<>();
+                    updates.put("trangThai", "pending");
                     updates.put("timeAdded", FieldValue.serverTimestamp());
                     currentSpaceRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -243,6 +244,7 @@ public class AddSpaceActivity extends AppCompatActivity implements
                 }
             });
         } else {
+            currentSpace.setTrangThai("pending");
             saveTask = mSpacesCollRef.add(currentSpace);
             saveTask.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override

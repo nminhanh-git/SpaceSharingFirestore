@@ -49,8 +49,9 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/detail_btn_cancel"
                     android:fontFamily="@font/roboto_reg"
                     android:gravity="center_vertical"
                     android:text="Chi tiết"
@@ -92,672 +93,764 @@
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:fontFamily="@font/roboto_bold"
                         android:src="@drawable/ic_edit"
                         android:textAllCaps="false"
                         android:textColor="@color/colorPrimary" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/detail_switch_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="8dp"
+                        android:theme="@style/AppTheme" />
                 </LinearLayout>
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <!--Content-->
-    <ScrollView
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/appbar_layout">
-
-        <RelativeLayout
+        android:layout_height="wrap_content">
+        <!--Content-->
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/detail_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appbar_layout">
 
-            <!--Image Layout-->
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/layout_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#cecece">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/detail_recycle_view_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="220dp" />
-
-                <LinearLayout
-                    android:id="@+id/detail_indicator_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/indicator_background_inverse"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <ImageView
-                        android:id="@+id/detail_indicator_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:src="@drawable/circle_indicator" />
-
-                    <ImageView
-                        android:id="@+id/detail_indicator_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:src="@drawable/circle_indicator"
-                        android:tint="@color/light_gray" />
-
-                    <ImageView
-                        android:id="@+id/detail_indicator_3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:src="@drawable/circle_indicator"
-                        android:tint="@color/light_gray" />
-
-                    <ImageView
-                        android:id="@+id/detail_indicator_4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:src="@drawable/circle_indicator"
-                        android:tint="@color/light_gray" />
-
-                    <ImageView
-                        android:id="@+id/detail_indicator_5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:src="@drawable/circle_indicator"
-                        android:tint="@color/light_gray" />
-                </LinearLayout>
-
-            </android.support.constraint.ConstraintLayout>
-
-            <!--Textview Type-->
-            <TextView
-                android:id="@+id/detail_text_view_type"
-                style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/layout_image"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="32dp"
-                android:fontFamily="@font/roboto_reg"
-                android:text="Nhà ở"
-                android:textColor="@color/colorPrimaryDark" />
-
-
-            <!--Textview Title-->
-            <TextView
-                android:id="@+id/detail_text_view_title"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_text_view_type"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="5dp"
-                android:fontFamily="@font/roboto_reg"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:maxLength="80"
-                android:text="Cho thuê nhà giá rẻ tại ngõ 169A Tây Sơn Đống Đa Hà Nội"
-                android:textColor="@color/darkest_gray" />
-
-            <!--Textview Date-->
-            <TextView
-                android:id="@+id/detail_text_view_date"
-                style="@style/TextAppearance.AppCompat.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_text_view_title"
-                android:layout_marginLeft="16dp"
-                android:fontFamily="@font/roboto_reg"
-                android:text="Ngày đăng: 22/04/2018"
-                android:textColor="@color/dark_gray" />
-
-
-            <!--Price and size info-->
-            <LinearLayout
-                android:id="@+id/detail_layout_size_price_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_text_view_date"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="16dp"
-                android:weightSum="3">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="Giá cho thuê"
-                        android:textAllCaps="true" />
-
-                    <TextView
-                        android:id="@+id/detail_text_view_price"
-                        style="@style/TextAppearance.AppCompat.Medium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="4 triệu"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorPrimary" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="diện tích"
-                        android:textAllCaps="true" />
-
-                    <TextView
-                        android:id="@+id/detail_text_view_size"
-                        style="@style/TextAppearance.AppCompat.Medium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="30m2"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorPrimary" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="Đặt cọc"
-                        android:textAllCaps="true" />
-
-                    <TextView
-                        android:id="@+id/detail_text_view_prepaid"
-                        style="@style/TextAppearance.AppCompat.Medium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/roboto_reg"
-                        android:text="4 triệu"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorPrimary" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!--account layout-->
             <RelativeLayout
-                android:id="@+id/detail_account_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_layout_size_price_info"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/card_layout_background"
-                android:padding="16dp">
+                android:layout_height="wrap_content">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/detail_account_image"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_face_placeholder"
-                    app:civ_border_color="#ffff"
-                    app:civ_circle_background_color="#ffff" />
+                <!--Image Layout-->
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/layout_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#cecece">
 
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/detail_recycle_view_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="270dp" />
+
+                    <LinearLayout
+                        android:id="@+id/detail_indicator_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/indicator_background_inverse"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ImageView
+                            android:id="@+id/detail_indicator_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/circle_indicator" />
+
+                        <ImageView
+                            android:id="@+id/detail_indicator_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/circle_indicator"
+                            android:tint="@color/light_gray" />
+
+                        <ImageView
+                            android:id="@+id/detail_indicator_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/circle_indicator"
+                            android:tint="@color/light_gray" />
+
+                        <ImageView
+                            android:id="@+id/detail_indicator_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/circle_indicator"
+                            android:tint="@color/light_gray" />
+
+                        <ImageView
+                            android:id="@+id/detail_indicator_5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/circle_indicator"
+                            android:tint="@color/light_gray" />
+                    </LinearLayout>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <!--Textview Type-->
                 <TextView
-                    android:id="@+id/detail_account_title"
-                    style="@style/TextAppearance.AppCompat.Small"
+                    android:id="@+id/detail_text_view_type"
+                    style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/detail_account_image"
+                    android:layout_below="@id/layout_image"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="32dp"
                     android:fontFamily="@font/roboto_reg"
-                    android:text="Người đăng" />
+                    android:text="Nhà ở"
+                    android:textColor="@color/colorPrimaryDark" />
 
+                <!--Textview Status-->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layout_image"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp">
+
+                    <TextView
+                        android:id="@+id/detail_text_view_status"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@id/deatail_image_status"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Chưa được xét duyệt"
+                        android:textColor="@color/colorCancel" />
+
+                    <ImageView
+                        android:id="@+id/deatail_image_status"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_alignTop="@id/detail_text_view_status"
+                        android:layout_alignBottom="@id/detail_text_view_status"
+                        android:src="@drawable/status_badge"
+                        android:tint="@color/colorCancel" />
+                </RelativeLayout>
+
+
+                <!--Textview Title-->
                 <TextView
-                    android:id="@+id/detail_account_text_view_name"
+                    android:id="@+id/detail_text_view_title"
                     style="@style/TextAppearance.AppCompat.Large"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/detail_account_title"
-                    android:layout_toEndOf="@id/detail_account_image"
+                    android:layout_below="@id/detail_text_view_type"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="5dp"
                     android:fontFamily="@font/roboto_reg"
-                    android:text="Trần Văn A"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:maxLength="80"
+                    android:text="Cho thuê nhà giá rẻ tại ngõ 169A Tây Sơn Đống Đa Hà Nội"
+
                     android:textColor="@color/darkest_gray" />
 
+                <!--Textview Date-->
                 <TextView
-                    android:id="@+id/detail_account_text_view_email"
+                    android:id="@+id/detail_text_view_date"
                     style="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/detail_account_text_view_name"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_toEndOf="@id/detail_account_image"
+                    android:layout_below="@id/detail_text_view_title"
+                    android:layout_marginLeft="16dp"
                     android:fontFamily="@font/roboto_reg"
-                    android:text="atranvan@gmail.com" />
-
-                <TextView
-                    android:id="@+id/detail_account_text_view_phone"
-                    style="@style/TextAppearance.AppCompat.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/detail_account_text_view_email"
-                    android:layout_toEndOf="@id/detail_account_image"
-                    android:fontFamily="@font/roboto_reg"
-                    android:text="0943223856" />
-            </RelativeLayout>
+                    android:text="Ngày đăng: 22/04/2018"
+                    android:textColor="@color/dark_gray" />
 
 
-            <!--Address Layout-->
-            <RelativeLayout
-                android:id="@+id/detail_address_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_account_layout"
-                android:layout_margin="16dp">
-
-                <android.support.v7.widget.CardView
+                <!--Price and size info-->
+                <LinearLayout
+                    android:id="@+id/detail_layout_size_price_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_text_view_date"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:baselineAligned="false"
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Giá cho thuê"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/detail_text_view_price"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="4 triệu"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="diện tích"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/detail_text_view_size"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="30m2"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Đặt cọc"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/detail_text_view_prepaid"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="4 triệu"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--account layout-->
+                <RelativeLayout
+                    android:id="@+id/detail_account_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_layout_size_price_info"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@drawable/card_layout_background"
+                    android:padding="16dp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/detail_account_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/ic_face_placeholder"
+                        app:civ_border_color="#ffff"
+                        app:civ_circle_background_color="#ffff" />
+
+                    <TextView
+                        android:id="@+id/detail_account_title"
+                        style="@style/TextAppearance.AppCompat.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/detail_account_image"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Người đăng" />
+
+                    <TextView
+                        android:id="@+id/detail_account_text_view_name"
+                        style="@style/TextAppearance.AppCompat.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/detail_account_title"
+                        android:layout_toEndOf="@id/detail_account_image"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="Trần Văn A"
+                        android:textColor="@color/darkest_gray" />
+
+                    <TextView
+                        android:id="@+id/detail_account_text_view_email"
+                        style="@style/TextAppearance.AppCompat.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/detail_account_text_view_name"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_toEndOf="@id/detail_account_image"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="atranvan@gmail.com" />
+
+                    <TextView
+                        android:id="@+id/detail_account_text_view_phone"
+                        style="@style/TextAppearance.AppCompat.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/detail_account_text_view_email"
+                        android:layout_toEndOf="@id/detail_account_image"
+                        android:fontFamily="@font/roboto_reg"
+                        android:text="0943223856" />
+                </RelativeLayout>
+
+
+                <!--Address Layout-->
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/detail_address_layout"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_account_layout"
+                    android:layout_margin="16dp"
                     android:backgroundTint="@color/light_gray"
                     app:cardCornerRadius="15dp">
 
-                    <RelativeLayout
+                    <RelativeLayout xmlns:map="http://schemas.android.com/apk/res-auto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <RelativeLayout xmlns:map="http://schemas.android.com/apk/res-auto"
-                            android:id="@+id/detail_address_content_layout"
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:id="@+id/detail_image_view_address"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_alignTop="@id/detail_text_view_address_title"
+                            android:layout_alignBottom="@id/detail_text_view_address_value"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="16dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_location" />
+
+                        <TextView
+                            android:id="@+id/detail_text_view_address_title"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:padding="16dp">
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="5dp"
+                            android:fontFamily="@font/roboto_reg"
+                            android:text="Địa chỉ"
+                            android:textColor="@color/darkest_gray" />
 
-                            <ImageView
-                                android:id="@+id/detail_image_view_address"
-                                android:layout_width="80dp"
-                                android:layout_height="80dp"
-                                android:layout_alignParentTop="true"
-                                android:layout_alignParentEnd="true"
-                                android:layout_alignParentBottom="true"
-                                android:layout_centerVertical="true"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/ic_location" />
-
-                            <TextView
-                                android:id="@+id/detail_text_view_address_title"
-                                style="@style/TextAppearance.AppCompat.Medium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="5dp"
-                                android:fontFamily="@font/roboto_reg"
-                                android:text="Địa chỉ"
-                                android:textColor="@color/darkest_gray" />
-
-                            <TextView
-                                android:id="@+id/detail_text_view_address_value"
-                                style="@style/TextAppearance.AppCompat.Small"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_below="@id/detail_text_view_address_title"
-                                android:layout_toStartOf="@id/detail_image_view_address"
-                                android:text="Số 43, ngách 29, ngõ 169A Tây Sơn, phường Quang Trung, quận Đống Đa, thành phố Hà Nội"
-                                android:textAlignment="viewStart"
-                                android:textColor="@color/dark_gray" />
-                        </RelativeLayout>
+                        <TextView
+                            android:id="@+id/detail_text_view_address_value"
+                            style="@style/TextAppearance.AppCompat.Small"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_below="@id/detail_text_view_address_title"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_toStartOf="@id/detail_image_view_address"
+                            android:text="Số 43, ngách 29, ngõ 169A Tây Sơn, phường Quang Trung, quận Đống Đa, thành phố Hà Nội"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/dark_gray" />
 
                         <com.google.android.gms.maps.MapView
                             android:id="@+id/map"
                             android:layout_width="match_parent"
                             android:layout_height="150dp"
-                            android:layout_below="@id/detail_address_content_layout"
+                            android:layout_below="@id/detail_text_view_address_value"
                             map:cameraZoom="13"
                             map:liteMode="true" />
                     </RelativeLayout>
 
+
                 </android.support.v7.widget.CardView>
-            </RelativeLayout>
-
-            <!--Description Layout-->
-            <RelativeLayout
-                android:id="@+id/detail_description_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_address_layout"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/edit_background"
-                android:padding="16dp">
 
 
-                <TextView
-                    android:id="@+id/detail_text_view_description_title"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/roboto_reg"
-                    android:gravity="center"
-                    android:text="Mô tả"
-                    android:textColor="@color/darkest_gray" />
-
-                <TextView
-                    android:id="@+id/detail_text_view_description_value"
-                    style="@style/TextAppearance.AppCompat.Small"
+                <!--Description Layout-->
+                <RelativeLayout
+                    android:id="@+id/detail_description_layout"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_address_layout"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/edit_background"
+                    android:padding="16dp">
+
+
+                    <TextView
+                        android:id="@+id/detail_text_view_description_title"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/roboto_reg"
+                        android:gravity="center"
+                        android:text="Mô tả"
+                        android:textColor="@color/darkest_gray" />
+
+                    <TextView
+                        android:id="@+id/detail_text_view_description_value"
+                        style="@style/TextAppearance.AppCompat.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@id/detail_text_view_description_title"
+                        android:text="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hdden in the middle of text. The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested."
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/dark_gray" />
+                </RelativeLayout>
+
+                <!--Others layout-->
+                <RelativeLayout
+                    android:id="@+id/detail_other_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_description_layout"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/edit_background"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/detail_text_view_other_title"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/roboto_reg"
+                        android:gravity="center"
+                        android:text="Thông tin khác"
+                        android:textColor="@color/darkest_gray" />
+
+                    <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/detail_text_view_other_title"
+                        android:columnCount="3">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_rowSpan="1"
+                            android:layout_columnSpan="1"
+                            android:layout_gravity="left"
+                            android:layout_margin="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_house" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_other_type"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="Nhà ở"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detail_layout_electric"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_rowSpan="1"
+                            android:layout_columnSpan="1"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_margin="8dp"
+
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_electric" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_other_electric"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="3.9k/số"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detail_layout_water"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_rowSpan="1"
+                            android:layout_columnSpan="1"
+                            android:layout_margin="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_water" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_other_water"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="5k/khối"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detail_layout_bed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_rowSpan="1"
+                            android:layout_columnSpan="1"
+                            android:layout_gravity="left"
+                            android:layout_margin="8dp"
+                            android:layout_marginTop="12dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_bed" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_other_bed"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="4 phòng ngủ"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detail_layout_bath"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_rowSpan="1"
+                            android:layout_columnSpan="1"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_margin="8dp"
+
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_toilet" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_other_bath"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="4 phòng vệ sinh"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/detail_layout_door"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_rowSpan="1"
+                            android:layout_columnSpan="1"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_margin="8dp"
+
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_door" />
+
+                            <TextView
+                                android:id="@+id/detail_text_view_other_door"
+                                style="@style/TextAppearance.AppCompat.Small"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:fontFamily="@font/roboto_reg"
+                                android:text="Hướng cửa phía đông"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+                    </GridLayout>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/detail_admin_btn_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_other_layout"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/detail_admin_btn_disable"
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Inverse"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/edit_background_inverse"
+                        android:backgroundTint="@android:color/holo_red_light"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:outlineProvider="background"
+                        android:padding="8dp"
+                        android:text="Không cho phép"
+                        android:textStyle="bold" />
+
+
+                    <Button
+                        android:id="@+id/detail_admin_btn_enable"
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Inverse"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/edit_background_inverse"
+                        android:backgroundTint="@android:color/holo_green_light"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:outlineProvider="background"
+                        android:padding="8dp"
+                        android:text="cho phép"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </RelativeLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_anchor="@id/detail_scroll_view"
+            app:layout_anchorGravity="center|bottom"
+            app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/detail_communication_layout"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/chat_background_gradient"
+                android:elevation="4dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/detail_btn_call"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_phone"
+                    android:tint="@color/white"
+                    app:layout_constraintEnd_toStartOf="@id/stroke0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageView
+                    android:id="@+id/stroke0"
+                    android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/detail_text_view_description_title"
-                    android:text="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hdden in the middle of text. The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested."
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/dark_gray" />
-            </RelativeLayout>
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/detail_btn_call"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/vertical_stroke"
+                    android:tint="@color/white"
+                    app:layout_constraintEnd_toStartOf="@id/detail_btn_chat"
+                    app:layout_constraintStart_toEndOf="@id/detail_btn_call" />
 
-            <!--Others layout-->
-            <RelativeLayout
-                android:id="@+id/detail_other_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_description_layout"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="86dp"
-                android:background="@drawable/edit_background"
-                android:padding="16dp">
+                <ImageButton
+                    android:id="@+id/detail_btn_chat"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_conversation"
+                    android:tint="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/stroke1"
+                    app:layout_constraintStart_toEndOf="@id/stroke0"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:layout_editor_absoluteY="0dp" />
 
-                <TextView
-                    android:id="@+id/detail_text_view_other_title"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/roboto_reg"
-                    android:gravity="center"
-                    android:text="Thông tin khác"
-                    android:textColor="@color/darkest_gray" />
+                <ImageView
+                    android:id="@+id/stroke1"
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@id/detail_btn_call"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/vertical_stroke"
+                    android:tint="@color/white"
+                    app:layout_constraintEnd_toStartOf="@id/detail_btn_mail"
+                    app:layout_constraintStart_toEndOf="@id/detail_btn_chat" />
 
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/detail_text_view_other_title"
-                    android:columnCount="3">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_rowSpan="1"
-                        android:layout_columnSpan="1"
-                        android:layout_gravity="left"
-                        android:layout_margin="8dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_house" />
-
-                        <TextView
-                            android:id="@+id/detail_text_view_other_type"
-                            style="@style/TextAppearance.AppCompat.Small"
-                            android:layout_width="70dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/roboto_reg"
-                            android:text="Nhà ở"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detail_layout_electric"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_rowSpan="1"
-                        android:layout_columnSpan="1"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="8dp"
-
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_electric" />
-
-                        <TextView
-                            android:id="@+id/detail_text_view_other_electric"
-                            style="@style/TextAppearance.AppCompat.Small"
-                            android:layout_width="70dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/roboto_reg"
-                            android:text="3.9k/số"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detail_layout_water"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_rowSpan="1"
-                        android:layout_columnSpan="1"
-                        android:layout_margin="8dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_water" />
-
-                        <TextView
-                            android:id="@+id/detail_text_view_other_water"
-                            style="@style/TextAppearance.AppCompat.Small"
-                            android:layout_width="70dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/roboto_reg"
-                            android:text="5k/khối"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detail_layout_bed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_rowSpan="1"
-                        android:layout_columnSpan="1"
-                        android:layout_gravity="left"
-                        android:layout_margin="8dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_bed" />
-
-                        <TextView
-                            android:id="@+id/detail_text_view_other_bed"
-                            style="@style/TextAppearance.AppCompat.Small"
-                            android:layout_width="70dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/roboto_reg"
-                            android:text="4 phòng ngủ"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detail_layout_bath"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_rowSpan="1"
-                        android:layout_columnSpan="1"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="8dp"
-
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_toilet" />
-
-                        <TextView
-                            android:id="@+id/detail_text_view_other_bath"
-                            style="@style/TextAppearance.AppCompat.Small"
-                            android:layout_width="70dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/roboto_reg"
-                            android:text="4 phòng vệ sinh"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/detail_layout_door"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_rowSpan="1"
-                        android:layout_columnSpan="1"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="8dp"
-
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_door" />
-
-                        <TextView
-                            android:id="@+id/detail_text_view_other_door"
-                            style="@style/TextAppearance.AppCompat.Small"
-                            android:layout_width="70dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/roboto_reg"
-                            android:text="Hướng cửa phía đông"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-                </GridLayout>
-            </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/detail_btn_mail"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="end"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_email"
+                    android:tint="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/stroke1" />
+            </android.support.constraint.ConstraintLayout>
         </RelativeLayout>
-    </ScrollView>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:background="@drawable/chat_background_gradient"
-        android:elevation="4dp"
-        android:foregroundGravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/detail_btn_call"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_phone"
-            android:tint="@color/white"
-            app:layout_constraintEnd_toStartOf="@id/stroke0"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/stroke0"
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/detail_btn_call"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:src="@drawable/vertical_stroke"
-            android:tint="@color/white"
-            app:layout_constraintEnd_toStartOf="@id/detail_btn_chat"
-            app:layout_constraintStart_toEndOf="@id/detail_btn_call" />
-
-        <ImageButton
-            android:id="@+id/detail_btn_chat"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_conversation"
-            android:tint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/stroke1"
-            app:layout_constraintStart_toEndOf="@id/stroke0"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteY="0dp" />
-
-        <ImageView
-            android:id="@+id/stroke1"
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@id/detail_btn_call"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:src="@drawable/vertical_stroke"
-            android:tint="@color/white"
-            app:layout_constraintEnd_toStartOf="@id/detail_btn_mail"
-            app:layout_constraintStart_toEndOf="@id/detail_btn_chat" />
-
-        <ImageButton
-            android:id="@+id/detail_btn_mail"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_email"
-            android:tint="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/stroke1" />
-    </android.support.constraint.ConstraintLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

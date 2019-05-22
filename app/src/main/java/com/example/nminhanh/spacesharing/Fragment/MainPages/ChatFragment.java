@@ -140,7 +140,7 @@ public class ChatFragment extends Fragment implements SignOutListener {
                 });
 
                 Date date = model.getTimeAdded();
-                DateFormat dateFormat = new SimpleDateFormat("HH:MM dd/MM/yyyy");
+                DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
                 holder.mTextViewDate.setText(dateFormat.format(date));
 
                 holder.setOnItemClickListener(new View.OnClickListener() {

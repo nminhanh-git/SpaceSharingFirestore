@@ -6,7 +6,7 @@
     <color name="facebook_color">#385c8d</color>
     <color name="darkest_gray">#434343</color>
     <color name="colorCancel">#F44336</color>
-    <color name="backgroundColor">#ffff</color>
+    <color name="backgroundColor">#fdfdfd</color>
     <color name="map_circle_fill_color">#6475a5f5</color>
     <color name="map_circle_stroke_color">#448aff</color>
     <color name="switch_enabled_track_tint">#fddeb1</color>

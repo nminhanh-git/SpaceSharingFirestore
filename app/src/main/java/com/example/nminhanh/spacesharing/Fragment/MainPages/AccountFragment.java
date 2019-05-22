@@ -2,7 +2,6 @@ package com.example.nminhanh.spacesharing.Fragment.MainPages;
 
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,8 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
+import com.example.nminhanh.spacesharing.AdminActivity;
 import com.example.nminhanh.spacesharing.FavoriteSpaceActivity;
 import com.example.nminhanh.spacesharing.GlideApp;
 import com.example.nminhanh.spacesharing.R;
@@ -42,6 +41,7 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -94,10 +94,11 @@ public class AccountFragment extends Fragment {
     Button mBtnConnectFacebook;
     RelativeLayout mBtnSpaceManagement;
     RelativeLayout mBtnFavoriteSpace;
+    RelativeLayout mBtnAdmin;
     Button mBtnSignOut;
     Button mBtnChangePicture;
     RelativeLayout mLayoutRecommendSignIn;
-    Button mBtnRecommenddSignIn;
+    Button mBtnRecommendSignIn;
     AlertDialog facebookLoadingDialog;
 
 
@@ -158,7 +159,7 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        mBtnRecommenddSignIn.setOnClickListener(new View.OnClickListener() {
+        mBtnRecommendSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent signInIntent = new Intent(getActivity(), WelcomeActivity.class);
@@ -217,9 +218,31 @@ public class AccountFragment extends Fragment {
             }
         });
 
-
+        if (mCurrentUser != null) {
+            DocumentReference mUserRef = mFirestore
+                    .collection("user_data")
+                    .document(mCurrentUser.getUid());
+            mUserRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if(documentSnapshot.getBoolean("isAdmin")){
+                        mBtnAdmin.setVisibility(View.VISIBLE);
+                        mBtnAdmin.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent adminIntent = new Intent(getActivity(), AdminActivity.class);
+                                startActivity(adminIntent);
+                            }
+                        });
+                    }else{
+                        mBtnAdmin.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -243,6 +266,40 @@ public class AccountFragment extends Fragment {
                 Log.d(TAG, "registerCallback:onError", error);
             }
         });
+    }
+
+    private void intitializeView() {
+        mImageViewProfile = view.findViewById(R.id.account_image);
+        mTextViewName = view.findViewById(R.id.account_text_view_name);
+        mTextViewEmail = view.findViewById(R.id.account_text_view_email);
+        mTextViewPhone = view.findViewById(R.id.account_text_view_phone);
+        mBtnEditProfile = view.findViewById(R.id.account_button_edit_profile);
+
+        mTextViewFacebookIntro = view.findViewById(R.id.account_facebook_text_view_intro);
+        mTextViewFacebookName = view.findViewById(R.id.account_facebook_text_view_name);
+        mBtnConnectFacebook = view.findViewById(R.id.account_button_connect_facebook);
+
+        mBtnAdmin = view.findViewById(R.id.account_button_admin);
+        mBtnSpaceManagement = view.findViewById(R.id.account_button_space_management);
+        mBtnFavoriteSpace = view.findViewById(R.id.account_button_favorite);
+
+        mBtnChangePicture = view.findViewById(R.id.account_button_edit_profile_avatar);
+
+        mBtnSignOut = view.findViewById(R.id.account_button_sign_out);
+        mLayoutRecommendSignIn = view.findViewById(R.id.account_layout_recommend_sign_in);
+        mBtnRecommendSignIn = view.findViewById(R.id.account_button_sign_in);
+
+        //Facebook connect custom dialog
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.facebook_loading_layout, null);
+        ImageView mImageFbLoading = view.findViewById(R.id.fb_loading_image);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setView(view);
+        GlideApp.with(this)
+                .load(R.raw.fb_emo)
+                .into(mImageFbLoading);
+        facebookLoadingDialog = builder.create();
+        InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
+        facebookLoadingDialog.getWindow().setBackgroundDrawable(insetDrawable);
     }
 
 
@@ -276,7 +333,7 @@ public class AccountFragment extends Fragment {
                                 }
                             });
                     Bundle requestFbInfoParameter = new Bundle();
-                    requestFbInfoParameter.putString("fields", "name,picture");
+                    requestFbInfoParameter.putString("fields", "name,picture.type(large)");
                     FbInfoRequest.setParameters(requestFbInfoParameter);
                     FbInfoRequest.executeAsync();
 
@@ -284,7 +341,7 @@ public class AccountFragment extends Fragment {
                     updateUIWithUserInfo();
                 } else {
                     Log.d(TAG, task.getException().getMessage());
-                    mShowLoadingListener.onHidingFacebookLoading();
+                    facebookLoadingDialog.dismiss();
                     AlertDialog mFacebookErrorDialog = new AlertDialog.Builder(getContext())
                             .setIcon(R.drawable.facebook_logo_colored)
                             .setTitle("Lỗi khi liên kết tài khoản Facebook")
@@ -399,37 +456,6 @@ public class AccountFragment extends Fragment {
         return false;
     }
 
-    private void intitializeView() {
-        mImageViewProfile = view.findViewById(R.id.account_image);
-        mTextViewName = view.findViewById(R.id.account_text_view_name);
-        mTextViewEmail = view.findViewById(R.id.account_text_view_email);
-        mTextViewPhone = view.findViewById(R.id.account_text_view_phone);
-        mBtnEditProfile = view.findViewById(R.id.account_button_edit_profile);
-
-        mTextViewFacebookIntro = view.findViewById(R.id.account_facebook_text_view_intro);
-        mTextViewFacebookName = view.findViewById(R.id.account_facebook_text_view_name);
-        mBtnConnectFacebook = view.findViewById(R.id.account_button_connect_facebook);
-
-        mBtnSpaceManagement = view.findViewById(R.id.account_button_space_management);
-        mBtnFavoriteSpace = view.findViewById(R.id.account_button_favorite);
-
-        mBtnChangePicture = view.findViewById(R.id.account_button_edit_profile_avatar);
-
-        mBtnSignOut = view.findViewById(R.id.account_button_sign_out);
-        mLayoutRecommendSignIn = view.findViewById(R.id.account_layout_recommend_sign_in);
-        mBtnRecommenddSignIn = view.findViewById(R.id.account_button_sign_in);
-
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.facebook_loading_layout, null);
-        ImageView mImageFbLoading = view.findViewById(R.id.fb_loading_image);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setView(view);
-        GlideApp.with(this)
-                .load(R.raw.fb_emo)
-                .into(mImageFbLoading);
-        facebookLoadingDialog = builder.create();
-        InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
-        facebookLoadingDialog.getWindow().setBackgroundDrawable(insetDrawable);
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -6,12 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:background="@drawable/edit_background_inverse">
+    android:background="@drawable/edit_background_inverse"
+    android:elevation="4dp"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:outlineProvider="background"
+    android:translationY="10dp">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="130dp"
-        android:backgroundTint="@color/light_gray"
         app:cardCornerRadius="15dp"
         app:cardElevation="0dp">
 
@@ -20,19 +23,34 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/favor_item_image"
+                android:id="@+id/item_image"
                 android:layout_width="150dp"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:src="@drawable/sign_in_image" />
 
             <TextView
-                android:id="@+id/favor_item_title"
-                style="@style/TextAppearance.AppCompat.Medium"
+                android:id="@+id/item_type"
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_toEndOf="@id/favor_item_image"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/item_image"
+                android:ellipsize="marquee"
+                android:fontFamily="@font/roboto_reg"
+                android:text="nhà ở"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/item_title"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/item_type"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_toEndOf="@id/item_image"
                 android:ellipsize="marquee"
                 android:fontFamily="@font/roboto_reg"
                 android:maxLines="3"
@@ -41,19 +59,32 @@
                 android:textColor="@color/darkest_gray" />
 
             <TextView
-                android:id="@+id/favor_item_address"
+                android:id="@+id/item_address"
                 style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/favor_item_title"
-                android:layout_alignStart="@id/favor_item_title"
+                android:layout_below="@id/item_title"
+                android:layout_alignStart="@id/item_title"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:maxLines="2"
-                android:layout_toEndOf="@id/favor_item_image"
+                android:layout_toEndOf="@id/item_image"
+                android:ellipsize="end"
                 android:fontFamily="@font/roboto_reg"
+                android:gravity="bottom"
+                android:maxLines="2"
                 android:text="Quang Trung, Đống Đa, Hà Nội"
-                android:textColor="@color/dark_gray"
-                android:ellipsize="end"/>
+                android:textColor="@color/dark_gray" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
+
+    <ImageView
+        android:id="@+id/item_image_status_badge"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/status_badge"
+        android:visibility="gone" />
 </RelativeLayout>

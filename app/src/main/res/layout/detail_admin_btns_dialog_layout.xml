@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:background="@drawable/edit_background_inverse"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/dialog_admin_btns_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@id/dialog_admin_btns_title"
+        android:layout_alignBottom="@id/dialog_admin_btns_subtitle"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/ic_disable"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/dialog_admin_btns_title"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/dialog_admin_btns_image"
+        android:fontFamily="@font/roboto_med"
+        android:text="Thông báo"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/darkest_gray" />
+
+    <TextView
+        android:id="@+id/dialog_admin_btns_subtitle"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_admin_btns_title"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/dialog_admin_btns_image"
+        android:fontFamily="@font/roboto_light"
+        android:text="Xác nhận không cho phép tin này được đăng lên? " />
+
+    <EditText
+        android:id="@+id/dialog_admin_edit_reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_admin_btns_subtitle"
+        android:background="@drawable/edit_background"
+        android:minHeight="120dp"
+        android:maxLines="15"
+        android:gravity="top|start"
+        android:layout_marginBottom="16dp"
+        android:hint="Hãy cho người đăng biết lý do tại sao bài đăng của họ lại không qua được vòng kiểm duyệt..."
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/dialog_admin_btns_yes"
+        style="@style/TextAppearance.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_admin_edit_reason"
+        android:layout_alignParentEnd="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Xác nhận"
+        android:textAllCaps="true"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/dialog_admin_btns_no"
+        style="@style/TextAppearance.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_admin_edit_reason"
+        android:layout_marginRight="60dp"
+        android:layout_toStartOf="@id/dialog_admin_btns_yes"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Hủy"
+        android:textAllCaps="true"
+        android:textColor="@color/colorPrimary" />
+</RelativeLayout>

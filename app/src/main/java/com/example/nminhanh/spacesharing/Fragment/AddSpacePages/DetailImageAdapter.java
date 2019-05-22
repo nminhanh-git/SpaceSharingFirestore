@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.request.target.DrawableImageViewTarget;
-import com.bumptech.glide.signature.MediaStoreSignature;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.nminhanh.spacesharing.GlideApp;
 import com.example.nminhanh.spacesharing.R;
@@ -47,7 +45,7 @@ public class DetailImageAdapter extends RecyclerView.Adapter<DetailImageAdapter.
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
         GlideApp.with(context)
-                .load(R.raw.loading2)
+                .load(R.raw.loading)
                 .useAnimationPool(true)
                 .into(viewHolder.mImageView);
         String name = imagePath.get(i);

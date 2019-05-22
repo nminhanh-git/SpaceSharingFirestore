@@ -190,7 +190,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto_bold"
-                    android:text="100"
+                    android:text="1000"
                     android:textColor="#595959" />
             </LinearLayout>
 
@@ -212,7 +212,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/size_range_layout"
-                app:scaleMax="100"
+                app:scaleMax="1000"
                 app:scaleMin="0"
                 app:scaleStep="20"
                 app:thumbColor="#dadada"

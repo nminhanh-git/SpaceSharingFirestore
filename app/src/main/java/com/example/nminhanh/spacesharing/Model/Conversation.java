@@ -9,6 +9,7 @@ public class Conversation implements Serializable {
     String id;
     @ServerTimestamp
     Date timeAdded;
+    String newMessageId;
 
     public Conversation() {
     }
@@ -32,5 +33,13 @@ public class Conversation implements Serializable {
 
     public void setTimeAdded(Date timeAdded) {
         this.timeAdded = timeAdded;
+    }
+
+    public String getNewMessageId() {
+        return newMessageId;
+    }
+
+    public void setNewMessageId(String newMessageId) {
+        this.newMessageId = newMessageId;
     }
 }

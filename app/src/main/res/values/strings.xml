@@ -51,5 +51,9 @@
     <string name="post_status_disabled_string">tin đăng chưa được kiểm duyệt</string>
     <string name="enable_dialog_promt_string">bạn có muốn cho phép tin này được đăng lên không?</string>
     <string name="disable_dialog_promt_string">Bạn có muốn gỡ bỏ tin đăng này xuống không?</string>
+    <string name="noti_channel_name">House Application notification channel</string>
+    <string name="space_detail_status_enabled_string">Đã được kiểm duyệt</string>
+    <string name="space_detail_status_pending_string">Đang chờ kiểm duyệt</string>
+    <string name="space_detail_status_disabled_string">Chưa được kiểm duyệt</string>
 
 </resources>

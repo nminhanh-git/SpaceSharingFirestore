@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.nminhanh.spacesharing.GoToTopEventListener;
+import com.example.nminhanh.spacesharing.MyNotiService;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.R;
@@ -34,7 +35,6 @@ import com.google.firebase.firestore.Query;
  * A simple {@link Fragment} subclass.
  */
 public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, GoToTopEventListener {
-    public static final int REQUEST_DETAIL_SPACE = 2;
 
     RecyclerView mRecycleView;
     RecyclerView.LayoutManager mLinearLayoutManager;
@@ -73,6 +73,9 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
         createNewFirestorePagingAdapterInstance();
         mRecycleView.setAdapter(firestorePagingAdapter);
         // Inflate the layout for this fragment
+
+        Intent notiServiceIntent = new Intent(getActivity(), MyNotiService.class);
+        getContext().startService(notiServiceIntent);
         return view;
     }
 
@@ -113,7 +116,9 @@ public class SearchFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     public void createNewFirestorePagingAdapterInstance() {
         CollectionReference mSpacesCollection = db.collection("space");
-        Query baseQuery = mSpacesCollection.orderBy("timeAdded", Query.Direction.DESCENDING);
+        Query baseQuery = mSpacesCollection
+                .whereEqualTo("trangThai", "enabled")
+                .orderBy("timeAdded", Query.Direction.DESCENDING);
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)

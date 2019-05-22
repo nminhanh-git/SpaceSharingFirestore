@@ -17,12 +17,10 @@ import com.bumptech.glide.signature.ObjectKey;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 public class CustomFirestoreRecyclerAdapter
@@ -57,6 +55,8 @@ public class CustomFirestoreRecyclerAdapter
     protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull final Space model) {
         if (holder instanceof SpaceManagementViewHolder) {
             bindDataForSpaceManagement((SpaceManagementViewHolder) holder, model);
+        } else {
+            bindDataForAdmin((AdminViewHolder) holder, model);
         }
     }
 
@@ -66,9 +66,13 @@ public class CustomFirestoreRecyclerAdapter
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View view;
         if (context instanceof SpaceManagementActivity) {
-            view = inflater.inflate(R.layout.search_recycleview_item_layout
-                    , viewGroup, false);
+            view = inflater.inflate(R.layout.favorite_recycler_view_item_layout,
+                    viewGroup, false);
             return new SpaceManagementViewHolder(view);
+        } else if (context instanceof AdminActivity) {
+            view = inflater.inflate(R.layout.search_recycleview_item_layout,
+                    viewGroup, false);
+            return new AdminViewHolder(view);
         }
         return null;
     }
@@ -77,11 +81,54 @@ public class CustomFirestoreRecyclerAdapter
         holder.mTextViewType.setText(model.getLoai());
         holder.mTextViewSpaceTitle.setText(model.getTieuDe());
         holder.mTextViewAddress.setText(model.getDiaChiDayDu());
+
+        holder.mImageBageStatus.setVisibility(View.VISIBLE);
+        switch (model.getTrangThai()) {
+            case "enabled":
+                holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_green_dark));
+                break;
+            case "pending":
+                holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_orange_dark));
+                break;
+            case "disabled":
+                holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_red_light));
+                break;
+        }
+
+        Glide.with(context)
+                .load(R.raw.loading)
+                .useAnimationPool(true)
+                .into(holder.mImageView);
+
+        StorageReference mFirtImageRef = mFirebaseStorage
+                .getReference(model.getIdChu())
+                .child(model.getId())
+                .child(1 + "");
+
+        Glide.with(context)
+                .load(mFirtImageRef)
+                .into(holder.mImageView);
+
+        holder.setOnItemClickLister(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, SpaceDetailActivity.class);
+                intent.putExtra("current space", model);
+                intent.putExtra("from", context.getClass().getSimpleName());
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    public void bindDataForAdmin(final AdminViewHolder holder, final Space model) {
+        holder.mTextViewType.setText(model.getLoai());
+        holder.mTextViewSpaceTitle.setText(model.getTieuDe());
+        holder.mTextViewAddress.setText(model.getDiaChiDayDu());
         holder.mTextViewPrice.setText((int) model.getDienTich() + "");
         holder.mTextViewPrice.append(Html.fromHtml("m<sup><small>2</small></sup>"));
         holder.mTextViewPrice.append(" - ");
         double price = model.getGia();
-        String priceStr = String.valueOf(price);
+        String priceStr = String.valueOf((int) price);
         if (priceStr.length() >= 10) {
             price /= 1000000000.0;
             holder.mTextViewPrice.append(String.format("%.1f tỉ đồng", price));
@@ -94,18 +141,28 @@ public class CustomFirestoreRecyclerAdapter
         } else {
             holder.mTextViewPrice.append(price + " đồng");
         }
+        GlideApp.with(context)
+                .load(R.raw.loading)
+                .useAnimationPool(true)
+                .into(holder.mImageView);
 
-        holder.mImageView.setImageResource(R.drawable.loading2);
-        StorageReference mFirtImageRef = mFirebaseStorage
+        final StorageReference mFirtImageRef = mFirebaseStorage
                 .getReference(model.getIdChu())
                 .child(model.getId())
                 .child(1 + "");
 
-        Glide.with(context)
-                .load(mFirtImageRef)
-                .into(holder.mImageView);
+        mFirtImageRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+            @Override
+            public void onSuccess(StorageMetadata storageMetadata) {
+                long updatedTime = storageMetadata.getUpdatedTimeMillis();
+                Glide.with(holder.mImageView.getContext())
+                        .load(mFirtImageRef)
+                        .signature(new ObjectKey(updatedTime))
+                        .into(holder.mImageView);
+            }
+        });
 
-        holder.setViewOnClickLister(new View.OnClickListener() {
+        holder.setOnItemClickLister(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, SpaceDetailActivity.class);
@@ -122,7 +179,7 @@ public class CustomFirestoreRecyclerAdapter
         TextView mTextViewSpaceTitle;
         TextView mTextViewAddress;
         ImageView mImageView;
-        TextView mTextViewPrice;
+        ImageView mImageBageStatus;
 
 
         public SpaceManagementViewHolder(@NonNull View itemView) {
@@ -131,10 +188,32 @@ public class CustomFirestoreRecyclerAdapter
             mTextViewSpaceTitle = itemView.findViewById(R.id.item_title);
             mTextViewAddress = itemView.findViewById(R.id.item_address);
             mImageView = itemView.findViewById(R.id.item_image);
-            mTextViewPrice = itemView.findViewById(R.id.item_textview_price);
+            mImageBageStatus = itemView.findViewById(R.id.item_image_status_badge);
         }
 
-        public void setViewOnClickLister(View.OnClickListener listener) {
+        public void setOnItemClickLister(View.OnClickListener listener) {
+            itemView.setOnClickListener(listener);
+        }
+    }
+
+    public class AdminViewHolder extends RecyclerView.ViewHolder {
+        TextView mTextViewType;
+        TextView mTextViewSpaceTitle;
+        TextView mTextViewAddress;
+        TextView mTextViewPrice;
+        ImageView mImageView;
+
+
+        public AdminViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mTextViewType = itemView.findViewById(R.id.item_type);
+            mTextViewSpaceTitle = itemView.findViewById(R.id.item_title);
+            mTextViewAddress = itemView.findViewById(R.id.item_address);
+            mTextViewPrice = itemView.findViewById(R.id.item_textview_price);
+            mImageView = itemView.findViewById(R.id.item_image);
+        }
+
+        public void setOnItemClickLister(View.OnClickListener listener) {
             itemView.setOnClickListener(listener);
         }
     }

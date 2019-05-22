@@ -142,93 +142,101 @@ public class ChatActivity extends AppCompatActivity {
         mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mEditMessage.getText().toString().isEmpty()) {
-
-
-                    final DocumentReference mConversationFriendDocRef = mFirestore
-                            .collection("user_data")
-                            .document(mConversationId)
-                            .collection("conversation")
-                            .document(mCurrentUser.getUid());
-
-                    mConversationFriendDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (!task.getResult().exists()) {
-                                Conversation currentFriendConversation = new Conversation(mCurrentUser.getUid(), new Date());
-                                mConversationFriendDocRef.set(currentFriendConversation);
-                            }
-                        }
-                    });
-
-                    final CollectionReference mMessageFriendColRef = mConversationFriendDocRef
-                            .collection("message");
-
-
-                    final DocumentReference mConversationUserDocRef = mFirestore
-                            .collection("user_data")
-                            .document(mCurrentUser.getUid())
-                            .collection("conversation")
-                            .document(mConversationId);
-
-                    mConversationUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (!task.getResult().exists()) {
-                                Conversation currentUserConversation = new Conversation(mConversationId, new Date());
-                                mConversationUserDocRef.set(currentUserConversation);
-                            }
-                        }
-                    });
-
-                    final CollectionReference mMessageUserColRef = mConversationUserDocRef
-                            .collection("message");
-
-                    final Message currentMessage = new Message(mCurrentUser.getUid(), "", message, System.currentTimeMillis());
-                    mMessageUserColRef.add(currentMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "update user's conversation successfully");
-                                Map<String, Object> updates =new HashMap<>();
-                                updates.put("timeAdded",FieldValue.serverTimestamp());
-                                mConversationUserDocRef.update(updates);
-                            } else {
-                                Log.d(TAG, "update user's conversation error: " + task.getException().getMessage());
-                            }
-                        }
-                    });
-
-                    mMessageFriendColRef.add(currentMessage).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "update friend's conversation successfully");
-                                Map<String, Object> updates =new HashMap<>();
-                                updates.put("timeAdded",FieldValue.serverTimestamp());
-                                mConversationFriendDocRef.update(updates);
-                            } else {
-                                Log.d(TAG, "update friend's conversation error: " + task.getException().getMessage());
-                            }
-                        }
-                    });
-
-                    mRecyclerViewBubbleChat.scrollToPosition(mMessageAdapter.getItemCount() - 1);
-                    mEditMessage.setText("");
-                } else {
-                    Toast.makeText(ChatActivity.this, "Bạn không thể gửi một tin nhắn rỗng!", Toast.LENGTH_SHORT).show();
-                }
+                sendMessage();
             }
         });
 
     }
+
+    private void sendMessage() {
+        if (!mEditMessage.getText().toString().isEmpty()) {
+            final DocumentReference mConversationFriendDocRef = mFirestore
+                    .collection("user_data")
+                    .document(mConversationId)
+                    .collection("conversation")
+                    .document(mCurrentUser.getUid());
+
+            mConversationFriendDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (!task.getResult().exists()) {
+                        Conversation currentFriendConversation = new Conversation(mCurrentUser.getUid(), new Date());
+                        mConversationFriendDocRef.set(currentFriendConversation);
+                    }
+                }
+            });
+
+            final CollectionReference mMessageFriendColRef = mConversationFriendDocRef
+                    .collection("message");
+
+            final DocumentReference mConversationUserDocRef = mFirestore
+                    .collection("user_data")
+                    .document(mCurrentUser.getUid())
+                    .collection("conversation")
+                    .document(mConversationId);
+
+            mConversationUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (!task.getResult().exists()) {
+                        Conversation currentUserConversation = new Conversation(mConversationId, new Date());
+                        mConversationUserDocRef.set(currentUserConversation);
+                    }
+                }
+            });
+
+            final CollectionReference mMessageUserColRef = mConversationUserDocRef
+                    .collection("message");
+
+            final Message currentMessage = new Message(mCurrentUser.getUid(), "", message, System.currentTimeMillis(), false);
+
+            //save message to Firebase
+            Task messageUserTask = mMessageUserColRef.add(currentMessage);
+            messageUserTask.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            currentMessage.setId(documentReference.getId());
+                            mMessageUserColRef.document(currentMessage.getId())
+                                    .set(currentMessage);
+
+                            Map<String, Object> conversationUpdates = new HashMap<>();
+                            conversationUpdates.put("timeAdded", FieldValue.serverTimestamp());
+                            conversationUpdates.put("newMessageId", currentMessage.getId());
+                            mConversationUserDocRef.update(conversationUpdates);
+                            Log.d(TAG, "update user's conversation successfully");
+
+                            mMessageFriendColRef.document(currentMessage.getId())
+                                    .set(currentMessage).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+//
+                                        Map<String, Object> updates = new HashMap<>();
+                                        updates.put("newMessageId", currentMessage.getId());
+                                        updates.put("timeAdded", FieldValue.serverTimestamp());
+                                        mConversationFriendDocRef.update(updates);
+
+                                        Log.d(TAG, "update friend's conversation successfully");
+                                    } else {
+                                        Log.d(TAG, "update friend's conversation error: " + task.getException().getMessage());
+                                    }
+                                }
+                            });
+                        }
+                    });
+            mRecyclerViewBubbleChat.scrollToPosition(mMessageAdapter.getItemCount() - 1);
+            mEditMessage.setText("");
+        }else{
+            Toast.makeText(this, "Bạn không thể ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     protected void onStart() {
         super.onStart();
         mMessageAdapter.startListening();
     }
-
 
     private void initializeView() {
         mToolbar = findViewById(R.id.chat_toolbar);
@@ -262,7 +270,7 @@ public class ChatActivity extends AppCompatActivity {
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerViewBubbleChat.setLayoutManager(mLayoutManager);
 
-        CollectionReference mMessagesColRef = mFirestore
+        final CollectionReference mMessagesColRef = mFirestore
                 .collection("user_data")
                 .document(mCurrentUser.getUid())
                 .collection("conversation")
@@ -281,6 +289,14 @@ public class ChatActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Message model) {
                 if (holder instanceof MessageFriendViewHolder) {
                     ((MessageFriendViewHolder) holder).mTextViewMessage.setText(model.getMessage());
+
+
+                    if (!model.isRead()) {
+                        DocumentReference mMessageRef = mMessagesColRef.document(model.getId());
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("isRead", true);
+                        mMessageRef.update(updates);
+                    }
 
                     LocalDate today = LocalDate.now();
                     LocalDateTime currentDate = Instant.ofEpochMilli(model.getTimeAdded())
@@ -353,6 +369,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public int getItemViewType(int position) {
                 Message currentMessage = getSnapshots().get(position);
+                //TODO: làm phần viewholder tin nhắn với hình và địa chỉ chi tiết khi admin gửi cho một người dùng
                 if (currentMessage.getSenderId().equalsIgnoreCase(mCurrentUser.getUid())) {
                     return VIEW_TYPE_USER;
                 } else {
@@ -360,6 +377,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         };
+
         mRecyclerViewBubbleChat.setAdapter(mMessageAdapter);
         mMessageAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override

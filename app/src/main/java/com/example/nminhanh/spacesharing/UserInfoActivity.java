@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nminhanh.spacesharing.Fragment.MainPages.AccountFragment;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -32,10 +33,16 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +73,7 @@ public class UserInfoActivity extends AppCompatActivity {
     FirebaseUser mCurrentUser;
     FirebaseFirestore mFirestore;
     CollectionReference mUserCollRef;
+    FirebaseStorage mFirebaseStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,13 +162,20 @@ public class UserInfoActivity extends AppCompatActivity {
                                 mMail = object.getString("email");
                                 mEditName.setText(mFacebookName);
                                 mEditMail.setText(mMail);
+
+                                String facebookImageUrl = response.getJSONObject()
+                                        .getJSONObject("picture")
+                                        .getJSONObject("data")
+                                        .getString("url");
+
+                                setProfileImageFromFacebook(facebookImageUrl);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
             Bundle infoParams = new Bundle();
-            infoParams.putString("fields", "name,email");
+            infoParams.putString("fields", "name,email,picture.type(large)");
             mFbInfoRequest.setParameters(infoParams);
             mFbInfoRequest.executeAsync();
         }
@@ -275,6 +290,19 @@ public class UserInfoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setProfileImageFromFacebook(String facebookImageUrl) {
+        try {
+            URL imageURL = new URL(facebookImageUrl);
+            InputStream mInputStream = (InputStream) imageURL.getContent();
+            StorageReference mAvatarRef = mFirebaseStorage.getReference(mCurrentUser.getUid() + "/avatar");
+            mAvatarRef.putStream(mInputStream);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void UpdateUserInfo() {

@@ -33,5 +33,4 @@ public class FacebookConnectUtils {
     public CallbackManager getmFacebookCallbackManager() {
         return mFacebookCallbackManager;
     }
-    // TODO: hoàn thành nốt việc kết nối giữa tài khoản SĐT và facebook
 }

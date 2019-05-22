@@ -359,6 +359,14 @@ public class AddOtherFragment extends Fragment implements StepContinueListener, 
         }
         if (currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[1]) ||
                 currentType.equalsIgnoreCase(getResources().getStringArray(R.array.type_array)[2])) {
+            if (mEditTextBathroom.getText().toString().isEmpty() || mEditTextBathroom.getError() != null) {
+                mEditTextBathroom.setError("Bạn chưa nhập giá tiền nước");
+                mEditTextBathroom.requestFocus();
+            }
+            if (mEditTextBathroom.getText().toString().isEmpty() || mEditTextBathroom.getError() != null) {
+                mEditTextBedroom.setError("Bạn chưa nhập giá tiền điện");
+                mEditTextBedroom.requestFocus();
+            }
         }
         receiver.onOtherReceived(currentType, currentDoor, bedRoom, bathRoom, electricPrice, waterPrice);
     }

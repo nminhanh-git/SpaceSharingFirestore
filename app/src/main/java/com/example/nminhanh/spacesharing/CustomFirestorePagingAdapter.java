@@ -19,31 +19,52 @@ import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class CustomFirestorePagingAdapter extends FirestorePagingAdapter<Space, CustomFirestorePagingAdapter.SpaceViewHolder> {
 
-    public static int REQUEST_DETAIL_SPACE = 100;
+    public static final int REQUEST_DETAIL_SPACE = 100;
     AddressUtils mAddressUtils;
     Context context;
     FirebaseStorage mFirebaseStorage;
+    FirebaseFirestore mFirestore;
 
     /**
      * Construct a new FirestorePagingAdapter from the given {@link FirestorePagingOptions}.
      *
      * @param options
      */
+
+
+
     public CustomFirestorePagingAdapter(@NonNull FirestorePagingOptions<Space> options, Context context) {
         super(options);
         mAddressUtils = new AddressUtils(context);
         this.context = context;
         mFirebaseStorage = FirebaseStorage.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
     }
+
+//    @Override
+//    protected void onLoadingStateChanged(@NonNull LoadingState state) {
+//        super.onLoadingStateChanged(state);
+//        switch (state){
+//            case ERROR:
+//                showErrorDialog();
+//                break;
+//
+//        }
+//    }
 
     @Override
     protected void onBindViewHolder(@NonNull final SpaceViewHolder holder, int position, @NonNull Space model) {
@@ -54,7 +75,7 @@ public class CustomFirestorePagingAdapter extends FirestorePagingAdapter<Space, 
         holder.mTextViewPrice.append(Html.fromHtml("m<sup><small>2</small></sup>"));
         holder.mTextViewPrice.append(" - ");
         double price = model.getGia();
-        String priceStr = String.valueOf(price);
+        String priceStr = String.valueOf((int)price);
         if (priceStr.length() >= 10) {
             price /= 1000000000.0;
             holder.mTextViewPrice.append(String.format("%.1f tỉ đồng", price));
@@ -68,7 +89,7 @@ public class CustomFirestorePagingAdapter extends FirestorePagingAdapter<Space, 
             holder.mTextViewPrice.append(price + " đồng");
         }
         GlideApp.with(context)
-                .load(R.raw.loading2)
+                .load(R.raw.loading)
                 .useAnimationPool(true)
                 .into(holder.mImageView);
 
@@ -100,6 +121,31 @@ public class CustomFirestorePagingAdapter extends FirestorePagingAdapter<Space, 
     private String formatMoney(int gia) {
         return String.format(Locale.getDefault(), "%,d", gia);
     }
+
+//    private void showErrorDialog() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//        final LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+//
+//        View mDialogView = inflater.inflate(R.layout.network_error_dialog_layout, null);
+//        TextView mButtonOK = mDialogView.findViewById(R.id.dialog_network_yes);
+//
+//
+//        final AlertDialog mErrorDialog = builder.setView(mDialogView).create();
+//        ColorDrawable dialogBackground = new ColorDrawable(Color.TRANSPARENT);
+//        InsetDrawable inset = new InsetDrawable(dialogBackground, 40, 50, 40, 50);
+//        mErrorDialog.getWindow().setBackgroundDrawable(inset);
+//
+//        mButtonOK.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                retry();
+//                mErrorDialog.dismiss();
+//            }
+//        });
+//
+//        mErrorDialog.show();
+//    }
+
 
     public class SpaceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView mTextViewType;

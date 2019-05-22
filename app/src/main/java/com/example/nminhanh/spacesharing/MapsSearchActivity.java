@@ -74,7 +74,6 @@ public class MapsSearchActivity extends FragmentActivity implements
     FloatingActionButton mBtnLocation;
     ImageButton mBtnSearch;
     EditText mEditSearch;
-    EditText mEditResultNumber;
     EditText mEditRadius;
     TextView mBtnFilter;
     RelativeLayout mLayoutFooter;
@@ -148,24 +147,6 @@ public class MapsSearchActivity extends FragmentActivity implements
             }
         });
 
-        mEditResultNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() != 0) {
-                    mEditResultNumber.setError(null);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
 
         mEditRadius.addTextChangedListener(new TextWatcher() {
             @Override
@@ -191,9 +172,8 @@ public class MapsSearchActivity extends FragmentActivity implements
             public void onClick(View v) {
                 if (!checkForEmptyEditTextError()) {
                     resetFilterResult();
-                    int resultNumber = Integer.valueOf(mEditResultNumber.getText().toString());
                     double radius = Double.valueOf(mEditRadius.getText().toString());
-                    getFilterResultList(resultNumber, radius);
+                    getFilterResultList(radius);
 
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(mCurrentLocation.getLatitude(),
@@ -227,7 +207,6 @@ public class MapsSearchActivity extends FragmentActivity implements
         mBtnBack = findViewById(R.id.map_search_btn_back);
         mBtnLocation = findViewById(R.id.map_btn_location);
         mBtnSearch = findViewById(R.id.map_btn_search);
-        mEditResultNumber = findViewById(R.id.map_edit_result_number);
         mEditRadius = findViewById(R.id.map_edit_radius);
         mEditSearch = findViewById(R.id.map_edit_text_search);
         mBtnFilter = findViewById(R.id.map_btn_filter);
@@ -310,12 +289,19 @@ public class MapsSearchActivity extends FragmentActivity implements
                     if (task.isSuccessful()) {
                         mMap.clear();
                         mCurrentLocation = task.getResult();
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), DEFAULT_ZOOM
-                        ));
-                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-                        mMap.clear();
-                        mMap.addMarker(markerOptions);
+                        if (mCurrentLocation == null) {
+                            Toast.makeText(MapsSearchActivity.this, "Không xác định được vị trí, vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                            mDefaultLatlng = new LatLng(21.0221485, 105.8017759);
+                            mMap.addMarker(new MarkerOptions().position(mDefaultLatlng));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatlng, DEFAULT_ZOOM));
+                        }else {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), DEFAULT_ZOOM
+                            ));
+                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+                            mMap.clear();
+                            mMap.addMarker(markerOptions);
+                        }
                     } else {
                         Log.d(TAG, "current location is null. Using default");
                         Log.d(TAG, "exception: " + task.getException().getMessage());
@@ -333,23 +319,20 @@ public class MapsSearchActivity extends FragmentActivity implements
 
     private boolean checkForEmptyEditTextError() {
         if (!mEditRadius.getText().toString().isEmpty() && mEditRadius.getError() == null
-                && !mEditResultNumber.getText().toString().isEmpty() && mEditResultNumber.getError() == null
                 && mCurrentLocation != null) {
             return false;
         }
         if (mCurrentLocation == null) {
             Toast.makeText(this, "Bạn chưa chọn vị trí để phân loại", Toast.LENGTH_SHORT).show();
         }
-        if (mEditResultNumber.getText().toString().isEmpty()) {
-            mEditResultNumber.setError("Bạn chưa nhập giới hạn số lượng kết quả");
-        }
+
         if (mEditRadius.getText().toString().isEmpty()) {
             mEditRadius.setError("Bạn chưa nhập giới hạn bán kính");
         }
         return true;
     }
 
-    private void getFilterResultList(final int resultNumber, double radius) {
+    private void getFilterResultList(double radius) {
         nearbyItemCount = 0;
         CollectionReference collectionReference = FirebaseFirestore
                 .getInstance().collection("space");
@@ -360,38 +343,33 @@ public class MapsSearchActivity extends FragmentActivity implements
         geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
             @Override
             public void onDocumentEntered(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                if (nearbyItemCount < resultNumber) {
-                    Log.d(TAG, "onDocEntered");
-                    nearbyItemCount++;
-                    Space currentSpace = documentSnapshot.toObject(Space.class);
-                    LatLng currentLatLng = new LatLng(currentSpace.getL().get(0), currentSpace.getL().get(1));
+                Log.d(TAG, "onDocEntered");
+                nearbyItemCount++;
+                Space currentSpace = documentSnapshot.toObject(Space.class);
+                LatLng currentLatLng = new LatLng(currentSpace.getL().get(0), currentSpace.getL().get(1));
 
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(currentLatLng)
-                            .title(currentSpace.getDiaChiDayDu());
-                    if (currentSpace.getLoai().equalsIgnoreCase(
-                            getResources().getStringArray(R.array.type_array)[1]
-                    )) {
-                        markerOptions.icon(
-                                BitmapDescriptorFactory
-                                        .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
-                    } else if (currentSpace.getLoai().equalsIgnoreCase(
-                            getResources().getStringArray(R.array.type_array)[2])) {
-                        markerOptions.icon(
-                                BitmapDescriptorFactory
-                                        .fromBitmap(getBitmapFromResource(R.drawable.ic_shop_marker)));
-                    } else {
-                        markerOptions.icon(
-                                BitmapDescriptorFactory
-                                        .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
-                    }
-
-                    final Marker currentMarker = mMap.addMarker(markerOptions);
-                    markerInfoList.put(currentMarker, currentSpace);
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .position(currentLatLng)
+                        .title(currentSpace.getDiaChiDayDu());
+                if (currentSpace.getLoai().equalsIgnoreCase(
+                        getResources().getStringArray(R.array.type_array)[1]
+                )) {
+                    markerOptions.icon(
+                            BitmapDescriptorFactory
+                                    .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
+                } else if (currentSpace.getLoai().equalsIgnoreCase(
+                        getResources().getStringArray(R.array.type_array)[2])) {
+                    markerOptions.icon(
+                            BitmapDescriptorFactory
+                                    .fromBitmap(getBitmapFromResource(R.drawable.ic_shop_marker)));
                 } else {
-                    geoQuery.removeAllListeners();
-                    return;
+                    markerOptions.icon(
+                            BitmapDescriptorFactory
+                                    .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
                 }
+
+                final Marker currentMarker = mMap.addMarker(markerOptions);
+                markerInfoList.put(currentMarker, currentSpace);
             }
 
             @Override

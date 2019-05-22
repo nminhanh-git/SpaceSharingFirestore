@@ -20,7 +20,6 @@ import com.example.nminhanh.spacesharing.Model.Space;
 import com.example.nminhanh.spacesharing.Model.UserFavoriteSpace;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.firebase.ui.firestore.SnapshotParser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,8 +30,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -80,7 +77,7 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerViewData() {
-        CollectionReference mUserFavoriteCollRef = mFirestore.collection("user_data")
+        final CollectionReference mUserFavoriteCollRef = mFirestore.collection("user_data")
                 .document(mCurrentUser.getUid()).collection("favorite_space");
         Query query = mUserFavoriteCollRef;
 
@@ -108,48 +105,53 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final FavorSpaceViewHolder holder, int position, @NonNull UserFavoriteSpace model) {
+            protected void onBindViewHolder(@NonNull final FavorSpaceViewHolder holder, int position, @NonNull final UserFavoriteSpace model) {
                 final Space[] currentSpace = new Space[1];
                 DocumentReference mSpaceColRef = mFirestore.collection("space").document(model.getId());
                 mSpaceColRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            currentSpace[0] = task.getResult().toObject(Space.class);
-                            String title = currentSpace[0].getTieuDe();
-                            String address = currentSpace[0].getDiaChiDayDu();
+                            if(task.getResult().exists()) {
+                                currentSpace[0] = task.getResult().toObject(Space.class);
+                                String title = currentSpace[0].getTieuDe();
+                                String address = currentSpace[0].getDiaChiDayDu();
 
-                            String[] addressArr = address.split(",");
-                            StringBuilder addressBuilder = new StringBuilder();
-                            for (int i = 1; i < addressArr.length; i++) {
-                                addressBuilder.append(addressArr[i]);
-                                if (i != addressArr.length - 1) {
-                                    addressBuilder.append(",");
+                                String[] addressArr = address.split(",");
+                                StringBuilder addressBuilder = new StringBuilder();
+                                for (int i = 1; i < addressArr.length; i++) {
+                                    addressBuilder.append(addressArr[i]);
+                                    if (i != addressArr.length - 1) {
+                                        addressBuilder.append(",");
+                                    }
                                 }
+                                address = addressBuilder.toString().trim();
+
+                                holder.mTextViewTitle.setText(title);
+                                holder.mTextViewAddress.setText(address.trim());
+
+                                StorageReference mImageRef = FirebaseStorage.getInstance()
+                                        .getReference(currentSpace[0].getIdChu())
+                                        .child(currentSpace[0].getId())
+                                        .child("1");
+
+                                GlideApp.with(FavoriteSpaceActivity.this)
+                                        .load(mImageRef)
+                                        .signature(new ObjectKey(currentSpace[0].getTimeAdded()))
+                                        .into(holder.mImageView);
+
+                                holder.setOnItemClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(FavoriteSpaceActivity.this, SpaceDetailActivity.class);
+                                        intent.putExtra("current space", currentSpace[0]);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }else{
+                                DocumentReference mDeletedFavorSpaceRef = mUserFavoriteCollRef.document(model.getId());
+                                mDeletedFavorSpaceRef.delete();
                             }
-                            address = addressBuilder.toString().trim();
-
-                            holder.mTextViewTitle.setText(title);
-                            holder.mTextViewAddress.setText(address.trim());
-
-                            StorageReference mImageRef = FirebaseStorage.getInstance()
-                                    .getReference(currentSpace[0].getIdChu())
-                                    .child(currentSpace[0].getId())
-                                    .child("1");
-
-                            GlideApp.with(FavoriteSpaceActivity.this)
-                                    .load(mImageRef)
-                                    .signature(new ObjectKey(currentSpace[0].getTimeAdded()))
-                                    .into(holder.mImageView);
-
-                            holder.setOnItemClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(FavoriteSpaceActivity.this, SpaceDetailActivity.class);
-                                    intent.putExtra("current space", currentSpace[0]);
-                                    startActivity(intent);
-                                }
-                            });
                         }
                     }
                 });
@@ -189,9 +191,9 @@ public class FavoriteSpaceActivity extends AppCompatActivity {
 
         public FavorSpaceViewHolder(@NonNull View itemView) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.favor_item_image);
-            mTextViewTitle = itemView.findViewById(R.id.favor_item_title);
-            mTextViewAddress = itemView.findViewById(R.id.favor_item_address);
+            mImageView = itemView.findViewById(R.id.item_image);
+            mTextViewTitle = itemView.findViewById(R.id.item_title);
+            mTextViewAddress = itemView.findViewById(R.id.item_address);
         }
 
         public void setOnItemClickListener(View.OnClickListener listener) {

@@ -28,6 +28,7 @@ public class Space implements Serializable {
     private int giaNuoc;
     private ArrayList<Double> l = new ArrayList<>();
     private String g;
+    private String trangThai;
 
     @ServerTimestamp
     private Date timeAdded;
@@ -56,7 +57,8 @@ public class Space implements Serializable {
                  String moTa,
                  int thangCoc,
                  int giaDien,
-                 int giaNuoc
+                 int giaNuoc,
+                 String trangThai
     ) {
         this.id = id;
         this.idChu = idChu;
@@ -79,6 +81,7 @@ public class Space implements Serializable {
         this.thangCoc = thangCoc;
         this.giaDien = giaDien;
         this.giaNuoc = giaNuoc;
+        this.trangThai = trangThai;
     }
 
     public String getId() {
@@ -257,4 +260,11 @@ public class Space implements Serializable {
         this.timeAdded = timeAdded;
     }
 
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
 }

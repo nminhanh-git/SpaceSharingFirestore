@@ -8,15 +8,14 @@
     android:clickable="true"
     android:elevation="4dp"
     android:focusable="true"
-
-    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:foreground="?attr/selectableItemBackground"
     android:outlineProvider="background">
 
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="?attr/selectableItemBackground"
         android:backgroundTint="#ffff"
         app:cardCornerRadius="15dp"
         app:cardElevation="0dp"

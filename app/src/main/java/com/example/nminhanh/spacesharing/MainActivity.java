@@ -3,6 +3,8 @@ package com.example.nminhanh.spacesharing;
 import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -11,6 +13,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.location.Location;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity
 
     static final int REQUEST_ADD = 1;
     private static final int REQUEST_LOCATION_PERMISSION_CODE = 1;
+    public static final String NOTI_CHANNEL_ID = "23121997";
 
     Toolbar mToolbar;
     TextView mTextViewToolbar;
@@ -142,6 +146,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
+        createNotificationChannel();
     }
 
     void initialize() {
@@ -233,6 +238,19 @@ public class MainActivity extends AppCompatActivity
 //                .useAnimationPool(true)
 //                .into(mImageFacebookLoading);
     }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.noti_channel_name);
+            String description = "this is the notification channel from House application";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOTI_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager mNotificationManager = getSystemService(NotificationManager.class);
+            mNotificationManager.createNotificationChannel(channel);
+        }
+    }
+
 
     @Override
     public void onPageScrolled(int i, float v, int i1) {
@@ -482,7 +500,8 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeSliders() {
         sizeStart = 0;
-        sizeEnd = 100;
+        sizeEnd = 1000;
+        //TODO: check lại xem có lỗi ở đây không sau khi đã sửa sizeEnd thành 1000
         mMultiSliderSize.setOnThumbValueChangeListener(new MultiSlider.OnThumbValueChangeListener() {
             @Override
             public void onValueChanged(MultiSlider multiSlider, MultiSlider.Thumb thumb, int thumbIndex, int value) {
@@ -596,10 +615,10 @@ public class MainActivity extends AppCompatActivity
         for (Fragment f : getSupportFragmentManager().getFragments()) {
             if (f instanceof ChatFragment) {
                 listener = (SignOutListener) f;
+                listener.onSignOut();
                 break;
             }
         }
-        listener.onSignOut();
     }
 
     @Override
@@ -641,6 +660,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onHidingFacebookLoading() {
-        mLayoutFacebookLoading.setVisibility(View.GONE);
+//        mLayoutFacebookLoading.setVisibility(View.GONE);
     }
 }
