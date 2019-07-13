@@ -86,7 +86,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/roboto_reg"
             android:paddingHorizontal="30dp"
-            android:text="Chưa có không gian nào cả, bạn hãy thêm vào những không gian mà bạn muốn chia sẻ nhé!"
+            android:text="Chưa có không gian nào đang cần xét duyệt"
             android:textAlignment="center"
             android:textColor="@color/dark_gray" />
     </RelativeLayout>

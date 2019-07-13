@@ -150,23 +150,41 @@ public class OTPActivity extends AppCompatActivity {
 
         mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
-            public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+                Log.d(TAG, "auto verify");
+                mLayoutLoading.setVisibility(View.VISIBLE);
+                mTextViewLoading.setText("Đang xác nhận...");
+                mOtpView.setText(phoneAuthCredential.getSmsCode());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (command.toLowerCase()) {
+                            case "sign in":
+                                signInWithPhoneAuthCredential(phoneAuthCredential);
+                                break;
+                            case "verify":
+                                linkWithPhoneAuthCredential(phoneAuthCredential);
+                                break;
+                            case "edit":
+                                updateWithPhoneAuthCredential(phoneAuthCredential);
+                                break;
+                        }
+                    }
+                }, 1200);
             }
 
             @Override
             public void onVerificationFailed(FirebaseException e) {
-                Log.d("MaVerification", e.getMessage());
+                Log.d(TAG, e.getMessage());
                 if (e.getMessage().equalsIgnoreCase(getString(R.string.op_network_error_string))) {
                     mBtnVerify.setVisibility(View.GONE);
                     showNetworkErrorDialog();
-
-
                 }
             }
 
             @Override
             public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                Log.d("OTPMinhAnh", "go to onCodeSent");
+                Log.d(TAG, "go to onCodeSent");
                 VerificationId = s;
                 mCountDown.start();
                 mOtpView.setText("");
@@ -249,8 +267,8 @@ public class OTPActivity extends AppCompatActivity {
     private void sendVerificationCode(String number) {
         StringBuilder builder = new StringBuilder(number);
         builder.replace(0, 0, "+84");
-//        number = PhoneNumberUtils.formatNumberToE164(number, "VN");
-        number = builder.toString();
+        number = PhoneNumberUtils.formatNumberToE164(number, "VN");
+//        number = builder.toString();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 number,
                 60,

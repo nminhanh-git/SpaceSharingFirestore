@@ -19,11 +19,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.nminhanh.spacesharing.OtherOldDataReceiver;
+import com.example.nminhanh.spacesharing.Interface.OtherOldDataReceiver;
 import com.example.nminhanh.spacesharing.R;
-import com.example.nminhanh.spacesharing.StepContinueListener;
-
-import java.util.Locale;
+import com.example.nminhanh.spacesharing.Interface.StepContinueListener;
 
 /**
  * A simple {@link Fragment} subclass.

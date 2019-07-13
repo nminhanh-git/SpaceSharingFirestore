@@ -212,7 +212,7 @@ public class FilterResultActivity extends AppCompatActivity {
         mRecyclerViewResult.setLayoutManager(mLinearLayoutManager);
 
         CollectionReference mSpacesCollection = db.collection("space");
-        Query baseQuery = mSpacesCollection;
+        Query baseQuery = mSpacesCollection.whereEqualTo("trangThai","allow");
         if (currentCity != null && !currentCity.getId().equals("-1")) {
             baseQuery = baseQuery.whereEqualTo("thanhPhoId", currentCity.getId());
         }

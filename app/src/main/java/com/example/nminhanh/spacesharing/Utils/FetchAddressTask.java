@@ -1,4 +1,4 @@
-package com.example.nminhanh.spacesharing;
+package com.example.nminhanh.spacesharing.Utils;
 
 import android.content.Context;
 import android.location.Address;
@@ -63,7 +63,7 @@ public class FetchAddressTask extends AsyncTask<Location, Void, String> {
         super.onPostExecute(s);
     }
 
-    interface onGetAddressCompletedListener {
+    public interface onGetAddressCompletedListener {
         void onGetAddressCompleted(String result, Location location);
     }
 }

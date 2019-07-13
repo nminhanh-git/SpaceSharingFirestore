@@ -29,7 +29,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +36,7 @@ import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.DetailImageAdapt
 import com.example.nminhanh.spacesharing.Model.Conversation;
 import com.example.nminhanh.spacesharing.Model.Message;
 import com.example.nminhanh.spacesharing.Model.Space;
+import com.example.nminhanh.spacesharing.Service.MyNotiService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -443,9 +443,9 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
                     if (documentSnapshot.exists()) {
                         String status = documentSnapshot.get("trangThai").toString();
                         switch (status) {
-                            case "enabled":
+                            case "allow":
                                 mImageStatus.setColorFilter(getResources().getColor(android.R.color.holo_green_light, null));
-                                mTextViewStatus.setText(getString(R.string.space_detail_status_enabled_string));
+                                mTextViewStatus.setText(getString(R.string.space_detail_status_allow_string));
                                 mTextViewStatus.setTextColor(getResources().getColor(android.R.color.holo_green_light, null));
                                 mSwitchStatus.setChecked(true);
                                 break;
@@ -455,10 +455,16 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
                                 mTextViewStatus.setText(getString(R.string.space_detail_status_pending_string));
                                 mTextViewStatus.setTextColor(getResources().getColor(R.color.colorPrimary, null));
                                 break;
-                            case "disabled":
+                            case "not_publish":
+                                mSwitchStatus.setChecked(false);
+                                mImageStatus.setColorFilter(getColor(R.color.dark_gray));
+                                mTextViewStatus.setText(getString(R.string.space_detail_status_not_publish_string));
+                                mTextViewStatus.setTextColor(getResources().getColor(R.color.dark_gray, null));
+                                break;
+                            case "not_allow":
                                 mSwitchStatus.setChecked(false);
                                 mImageStatus.setColorFilter(getColor(R.color.colorCancel));
-                                mTextViewStatus.setText(getString(R.string.space_detail_status_disabled_string));
+                                mTextViewStatus.setText(getString(R.string.space_detail_status_not_allow_string));
                                 mTextViewStatus.setTextColor(getResources().getColor(R.color.colorCancel, null));
                                 break;
                         }
@@ -730,9 +736,13 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
                         .document(id);
                 Map<String, Object> updates = new HashMap<>();
                 if (isPublishRequest) {
-                    updates.put("trangThai", "pending");
+                    if (mCurrentSpace.isAllow()) {
+                        updates.put("trangThai", "allow");
+                    } else {
+                        updates.put("trangThai", "pending");
+                    }
                 } else {
-                    updates.put("trangThai", "disabled");
+                    updates.put("trangThai", "not_publish");
                 }
                 spaceDocRef.update(updates)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -791,7 +801,8 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
                         .document(id);
                 if (isAllow) {
                     Map<String, Object> updates = new HashMap<>();
-                    updates.put("trangThai", "enabled");
+                    updates.put("trangThai", "allow");
+                    updates.put("allow",true);
                     updates.put("timeAdded", new Date());
                     spaceDocRef.update(updates)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -816,7 +827,10 @@ public class SpaceDetailActivity extends AppCompatActivity implements OnMapReady
                         mEditReason.setError("Số kí tự không được nhỏ hơn 10");
                         mEditReason.requestFocus();
                     } else {
-                        spaceDocRef.update("trangThai", "disabled")
+                        Map<String,Object> updates = new HashMap<>();
+                        updates.put("trangThai", "not_allow");
+                        updates.put("allow", false);
+                        spaceDocRef.update(updates)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {

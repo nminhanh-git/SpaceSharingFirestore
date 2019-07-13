@@ -313,6 +313,7 @@ public class UserInfoActivity extends AppCompatActivity {
             userData.put("facebookName", mFacebookName);
             userData.put("name", mName);
             userData.put("phone_number", mPhone);
+            userData.put("isAdmin", false);
 
             mUserCollRef.document(mCurrentUser.getUid()).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override

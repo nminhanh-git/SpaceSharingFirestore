@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.nminhanh.spacesharing.ChatActivity;
 import com.example.nminhanh.spacesharing.GlideApp;
+import com.example.nminhanh.spacesharing.Interface.SignOutListener;
 import com.example.nminhanh.spacesharing.Model.Conversation;
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.WelcomeActivity;
@@ -59,6 +60,8 @@ public class ChatFragment extends Fragment implements SignOutListener {
 
     RelativeLayout mLayoutSignIn;
     Button mBtnRecommendSignIn;
+
+    RelativeLayout mLayoutEmpty;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -116,6 +119,16 @@ public class ChatFragment extends Fragment implements SignOutListener {
                 .build();
 
         mConversationAdapter = new FirestoreRecyclerAdapter<Conversation, ConversationViewHolder>(options) {
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if(getItemCount() == 0){
+                    mLayoutEmpty.setVisibility(View.VISIBLE);
+                }else{
+                    mLayoutEmpty.setVisibility(View.GONE);
+                }
+            }
+
             @Override
             protected void onBindViewHolder(@NonNull final ConversationViewHolder holder, int position, @NonNull final Conversation model) {
                 String id = model.getId();
@@ -182,6 +195,8 @@ public class ChatFragment extends Fragment implements SignOutListener {
         mChatRecyclerView = view.findViewById(R.id.conversation_recycle_view);
         mLayoutSignIn = view.findViewById(R.id.conversation_layout_recommend_sign_in);
         mBtnRecommendSignIn = view.findViewById(R.id.conversation_button_sign_in);
+
+        mLayoutEmpty = view.findViewById(R.id.empty_layout);
     }
 
     @Override

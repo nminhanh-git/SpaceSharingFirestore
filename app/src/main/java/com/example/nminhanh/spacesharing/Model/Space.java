@@ -29,6 +29,7 @@ public class Space implements Serializable {
     private ArrayList<Double> l = new ArrayList<>();
     private String g;
     private String trangThai;
+    private boolean allow;
 
     @ServerTimestamp
     private Date timeAdded;
@@ -58,7 +59,8 @@ public class Space implements Serializable {
                  int thangCoc,
                  int giaDien,
                  int giaNuoc,
-                 String trangThai
+                 String trangThai,
+                 boolean allow
     ) {
         this.id = id;
         this.idChu = idChu;
@@ -82,6 +84,7 @@ public class Space implements Serializable {
         this.giaDien = giaDien;
         this.giaNuoc = giaNuoc;
         this.trangThai = trangThai;
+        this.allow = allow;
     }
 
     public String getId() {
@@ -266,5 +269,13 @@ public class Space implements Serializable {
 
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public boolean isAllow() {
+        return allow;
+    }
+
+    public void setAllow(boolean allow) {
+        this.allow = allow;
     }
 }

@@ -1,7 +1,6 @@
-package com.example.nminhanh.spacesharing;
+package com.example.nminhanh.spacesharing.Service;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -12,14 +11,17 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.nminhanh.spacesharing.ChatActivity;
+import com.example.nminhanh.spacesharing.GlideApp;
+import com.example.nminhanh.spacesharing.MainActivity;
 import com.example.nminhanh.spacesharing.Model.Conversation;
 import com.example.nminhanh.spacesharing.Model.Message;
 import com.example.nminhanh.spacesharing.Model.Space;
+import com.example.nminhanh.spacesharing.R;
+import com.example.nminhanh.spacesharing.SpaceDetailActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -35,9 +37,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -132,7 +131,7 @@ public class MyNotiService extends Service {
                                 switch (dc.getType()) {
                                     case MODIFIED:
                                         Space modifiedSpace = dc.getDocument().toObject(Space.class);
-                                        if (modifiedSpace.getTrangThai().equalsIgnoreCase("enabled")) {
+                                        if (modifiedSpace.getTrangThai().equalsIgnoreCase("allow")) {
                                             sendSpaceNotification(modifiedSpace);
                                         }
                                         isNotified = true;

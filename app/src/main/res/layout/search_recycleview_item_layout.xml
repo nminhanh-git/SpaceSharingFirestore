@@ -29,7 +29,7 @@
             <ImageView
                 android:id="@+id/item_image"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="180dp"
                 android:layout_alignParentTop="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_location" />
@@ -49,7 +49,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:ellipsize="end"
-                    android:fontFamily="@font/roboto_reg"
+                    android:fontFamily="@font/roboto_bold"
+                    android:textAllCaps="false"
                     android:text="type"
                     android:textColor="@color/colorPrimaryDark" />
 
@@ -69,11 +70,24 @@
 
 
                 <TextView
-                    android:id="@+id/item_address"
+                    android:id="@+id/item_date"
                     style="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/item_title"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="middle"
+                    android:fontFamily="@font/roboto_light"
+                    android:singleLine="true"
+                    android:text="date"
+                    />
+
+                <TextView
+                    android:id="@+id/item_address"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/item_date"
                     android:layout_marginTop="8dp"
                     android:ellipsize="middle"
                     android:fontFamily="@font/roboto_reg"
@@ -90,7 +104,8 @@
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/roboto_reg"
                     android:gravity="center_vertical"
-                    android:text="3,000,000" />
+                    android:text="3,000,000"
+                    android:textColor="@color/colorAccent"/>
             </RelativeLayout>
         </RelativeLayout>
     </android.support.v7.widget.CardView>

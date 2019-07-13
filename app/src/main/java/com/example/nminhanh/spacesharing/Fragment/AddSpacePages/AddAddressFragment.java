@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -39,15 +39,15 @@ import android.widget.Toast;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.nminhanh.spacesharing.AddCanceledListener;
-import com.example.nminhanh.spacesharing.AddressOldDataReceiver;
+import com.example.nminhanh.spacesharing.Interface.AddCanceledListener;
+import com.example.nminhanh.spacesharing.Interface.AddressOldDataReceiver;
 import com.example.nminhanh.spacesharing.GlideApp;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
 import com.example.nminhanh.spacesharing.Model.City;
 import com.example.nminhanh.spacesharing.Model.District;
 import com.example.nminhanh.spacesharing.Model.Ward;
 import com.example.nminhanh.spacesharing.R;
-import com.example.nminhanh.spacesharing.StepContinueListener;
+import com.example.nminhanh.spacesharing.Interface.StepContinueListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -492,7 +492,7 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         }
         Bundle b = getArguments();
         if (b != null) {
-            for(Bitmap bitmap : b.<Bitmap>getParcelableArrayList("image path")){
+            for (Bitmap bitmap : b.<Bitmap>getParcelableArrayList("image path")) {
                 adapter.addImage(bitmap);
                 adapter.notifyDataSetChanged();
                 showIndicator(adapter.getItemCount());
@@ -612,8 +612,14 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, IMAGE_PERMISSION_REQUEST_CODE);
             }
         } else {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, GET_IMAGE_REQUEST_CODE);
+//            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//            startActivityForResult(intent, GET_IMAGE_REQUEST_CODE);
+
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Image Chooser"), GET_IMAGE_REQUEST_CODE);
         }
     }
 
@@ -622,8 +628,14 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
                                            @NonNull int[] grantResults) {
         if (requestCode == IMAGE_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, GET_IMAGE_REQUEST_CODE);
+//                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                startActivityForResult(intent, GET_IMAGE_REQUEST_CODE);
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Image Chooser"), GET_IMAGE_REQUEST_CODE);
             }
         }
     }
@@ -633,22 +645,47 @@ public class AddAddressFragment extends Fragment implements StepContinueListener
         if (requestCode == GET_IMAGE_REQUEST_CODE) {
             if (resultCode == getActivity().RESULT_OK) {
                 mDeleteImageBtn.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    if (data.getClipData() != null) {
+                        int imageCount = data.getClipData().getItemCount();
+                        if (imageCount > 5) {
+                            Toast.makeText(getContext(), "Bạn chỉ có thể thêm tối đa 5 ảnh", Toast.LENGTH_SHORT).show();
+                        }
+                        for (int i = 0; i < imageCount; i++) {
+                            try {
+                                Uri imagePath = data.getClipData().getItemAt(i).getUri();
+                                Bitmap mCurrentBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imagePath);
+                                adapter.addImage(mCurrentBitmap);
+                                showIndicator(adapter.getItemCount());
+                                String textNote = "Bạn cần phải thêm vào 5 ảnh. Bạn đã thêm <font color=#FF9800>" + adapter.getItemCount() + "/5 ảnh</font>. Ảnh đầu tiên sẽ được sử dụng làm ảnh bìa cho tin đăng";
+                                mTextViewImageNote.setText(Html.fromHtml(textNote));
+                                mImageRecycleView.scrollToPosition(adapter.getItemCount() - 1);
+                                if (adapter.getItemCount() == 5) {
+                                    mAddImageBtn.setVisibility(View.GONE);
+                                    break;
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } else {
+                        Uri imagePath = data.getData();
+                        try {
+                            Bitmap mCurrentBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imagePath);
+                            adapter.addImage(mCurrentBitmap);
+                            showIndicator(adapter.getItemCount());
+                            String textNote = "Bạn cần phải thêm vào 5 ảnh. Bạn đã thêm <font color=#FF9800>" + adapter.getItemCount() + "/5 ảnh</font>. Ảnh đầu tiên sẽ được sử dụng làm ảnh bìa cho tin đăng";
+                            mTextViewImageNote.setText(Html.fromHtml(textNote));
+                            mImageRecycleView.scrollToPosition(adapter.getItemCount() - 1);
+                            if (adapter.getItemCount() == 5) {
+                                mAddImageBtn.setVisibility(View.GONE);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-                Uri imagePath = data.getData();
-                try {
-                    Bitmap mCurrentBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imagePath);
-                    adapter.addImage(mCurrentBitmap);
-                    showIndicator(adapter.getItemCount());
-                    String textNote = "Bạn cần phải thêm vào 5 ảnh. Bạn đã thêm <font color=#FF9800>" + adapter.getItemCount() + "/5 ảnh</font>. Ảnh đầu tiên sẽ được sử dụng làm ảnh bìa cho tin đăng";
-                    mTextViewImageNote.setText(Html.fromHtml(textNote));
-                    mImageRecycleView.scrollToPosition(adapter.getItemCount() - 1);
-                    if (adapter.getItemCount() == 5) {
-                        mAddImageBtn.setVisibility(View.GONE);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-
             }
         }
     }

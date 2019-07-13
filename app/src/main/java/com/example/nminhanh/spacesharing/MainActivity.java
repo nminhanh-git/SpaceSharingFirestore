@@ -1,7 +1,6 @@
 package com.example.nminhanh.spacesharing;
 
 import android.Manifest;
-import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -33,7 +32,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,12 +40,14 @@ import android.widget.Toast;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.ChatFragment;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.PagerAdapter;
 import com.example.nminhanh.spacesharing.Fragment.MainPages.SearchFragment;
-import com.example.nminhanh.spacesharing.Fragment.MainPages.ShowFacebookLoadingListener;
-import com.example.nminhanh.spacesharing.Fragment.MainPages.SignOutListener;
+import com.example.nminhanh.spacesharing.Interface.SignOutListener;
+import com.example.nminhanh.spacesharing.Interface.GoToTopEventListener;
 import com.example.nminhanh.spacesharing.Model.City;
 import com.example.nminhanh.spacesharing.Model.District;
 import com.example.nminhanh.spacesharing.Model.Ward;
+import com.example.nminhanh.spacesharing.Service.MyNotiService;
 import com.example.nminhanh.spacesharing.Utils.AddressUtils;
+import com.example.nminhanh.spacesharing.Utils.FetchAddressTask;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -62,11 +62,8 @@ import io.apptik.widget.MultiSlider;
 
 public class MainActivity extends AppCompatActivity
         implements ViewPager.OnPageChangeListener,
-        SignOutListener,
-        ShowFacebookLoadingListener,
-        FetchAddressTask.onGetAddressCompletedListener {
+        SignOutListener {
 
-    static final int REQUEST_ADD = 1;
     private static final int REQUEST_LOCATION_PERMISSION_CODE = 1;
     public static final String NOTI_CHANNEL_ID = "23121997";
 
@@ -74,7 +71,6 @@ public class MainActivity extends AppCompatActivity
     TextView mTextViewToolbar;
     ViewPager mViewPager;
     BottomNavigationView mNavigationView;
-    RelativeLayout mLayoutFacebookLoading;
     FirebaseAuth mFirebaseAuth;
     ImageButton mBtnFilter;
 
@@ -111,18 +107,14 @@ public class MainActivity extends AppCompatActivity
     Spinner mSpinnerPrice;
     String priceSortDirection;
 
-    FusedLocationProviderClient mFusedLocationProviderClient;
-    LocationCallback mLocationCallback;
-    String mLatestAddress;
-    boolean isTrackingLocation = false;
-
-    TextView mTextViewLocationAddress;
-    TextView mTextViewLocationLoading;
-    Button mBtnLocationStartLocate;
-
-    Button mBtnLocationFilter;
-    AnimatorSet mAnimLocationImage;
-    Location mLatestTranslatedLocation;
+//    FusedLocationProviderClient mFusedLocationProviderClient;
+//    LocationCallback mLocationCallback;
+//    boolean isTrackingLocation = false;
+//
+//    TextView mTextViewLocationLoading;
+//    Button mBtnLocationStartLocate;
+//
+//    AnimatorSet mAnimLocationImage;
 
     GoToTopEventListener goToTopEventListener;
 
@@ -136,17 +128,10 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth = FirebaseAuth.getInstance();
         mAddressUtils = new AddressUtils(this);
 
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (isTrackingLocation) {
-                    new FetchAddressTask(MainActivity.this)
-                            .execute(locationResult.getLastLocation());
-                }
-            }
-        };
         createNotificationChannel();
+
+        Intent notiServiceIntent = new Intent(MainActivity.this, MyNotiService.class);
+        startService(notiServiceIntent);
     }
 
     void initialize() {
@@ -172,7 +157,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //Initialize ViewPager
+        // Initialize ViewPager
         mViewPager = findViewById(R.id.main_pager);
         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setAdapter(adapter);
@@ -230,13 +215,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
         mViewPager.setOnPageChangeListener(this);
-
-//        mLayoutFacebookLoading = findViewById(R.layout.facebook_loading_layout);
-//        mImageFacebookLoading = findViewById(R.id.fb_loading_image);
-//        GlideApp.with(this)
-//                .load(R.raw.fb_emo)
-//                .useAnimationPool(true)
-//                .into(mImageFacebookLoading);
     }
 
     private void createNotificationChannel() {
@@ -563,49 +541,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private LocationRequest getLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
-    }
-
-    private void startTrackingLocation() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_LOCATION_PERMISSION_CODE);
-        } else {
-            mFusedLocationProviderClient.requestLocationUpdates(
-                    getLocationRequest(), mLocationCallback, null);
-
-            mBtnLocationStartLocate.setText("Ngừng định vị");
-            mTextViewLocationLoading.setVisibility(View.VISIBLE);
-            mAnimLocationImage.start();
-            isTrackingLocation = true;
-        }
-    }
-
-    private void stopTrackingLocation() {
-        if (isTrackingLocation) {
-            isTrackingLocation = false;
-            mBtnLocationStartLocate.setText("Định vị");
-            mAnimLocationImage.end();
-            mTextViewLocationLoading.setVisibility(View.GONE);
-            mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
-        }
-    }
-
-    @Override
-    public void onGetAddressCompleted(String result, Location location) {
-        mLatestAddress = result;
-        mTextViewLocationAddress.setText(result);
-        mLatestTranslatedLocation = location;
-        mBtnLocationFilter.setBackgroundResource(R.drawable.button_sign_in_background);
-        mBtnLocationFilter.setEnabled(true);
-    }
 
     @Override
     public void onSignOut() {
@@ -624,11 +559,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_LOCATION_PERMISSION_CODE) {
-            if (resultCode == RESULT_OK) {
-                startTrackingLocation();
-            }
-        }
         if (requestCode == CustomFirestorePagingAdapter.REQUEST_DETAIL_SPACE) {
             if (resultCode == RESULT_OK) {
                 for (Fragment f : getSupportFragmentManager().getFragments()) {
@@ -642,24 +572,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        if (isTrackingLocation) {
-            stopTrackingLocation();
-        }
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    @Override
-    public void onShowingFacebookLoading() {
-        mLayoutFacebookLoading.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onHidingFacebookLoading() {
-//        mLayoutFacebookLoading.setVisibility(View.GONE);
     }
 }

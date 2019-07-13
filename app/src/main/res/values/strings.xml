@@ -52,8 +52,12 @@
     <string name="enable_dialog_promt_string">bạn có muốn cho phép tin này được đăng lên không?</string>
     <string name="disable_dialog_promt_string">Bạn có muốn gỡ bỏ tin đăng này xuống không?</string>
     <string name="noti_channel_name">House Application notification channel</string>
-    <string name="space_detail_status_enabled_string">Đã được kiểm duyệt</string>
+    <string name="space_detail_status_allow_string">Đã được kiểm duyệt</string>
     <string name="space_detail_status_pending_string">Đang chờ kiểm duyệt</string>
-    <string name="space_detail_status_disabled_string">Chưa được kiểm duyệt</string>
+    <string name="space_detail_status_not_allow_string">Chưa được kiểm duyệt</string>
+    <string name="space_detail_status_not_publish_string">không công khai</string>
+    <string name="internet_status_retrying_string">Đang thử kết nối lại</string>
+    <string name="internet_status_success_string">Kết nối mạng thành công</string>
+    <string name="internet_status_fail_string">Không có kết nối mạng.</string>
 
 </resources>

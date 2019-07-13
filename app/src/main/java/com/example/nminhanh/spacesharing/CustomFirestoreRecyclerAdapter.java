@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -22,6 +23,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CustomFirestoreRecyclerAdapter
         extends FirestoreRecyclerAdapter<Space, RecyclerView.ViewHolder> {
@@ -84,14 +89,17 @@ public class CustomFirestoreRecyclerAdapter
 
         holder.mImageBageStatus.setVisibility(View.VISIBLE);
         switch (model.getTrangThai()) {
-            case "enabled":
-                holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_green_dark));
+            case "allow":
+                holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_green_light));
                 break;
             case "pending":
                 holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_orange_dark));
                 break;
-            case "disabled":
+            case "not_allow":
                 holder.mImageBageStatus.setColorFilter(context.getColor(android.R.color.holo_red_light));
+                break;
+            case "not_publish":
+                holder.mImageBageStatus.setColorFilter(context.getColor(R.color.dark_gray));
                 break;
         }
 
@@ -107,6 +115,7 @@ public class CustomFirestoreRecyclerAdapter
 
         Glide.with(context)
                 .load(mFirtImageRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(holder.mImageView);
 
         holder.setOnItemClickLister(new View.OnClickListener() {
@@ -141,6 +150,11 @@ public class CustomFirestoreRecyclerAdapter
         } else {
             holder.mTextViewPrice.append(price + " đồng");
         }
+
+        DateFormat dateFormat = new SimpleDateFormat("dd - MM - yyyy");
+        Date currentDate = model.getTimeAdded();
+        holder.mTextViewDate.setText("Ngày đăng: " + dateFormat.format(currentDate));
+
         GlideApp.with(context)
                 .load(R.raw.loading)
                 .useAnimationPool(true)
@@ -199,6 +213,7 @@ public class CustomFirestoreRecyclerAdapter
     public class AdminViewHolder extends RecyclerView.ViewHolder {
         TextView mTextViewType;
         TextView mTextViewSpaceTitle;
+        TextView mTextViewDate;
         TextView mTextViewAddress;
         TextView mTextViewPrice;
         ImageView mImageView;
@@ -208,6 +223,7 @@ public class CustomFirestoreRecyclerAdapter
             super(itemView);
             mTextViewType = itemView.findViewById(R.id.item_type);
             mTextViewSpaceTitle = itemView.findViewById(R.id.item_title);
+            mTextViewDate = itemView.findViewById(R.id.item_date);
             mTextViewAddress = itemView.findViewById(R.id.item_address);
             mTextViewPrice = itemView.findViewById(R.id.item_textview_price);
             mImageView = itemView.findViewById(R.id.item_image);

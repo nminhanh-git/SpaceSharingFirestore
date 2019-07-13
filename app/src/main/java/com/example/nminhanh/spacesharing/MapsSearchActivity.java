@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nminhanh.spacesharing.Model.Space;
+import com.example.nminhanh.spacesharing.Utils.GetLatLngAsyncTask;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,6 +47,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -294,7 +296,7 @@ public class MapsSearchActivity extends FragmentActivity implements
                             mDefaultLatlng = new LatLng(21.0221485, 105.8017759);
                             mMap.addMarker(new MarkerOptions().position(mDefaultLatlng));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatlng, DEFAULT_ZOOM));
-                        }else {
+                        } else {
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), DEFAULT_ZOOM
                             ));
@@ -336,6 +338,7 @@ public class MapsSearchActivity extends FragmentActivity implements
         nearbyItemCount = 0;
         CollectionReference collectionReference = FirebaseFirestore
                 .getInstance().collection("space");
+        Query query = collectionReference.whereEqualTo("trangThai", "allow");
         GeoPoint currentNearbyGeoPoint = new GeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         GeoFirestore geoFirestore = new GeoFirestore(collectionReference);
@@ -344,32 +347,32 @@ public class MapsSearchActivity extends FragmentActivity implements
             @Override
             public void onDocumentEntered(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
                 Log.d(TAG, "onDocEntered");
-                nearbyItemCount++;
                 Space currentSpace = documentSnapshot.toObject(Space.class);
-                LatLng currentLatLng = new LatLng(currentSpace.getL().get(0), currentSpace.getL().get(1));
+                if (currentSpace.getTrangThai().equalsIgnoreCase("allow")) {
+                    LatLng currentLatLng = new LatLng(currentSpace.getL().get(0), currentSpace.getL().get(1));
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(currentLatLng)
+                            .title(currentSpace.getDiaChiDayDu());
+                    if (currentSpace.getLoai().equalsIgnoreCase(
+                            getResources().getStringArray(R.array.type_array)[1]
+                    )) {
+                        markerOptions.icon(
+                                BitmapDescriptorFactory
+                                        .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
+                    } else if (currentSpace.getLoai().equalsIgnoreCase(
+                            getResources().getStringArray(R.array.type_array)[2])) {
+                        markerOptions.icon(
+                                BitmapDescriptorFactory
+                                        .fromBitmap(getBitmapFromResource(R.drawable.ic_shop_marker)));
+                    } else {
+                        markerOptions.icon(
+                                BitmapDescriptorFactory
+                                        .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
+                    }
 
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(currentLatLng)
-                        .title(currentSpace.getDiaChiDayDu());
-                if (currentSpace.getLoai().equalsIgnoreCase(
-                        getResources().getStringArray(R.array.type_array)[1]
-                )) {
-                    markerOptions.icon(
-                            BitmapDescriptorFactory
-                                    .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
-                } else if (currentSpace.getLoai().equalsIgnoreCase(
-                        getResources().getStringArray(R.array.type_array)[2])) {
-                    markerOptions.icon(
-                            BitmapDescriptorFactory
-                                    .fromBitmap(getBitmapFromResource(R.drawable.ic_shop_marker)));
-                } else {
-                    markerOptions.icon(
-                            BitmapDescriptorFactory
-                                    .fromBitmap(getBitmapFromResource(R.drawable.ic_house_marker)));
+                    final Marker currentMarker = mMap.addMarker(markerOptions);
+                    markerInfoList.put(currentMarker, currentSpace);
                 }
-
-                final Marker currentMarker = mMap.addMarker(markerOptions);
-                markerInfoList.put(currentMarker, currentSpace);
             }
 
             @Override
@@ -448,37 +451,36 @@ public class MapsSearchActivity extends FragmentActivity implements
             return false;
         } else {
             marker.showInfoWindow();
+            Space currentSpace = markerInfoList.get(marker);
+
+            StorageReference imageRef = mFirebaseStorage
+                    .getReference(currentSpace.getIdChu())
+                    .child(currentSpace.getId())
+                    .child(1 + "");
+            GlideApp.with(this)
+                    .load(imageRef)
+                    .into(mImageInfo);
+            mTextViewInfoTitle.setText(currentSpace.getTieuDe());
+            String[] addresArr = currentSpace.getDiaChiDayDu().split(",");
+            StringBuilder addressBuilder = new StringBuilder();
+            for (int i = 1; i < addresArr.length; i++) {
+                addressBuilder.append(addresArr[i]);
+                if (i != addresArr.length - 1) {
+                    addressBuilder.append(",");
+                }
+            }
+            mTextViewInfoShortAddress.setText(addressBuilder.toString().trim());
+
             if (!isInfoLayoutVisible) {
                 isInfoLayoutVisible = true;
-                Space currentSpace = markerInfoList.get(marker);
-
-                StorageReference imageRef = mFirebaseStorage
-                        .getReference(currentSpace.getIdChu())
-                        .child(currentSpace.getId())
-                        .child(1 + "");
-                GlideApp.with(this)
-                        .load(imageRef)
-                        .into(mImageInfo);
-                mTextViewInfoTitle.setText(currentSpace.getTieuDe());
-                String[] addresArr = currentSpace.getDiaChiDayDu().split(",");
-                StringBuilder addressBuilder = new StringBuilder();
-                for (int i = 1; i < addresArr.length; i++) {
-                    addressBuilder.append(addresArr[i]);
-                    if (i != addresArr.length - 1) {
-                        addressBuilder.append(",");
-                    }
-                }
-                mTextViewInfoShortAddress.setText(addressBuilder.toString().trim());
-
-
                 slideUp(mLayoutInfo);
                 slideDown(mLayoutFooter);
-                mMap.setPadding(40, 290, 40, 290);
-                currentMarkerSpace = currentSpace;
-                return true;
             }
+
+            mMap.setPadding(40, 290, 40, 290);
+            currentMarkerSpace = currentSpace;
+            return true;
         }
-        return false;
     }
 
     public void slideUp(RelativeLayout layout) {

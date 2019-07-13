@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@drawable/toolbar_background_inverse"
-        app:elevation="0dp"
-        android:focusable="true">
+        android:focusable="true"
+        app:elevation="0dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/main_toolbar"
@@ -32,28 +32,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/roboto_black"
+                    android:gravity="center"
                     android:text="house"
-                    android:textSize="32sp"
-                    android:gravity="center"/>
-
-                <!--<TextView-->
-                <!--android:id="@+id/main_btn_filter"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignParentBottom="true"-->
-                <!--android:layout_alignParentTop="true"-->
-                <!--android:layout_alignParentEnd="true"-->
-                <!--android:background="?attr/selectableItemBackgroundBorderless"-->
-                <!--android:clickable="true"-->
-                <!--android:focusable="true"-->
-                <!--android:fontFamily="@font/roboto_bold"-->
-                <!--android:gravity="center"-->
-                <!--android:paddingEnd="16dp"-->
-                <!--android:text="Phân loại"-->
-                <!--android:textAllCaps="false"-->
-                <!--android:textColor="@color/colorPrimary"-->
-                <!--android:textSize="@dimen/suggestion_body_text_size" />-->
-
+                    android:textSize="32sp" />
 
                 <ImageButton
                     android:id="@+id/main_btn_filter"
@@ -102,6 +83,4 @@
         app:itemTextColor="@color/navigation_color_selector"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_navigation_menu" />
-
-
 </RelativeLayout>

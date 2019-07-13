@@ -17,9 +17,9 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.nminhanh.spacesharing.DescriptionOldDataReceiver;
+import com.example.nminhanh.spacesharing.Interface.DescriptionOldDataReceiver;
 import com.example.nminhanh.spacesharing.R;
-import com.example.nminhanh.spacesharing.StepContinueListener;
+import com.example.nminhanh.spacesharing.Interface.StepContinueListener;
 
 
 /**

@@ -28,6 +28,7 @@ import com.bumptech.glide.signature.ObjectKey;
 import com.example.nminhanh.spacesharing.AdminActivity;
 import com.example.nminhanh.spacesharing.FavoriteSpaceActivity;
 import com.example.nminhanh.spacesharing.GlideApp;
+import com.example.nminhanh.spacesharing.Interface.SignOutListener;
 import com.example.nminhanh.spacesharing.R;
 import com.example.nminhanh.spacesharing.SpaceManagementActivity;
 import com.example.nminhanh.spacesharing.UserInfoActivity;
@@ -103,7 +104,6 @@ public class AccountFragment extends Fragment {
 
 
     SignOutListener mSignOutListener;
-    ShowFacebookLoadingListener mShowLoadingListener;
 
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mCurrentUser;
@@ -120,7 +120,6 @@ public class AccountFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         mSignOutListener = (SignOutListener) context;
-        mShowLoadingListener = (ShowFacebookLoadingListener) context;
         super.onAttach(context);
     }
 
@@ -258,7 +257,6 @@ public class AccountFragment extends Fragment {
             @Override
             public void onCancel() {
                 Log.d(TAG, "registerCallback:onCancel");
-                mShowLoadingListener.onHidingFacebookLoading();
             }
 
             @Override
@@ -301,7 +299,6 @@ public class AccountFragment extends Fragment {
         InsetDrawable insetDrawable = new InsetDrawable(new ColorDrawable(Color.TRANSPARENT), 50, 200, 50, 200);
         facebookLoadingDialog.getWindow().setBackgroundDrawable(insetDrawable);
     }
-
 
     private void LinkWithFacebookAccount(AccessToken accessToken) {
         AuthCredential mFbCredential = FacebookAuthProvider.getCredential(accessToken.getToken());

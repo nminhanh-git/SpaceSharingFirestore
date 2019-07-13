@@ -1,4 +1,4 @@
-package com.example.nminhanh.spacesharing;
+package com.example.nminhanh.spacesharing.Utils;
 
 import android.content.Context;
 import android.location.Address;

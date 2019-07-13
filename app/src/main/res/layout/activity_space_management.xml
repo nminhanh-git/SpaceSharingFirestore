@@ -93,7 +93,7 @@
             android:layout_centerHorizontal="true" />
 
         <TextView
-            android:id="@+id/space_management_title"
+            android:id="@+id/space_management_empty_title"
             style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
             style="@style/Base.TextAppearance.AppCompat.Widget.Button.Inverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/space_management_title"
+            android:layout_below="@id/space_management_empty_title"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@drawable/button_sign_in_background"

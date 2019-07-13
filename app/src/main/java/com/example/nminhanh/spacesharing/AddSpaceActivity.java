@@ -20,6 +20,11 @@ import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.AddAddressFragme
 import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.AddDescriptionFragment;
 import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.AddOtherFragment;
 import com.example.nminhanh.spacesharing.Fragment.AddSpacePages.AddPagerAdapter;
+import com.example.nminhanh.spacesharing.Interface.AddCanceledListener;
+import com.example.nminhanh.spacesharing.Interface.AddressOldDataReceiver;
+import com.example.nminhanh.spacesharing.Interface.DescriptionOldDataReceiver;
+import com.example.nminhanh.spacesharing.Interface.OtherOldDataReceiver;
+import com.example.nminhanh.spacesharing.Interface.StepContinueListener;
 import com.example.nminhanh.spacesharing.Model.Space;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -220,13 +225,14 @@ public class AddSpaceActivity extends AppCompatActivity implements
         final CollectionReference mSpacesCollRef = db.collection(SPACE_COLLECTION);
         Task saveTask;
         if (command.equalsIgnoreCase("edit space")) {
+            currentSpace.setTrangThai("pending");
+            currentSpace.setAllow(false);
             saveTask = mSpacesCollRef.document(currentSpace.getId()).set(currentSpace);
             saveTask.addOnSuccessListener(new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     DocumentReference currentSpaceRef = mSpacesCollRef.document(currentSpace.getId());
                     Map<String, Object> updates = new HashMap<>();
-                    updates.put("trangThai", "pending");
                     updates.put("timeAdded", FieldValue.serverTimestamp());
                     currentSpaceRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -245,6 +251,7 @@ public class AddSpaceActivity extends AppCompatActivity implements
             });
         } else {
             currentSpace.setTrangThai("pending");
+            currentSpace.setAllow(false);
             saveTask = mSpacesCollRef.add(currentSpace);
             saveTask.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override

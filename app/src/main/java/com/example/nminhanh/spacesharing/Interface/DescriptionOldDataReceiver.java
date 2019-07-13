@@ -1,4 +1,4 @@
-package com.example.nminhanh.spacesharing;
+package com.example.nminhanh.spacesharing.Interface;
 
 import android.os.Bundle;
 

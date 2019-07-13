@@ -53,5 +53,34 @@
             android:fontFamily="@font/roboto_bold"
             android:padding="10dp"
             android:text="Đăng nhập ngay" />
+        
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/empty_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@color/background"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/conversation_empty_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_empty_conversation"/>
+
+        <TextView
+            android:id="@+id/conversation_title"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/conversation_empty_image"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/roboto_reg"
+            android:paddingHorizontal="30dp"
+            android:text="Không có tin nhắn"
+            android:textAlignment="center"
+            android:textColor="@color/dark_gray" />
     </RelativeLayout>
 </FrameLayout>
